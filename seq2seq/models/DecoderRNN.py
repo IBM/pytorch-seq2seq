@@ -86,8 +86,8 @@ class DecoderRNN(BaseRNN):
                 self.init_input = self.init_input.cuda()
         return self.init_input
 
-    def forward_step(self, input, hidden, encoder_outputs, function):
-        embedded = self.embedding(input)
+    def forward_step(self, input_var, hidden, encoder_outputs, function):
+        embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
 
         output, hidden = self.rnn(embedded, hidden)

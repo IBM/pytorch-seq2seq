@@ -6,10 +6,9 @@ import torch.nn as nn
 class BaseRNN(nn.Module):
     r"""
     Applies a multi-layer RNN to an input sequence.
-    
     Note:
         Do not use this class directly, use one of the sub classes.
-        
+
     Args:
         vocab (Vocabulary): object of Vocabulary class
         max_len (int): maximum allowed length for the sequence to be processed
@@ -18,11 +17,11 @@ class BaseRNN(nn.Module):
         dropout_p (float): dropout probability for the output sequence
         n_layers (int): number of recurrent layers
         rnn_cell (str): type of RNN cell (Eg. 'LSTM' , 'GRU')
-        
+
     Inputs: ``*args``, ``**kwargs``
         - ``*args``: variable length argument list.
         - ``**kwargs``: arbitrary keyword arguments.
-        
+
     Attributes:
         SYM_MASK: masking symbol
         SYM_EOS: end-of-sequence symbol
@@ -49,7 +48,7 @@ class BaseRNN(nn.Module):
         self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p)
 
     def balance(self, batch, volatile):
-        """ 
+        """
         Add reserved symbols and balance batch input.
         It first appends EOS symbol to each sequence and then appends multiple
         MASK symbols to make the sequences the same length.

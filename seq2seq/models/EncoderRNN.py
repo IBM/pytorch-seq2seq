@@ -42,18 +42,18 @@ class EncoderRNN(BaseRNN):
         self.lengths = [min(self.max_len, len(seq)) for seq in batch]
         return super(EncoderRNN, self).forward(batch, **kwargs)
 
-    def forward_rnn(self, input):
+    def forward_rnn(self, input_var):
         """
         Applies a multi-layer RNN to an input sequence.
 
         Args:
-            input (batch, seq_len): tensor containing the features of the input sequence.
+            input_var (batch, seq_len): tensor containing the features of the input sequence.
 
        returns: output, hidden
             - **output** (batch, seq_len, hidden_size): variable containing the encoded features of the input sequence
             - **hidden** (num_layers * num_directions, batch, hidden_size): variable containing the features in the hidden state h
         """
-        embedded = self.embedding(input)
+        embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
         embedded = nn.utils.rnn.pack_padded_sequence(embedded, self.lengths, batch_first=True)
         output, hidden = self.rnn(embedded)

@@ -1,7 +1,4 @@
 from __future__ import print_function
-import unicodedata
-import re
-
 
 def filter_pair(pair, src_max_len, tgt_max_len):
     """
@@ -54,7 +51,7 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
         for line in fin:
             try:
                 src, dst = line.strip().split("\t")
-                pair = map(lambda st: tokenize_func(st), [src, dst])
+                pair = map(tokenize_func, [src, dst])
                 if filter_pair(pair, src_max_len, tgt_max_len):
                     pairs.append(pair)
             except:
