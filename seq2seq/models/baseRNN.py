@@ -8,7 +8,6 @@ class BaseRNN(nn.Module):
     Applies a multi-layer RNN to an input sequence.
     Note:
         Do not use this class directly, use one of the sub classes.
-
     Args:
         vocab (Vocabulary): object of Vocabulary class
         max_len (int): maximum allowed length for the sequence to be processed
@@ -52,7 +51,6 @@ class BaseRNN(nn.Module):
         Add reserved symbols and balance batch input.
         It first appends EOS symbol to each sequence and then appends multiple
         MASK symbols to make the sequences the same length.
-
         Args:
             batch: list of sequences, each of which is a list of integers
             volatile: boolean flag specifying whether to preserve gradients, when you are sure you will not be even calling .backward().
