@@ -5,7 +5,7 @@ from baseRNN import BaseRNN
 
 
 class TopKDecoder(BaseRNN):
-    r""" 
+    r"""
     Top-K decoding with beam search.
 
     Args:
@@ -13,25 +13,25 @@ class TopKDecoder(BaseRNN):
         k (int): Size of the beam.
 
     Inputs: inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio
-        - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which 
+        - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which
           each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default is `None`)
-        - **encoder_hidden** (batch, seq_len, hidden_size): tensor containing the features in the hidden state `h` of 
+        - **encoder_hidden** (batch, seq_len, hidden_size): tensor containing the features in the hidden state `h` of
           encoder. Used as the initial hidden state of the decoder.
-        - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder. 
+        - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
           Used for attention mechanism (default is `None`).
-        - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state 
+        - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state
           (default is `torch.nn.functional.log_softmax`).
-        - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is 
-          drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value, 
+        - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is
+          drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,
           teacher forcing would be used (default is 0).
 
     Outputs: decoder_outputs, decoder_hidden, ret_dict
-        - **decoder_outputs** (batch): batch-length list of tensors with size (max_length, hidden_size) containing the 
+        - **decoder_outputs** (batch): batch-length list of tensors with size (max_length, hidden_size) containing the
           outputs of the decoder.
-        - **decoder_hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden 
+        - **decoder_hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden
           state of the decoder.
-        - **ret_dict**: dictionary containing additional information as follows {*length* : list of integers 
-          representing lengths of output sequences, *sequence* : list of sequences, where each sequence is a list of 
+        - **ret_dict**: dictionary containing additional information as follows {*length* : list of integers
+          representing lengths of output sequences, *sequence* : list of sequences, where each sequence is a list of
           predicted token IDs, *inputs* : target outputs if provided for decoding}.
 
     """
@@ -77,7 +77,7 @@ class TopKDecoder(BaseRNN):
         sequence_scores = Variable(sequence_scores)
 
         # Initialize the input vector
-        input = Variable(torch.transpose(torch.LongTensor([[self.SOS]*b*self.k]), 0, 1))
+        input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS]*b*self.k]), 0, 1))
 
         # Store decisions for backtracking
         stored_outputs = list()
@@ -86,10 +86,10 @@ class TopKDecoder(BaseRNN):
         stored_emitted_symbols = list()
         stored_hidden = list()
 
-        for T in range(0, self.rnn.max_length):
+        for _ in range(0, self.rnn.max_length):
 
             # Run the RNN one step forward
-            log_softmax_output, hidden, _ = self.rnn.forward_step(input, hidden, inflated_encoder_outputs, function=function)
+            log_softmax_output, hidden, _ = self.rnn.forward_step(input_var, hidden, inflated_encoder_outputs, function=function)
 
             # If doing local backprop (e.g. supervised training), retain the output layer
             if retain_output_probs:
@@ -101,7 +101,7 @@ class TopKDecoder(BaseRNN):
             scores, candidates = sequence_scores.view(b, -1).topk(self.k, dim=1)
 
             # Reshape input = (bk, 1) and sequence_scores = (bk, 1)
-            input = (candidates % self.V).view(b * self.k, 1)
+            input_var = (candidates % self.V).view(b * self.k, 1)
             sequence_scores = scores.view(b * self.k, 1)
 
             # Update fields for next timestep
@@ -110,13 +110,13 @@ class TopKDecoder(BaseRNN):
 
             # Update sequence scores and erase scores for end-of-sentence symbol so that they aren't expanded
             stored_scores.append(sequence_scores.clone())
-            eos_indices = input.data.eq(self.EOS)
+            eos_indices = input_var.data.eq(self.EOS)
             if eos_indices.nonzero().dim() > 0:
                 sequence_scores.data.masked_fill_(eos_indices, -float('inf'))
 
             # Cache results for backtracking
             stored_predecessors.append(predecessors)
-            stored_emitted_symbols.append(input)
+            stored_emitted_symbols.append(input_var)
             stored_hidden.append(hidden)
 
         # Do backtracking to return the optimal values

@@ -5,7 +5,6 @@ from baseRNN import BaseRNN
 class EncoderRNN(BaseRNN):
     r"""
     Applies a multi-layer RNN to an input sequence.
-    
     Args:
         vocab (Vocabulary): an object of Vocabulary class
         max_len (int): a maximum allowed length for the sequence to be processed
@@ -14,21 +13,20 @@ class EncoderRNN(BaseRNN):
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
         n_layers (int, optional): number of recurrent layers (default: 1)
         rnn_cell (str, optional): type of RNN cell (default: gru)
-        
+
     Inputs: inputs, volatile
         - **inputs**: list of sequences, whose length is the batch size and within which each sequence is a list of token IDs.
-        - **volatile** (bool, optional): boolean flag specifying whether to preserve gradients, when you are sure you 
+        - **volatile** (bool, optional): boolean flag specifying whether to preserve gradients, when you are sure you
           will not be even calling .backward().
-        
     Outputs: output, hidden
         - **output** (batch, seq_len, hidden_size): tensor containing the encoded features of the input sequence
         - **hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the features in the hidden state `h`
-        
+
     Examples::
-    
+
          >>> encoder = EncoderRNN(input_vocab, max_seq_length, hidden_size)
          >>> output, hidden = encoder(input)
-    
+
     """
     def __init__(self, vocab, max_len, hidden_size,
             input_dropout_p=0, dropout_p=0,
@@ -47,10 +45,10 @@ class EncoderRNN(BaseRNN):
     def forward_rnn(self, input):
         """
         Applies a multi-layer RNN to an input sequence.
-        
+
         Args:
-            input (batch, seq_len): tensor containing the features of the input sequence. 
-         
+            input (batch, seq_len): tensor containing the features of the input sequence.
+
        returns: output, hidden
             - **output** (batch, seq_len, hidden_size): variable containing the encoded features of the input sequence
             - **hidden** (num_layers * num_directions, batch, hidden_size): variable containing the features in the hidden state h

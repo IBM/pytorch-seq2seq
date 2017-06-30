@@ -11,7 +11,6 @@ def filter_pair(pair, src_max_len, tgt_max_len):
         pair ((str, str)): (source, target) sentence pair
         src_max_len (int): maximum length cutoff for sentences in the source language
         tgt_max_len (int): maximum length cutoff for sentences in the target language
-    
     Returns:
          bool: true if the pair is shorter than the length cutoffs, false otherwise
     """
@@ -24,7 +23,7 @@ def space_tokenize(text):
 
     Args:
      text (str): input text as a single string
-    
+
     Returns:
          list(str): list of tokens obtained by splitting the text on single spaces
     """
@@ -41,8 +40,8 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
         src_max_len (int): maximum length cutoff for sentences in the source language
         tgt_max_len (int): maximum length cutoff for sentences in the target language
         tokenize_func (func): function for splitting words in a sentence (default is single-space-delimited)
-    
-    Returns: 
+
+    Returns:
         list((str, str)): list of (source, target) string pairs
     """
 
@@ -72,12 +71,12 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
 def read_vocabulary(path, max_num_vocab=50000):
     """
     Helper function to read a vocabulary file.
-    
+
     Args:
         path (str): filepath to raw vocabulary file
         max_num_vocab (int): maximum number of words to read from vocabulary file
-        
-    Returns: 
+
+    Returns:
         set: read words from vocabulary file
     """
     print("Reading vocabulary...")

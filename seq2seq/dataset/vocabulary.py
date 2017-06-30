@@ -66,7 +66,7 @@ class Vocabulary(object):
 
     def get_index(self, token):
         """
-        Returns: 
+        Returns:
             int: ID of the given token.
         """
         self.check_sorted()
@@ -74,7 +74,7 @@ class Vocabulary(object):
 
     def get_token(self, index):
         """
-        Returns: 
+        Returns:
             str: token with ID equal to the given index.
         """
         self.check_sorted()
@@ -82,7 +82,7 @@ class Vocabulary(object):
 
     def get_vocab_size(self):
         """
-        Returns: 
+        Returns:
             int: maximum number of words in the vocabulary.
         """
         self.check_sorted()
@@ -120,8 +120,7 @@ class Vocabulary(object):
 
         Args:
             sequence (list(str)): list of words to map
-        
-        Returns: 
+        Returns:
             list(int): list of mapped IDs
         """
         self.check_sorted()
@@ -136,8 +135,8 @@ class Vocabulary(object):
 
         Args:
             indices (list(int)): list of token IDs.
-        
-        Returns: 
+
+        Returns:
             list(str): recovered sentence, represented as a list of words
         """
         seq = [self._index2token[idx] for idx in indices]
@@ -161,8 +160,8 @@ class Vocabulary(object):
 
         Args:
             file_name (str): path to the pickle file
-        
-        Returns: 
+
+        Returns:
             Vocabulary: loaded Vocabulary
         """
         with open(file_name, "rb") as f:
