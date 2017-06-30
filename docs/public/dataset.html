@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dataset &mdash; pytorch-seq2seq 0.1.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.1 documentation" href="index.html"/>
+        <link rel="next" title="Util" href="util.html"/>
+        <link rel="prev" title="Introduction" href="notes/intro.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.dataset.utils">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.dataset.vocabulary">vocabulary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dataset">
+<h1>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-seq2seq.dataset.dataset"></span><dl class="class">
+<dt id="seq2seq.dataset.dataset.Dataset">
+<em class="property">class </em><code class="descclassname">seq2seq.dataset.dataset.</code><code class="descname">Dataset</code><span class="sig-paren">(</span><em>path</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>src_vocab=None</em>, <em>tgt_vocab=None</em>, <em>src_max_vocab=50000</em>, <em>tgt_max_vocab=50000</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class that encapsulates a dataset.</p>
+<p>Initialize a dataset from the file at given path. The file
+must contains a list of TAB-separated pairs of sequences.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Source or target sequences that are longer than the respective
+max length will be filtered.
+As specified by maximum vocabulary size, source and target
+vocabularies will be sorted in descending token frequency and cutoff.
+Tokens that are in the dataset but not retained in the vocabulary
+will be dropped in the sequences.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the dataset file</li>
+<li><strong>src_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum source sequence length</li>
+<li><strong>tgt_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum target sequence length</li>
+<li><strong>src_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the source language,
+default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>src_max_vocab</cite> wouldn’t be used.</li>
+<li><strong>tgt_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the target language,
+default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>tgt_max_vocab</cite> wouldn’t be used.</li>
+<li><strong>src_max_vocab</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum source vocabulary size</li>
+<li><strong>tgt_max_vocab</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum target vocabulary size</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="seq2seq.dataset.dataset.Dataset.make_batches">
+<code class="descname">make_batches</code><span class="sig-paren">(</span><em>batch_size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.make_batches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a generator that generates batches in batch_size over data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of pairs in a mini-batch</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><em>(list(str), list(str))</em> – next pair of source and target variable in a batch</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.dataset.Dataset.num_batches">
+<code class="descname">num_batches</code><span class="sig-paren">(</span><em>batch_size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.num_batches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of batches given batch size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of examples in a batch</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">number of batches</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.dataset.Dataset.shuffle">
+<code class="descname">shuffle</code><span class="sig-paren">(</span><em>seed=None</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shuffle the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – provide a value for the random seed; default seed=None is truly random</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-seq2seq.dataset.utils">
+<span id="utils"></span><h2>utils<a class="headerlink" href="#module-seq2seq.dataset.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="seq2seq.dataset.utils.filter_pair">
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">filter_pair</code><span class="sig-paren">(</span><em>pair</em>, <em>src_max_len</em>, <em>tgt_max_len</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.filter_pair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if a sentence pair meets the length requirements, false otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pair</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>)</em>) – (source, target) sentence pair</li>
+<li><strong>src_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum length cutoff for sentences in the source language</li>
+<li><strong>tgt_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum length cutoff for sentences in the target language</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">true if the pair is shorter than the length cutoffs, false otherwise</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="seq2seq.dataset.utils.prepare_data">
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">prepare_data</code><span class="sig-paren">(</span><em>path</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>tokenize_func=&lt;function space_tokenize&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.prepare_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a tab-separated data file where each line contains a source sentence and a target sentence. Pairs containing
+a sentence that exceeds the maximum length allowed for its language are not added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the data file</li>
+<li><strong>src_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum length cutoff for sentences in the source language</li>
+<li><strong>tgt_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum length cutoff for sentences in the target language</li>
+<li><strong>tokenize_func</strong> (<em>func</em>) – function for splitting words in a sentence (default is single-space-delimited)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of (source, target) string pairs</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list((<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a>, <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a>))</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="seq2seq.dataset.utils.read_vocabulary">
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">read_vocabulary</code><span class="sig-paren">(</span><em>path</em>, <em>max_num_vocab=50000</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.read_vocabulary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to read a vocabulary file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – filepath to raw vocabulary file</li>
+<li><strong>max_num_vocab</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum number of words to read from vocabulary file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">read words from vocabulary file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#set" title="(in Python v2.7)">set</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="seq2seq.dataset.utils.space_tokenize">
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">space_tokenize</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.space_tokenize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tokenizes a piece of text by splitting it up based on single spaces (” “).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – input text as a single string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of tokens obtained by splitting the text on single spaces</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list(<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-seq2seq.dataset.vocabulary">
+<span id="vocabulary"></span><h2>vocabulary<a class="headerlink" href="#module-seq2seq.dataset.vocabulary" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary">
+<em class="property">class </em><code class="descclassname">seq2seq.dataset.vocabulary.</code><code class="descname">Vocabulary</code><span class="sig-paren">(</span><em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Vocabulary stores a set of words belonging to a particular language. Words in the source vocabulary are mapped
+to unique integer IDs during encoding. Words in the target vocabulary are recovered from the model’s output
+during decoding.</p>
+<p>In addition to the words in the actual language, a Vocabulary includes three reserved tokens (and IDs) for the
+start-of-sentence and end-of-sentence markers, and for a special ‘mask’ marker used to handle
+rare/unknown words.</p>
+<p>The Vocabulary is sorted in descending order based on frequency. If the number of words seen is greater than
+the maximum size of the Vocabulary, the remaining least-frequent words are ignored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum number of words allowed in this vocabulary</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.add_sequence">
+<code class="descname">add_sequence</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.add_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a sequence of words to the vocabulary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sequence</strong> (<em>list</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>)</em>) – list of words, e.g. representing a sentence.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.add_token">
+<code class="descname">add_token</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.add_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an occurrence of a token to the vocabulary, incrementing its observed frequency if the word already exists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>token</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – word to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.check_sorted">
+<code class="descname">check_sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.check_sorted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts the vocabulary (if it is not already sorted).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.get_index">
+<code class="descname">get_index</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_index" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ID of the given token.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.get_token">
+<code class="descname">get_token</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_token" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">token with ID equal to the given index.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.get_vocab_size">
+<code class="descname">get_vocab_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_vocab_size" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">maximum number of words in the vocabulary.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.indices_from_sequence">
+<code class="descname">indices_from_sequence</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.indices_from_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps a list of words to their token IDs, or else the ‘mask’ token if the word is rare/unknown.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sequence</strong> (<em>list</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>)</em>) – list of words to map</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of mapped IDs</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list(<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.load">
+<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a Vocabulary from a pickle file on disk.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the pickle file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">loaded Vocabulary</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary">Vocabulary</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes this Vocabulary to disk in a pickle file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the target pickle file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.sequence_from_indices">
+<code class="descname">sequence_from_indices</code><span class="sig-paren">(</span><em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.sequence_from_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recover a sentence from a list of token IDs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>indices</strong> (<em>list</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>)</em>) – list of token IDs.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">recovered sentence, represented as a list of words</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list(<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.vocabulary.Vocabulary.trim">
+<code class="descname">trim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.trim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts the vocabulary in descending order based on frequency</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="util.html" class="btn btn-neutral float-right" title="Util" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="notes/intro.html" class="btn btn-neutral" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contritors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
