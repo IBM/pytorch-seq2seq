@@ -1,4 +1,6 @@
 # pytorch-seq2seq
+[![Build Status](https://travis-ci.org/IBM/pytorch-seq2seq.svg?branch=master)](https://travis-ci.org/IBM/pytorch-seq2seq)
+
 **[Documentation](https://ibm.github.io/pytorch-seq2seq/public/index.html)**
 
 This is a framework for sequence-to-sequence (seq2seq) models implemented in [PyTorch](http://pytorch.org).  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
