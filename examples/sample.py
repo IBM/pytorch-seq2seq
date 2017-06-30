@@ -10,15 +10,14 @@ from seq2seq.dataset import Dataset
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
 
-'''
-Sample usage:
-     # training
-     python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH
-     # resuming from the latest checkpoint of the experiment
-     python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH -resume
-     # resuming from a specific checkpoint
-     python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --load_checkpoint $CHECKPOINT_DIR
-'''
+# Sample usage:
+#     # training
+#     python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH
+#     # resuming from the latest checkpoint of the experiment
+#      python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH -resume
+#      # resuming from a specific checkpoint
+#      python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --load_checkpoint $CHECKPOINT_DIR
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--train_path', action='store', dest='train_path',
                     help='Path to train data')

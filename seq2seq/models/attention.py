@@ -12,25 +12,25 @@ class Attention(nn.Module):
             x = context*output \\
             attn = exp(x_i - max_i x_i) / sum_j exp(x_j - max_i x_i) \\
             output = \tanh(w * (attn * context) + b * output)
-            \end{array}  
-            
+            \end{array}
+
     Args:
-        dim(int): The number of expected features in the output 
-        
+        dim(int): The number of expected features in the output
+
     Inputs: output, context
         - **output** (batch, dimensions): tensor containing the output features from the decoder.
         - **context** (batch, seq_len, dimensions): tensor containing features of the encoded input sequence.
-        
+
     Outputs: output, attn
         - **output** (batch, seq_len, dimensions): tensor containing the attended output features from the decoder.
         - **attn** (batch, seq_len): tensor containing attention weights.
-    
+
     Attributes:
         linear_out (torch.nn.Linear): applies a linear transformation to the incoming data: :math:`y = Ax + b`.
         mask (torch.Tensor, optional): applies a :math:`-inf` to the indices specified in the `Tensor`.
-        
+
     Examples::
-    
+
          >>> attention = seq2seq.models.Attention(256)
          >>> context = Variable(torch.randn(5, 3, 256))
          >>> output = Variable(torch.randn(5, 256))
@@ -44,10 +44,10 @@ class Attention(nn.Module):
 
     def set_mask(self, mask):
         """
-        Sets indices to be masked 
-        
+        Sets indices to be masked
+
         Args:
-            mask (torch.Tensor): tensor containing indices to be masked 
+            mask (torch.Tensor): tensor containing indices to be masked
         """
         self.mask = mask
 

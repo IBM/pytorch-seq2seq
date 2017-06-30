@@ -7,7 +7,7 @@ import torch
 from seq2seq.dataset.vocabulary import Vocabulary
 
 
-class Checkpoint:
+class Checkpoint(object):
     """
     The Checkpoint class manages the saving and loading of a model during training. It allows training to be suspended
     and resumed at a later time (e.g. when running on a cluster using sequential jobs).

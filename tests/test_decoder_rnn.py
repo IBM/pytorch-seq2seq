@@ -1,8 +1,6 @@
 import os
 import unittest
 
-import torch
-
 from seq2seq.dataset import Dataset
 from seq2seq.models import DecoderRNN
 

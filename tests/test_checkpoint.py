@@ -6,7 +6,6 @@ import mock
 from mock import ANY
 
 from seq2seq.util.checkpoint import Checkpoint
-from seq2seq.models.seq2seq import Seq2seq
 import time
 
 

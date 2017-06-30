@@ -8,8 +8,7 @@ def pretty_interval(start_time):
 
     Args:
         start_time (float): the start of the interval of time, obtained by calling time.time()
-        
-    Returns: 
+    Returns:
         str: elapsed time in '##d ##h ##m ##s' format
     """
     return pretty_time(time.time() - start_time)
@@ -22,13 +21,13 @@ def pretty_time(timespan_in_seconds):
 
     Args:
      timespan_in_seconds (float): the number of seconds in a span of time
-    
-    Returns: 
+
+    Returns:
         str: timespan in '##d ##h ##m ##s' format
-        
-        
+
+
     Examples::
-    
+
         >>> print seq2seq.util.custom_time.pretty_time(426753)
         >>> 4d 22h 32m 33
     """

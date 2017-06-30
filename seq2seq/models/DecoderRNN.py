@@ -11,7 +11,7 @@ from baseRNN import BaseRNN
 class DecoderRNN(BaseRNN):
     r"""
     Provides functionality for decoding in a seq2seq framework, with an option for attention.
-    
+
     Args:
         vocab (Vocabulary): an object of Vocabulary class
         max_len (int): a maximum allowed length for the sequence to be processed
@@ -21,33 +21,33 @@ class DecoderRNN(BaseRNN):
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
         use_attention(bool, optional): flag indication whether to use attention mechanism or not (default: false)
-        
+
     Attributes:
         KEY_ATTN_SCORE (str): key used to indicate attention weights in `ret_dict`
-        KEY_LENGTH (str): key used to indicate a list representing lengths of output sequences in `ret_dict` 
+        KEY_LENGTH (str): key used to indicate a list representing lengths of output sequences in `ret_dict`
         KEY_SEQUENCE (str): key used to indicate a list of sequences in `ret_dict`
         KEY_INPUT (str): key used to target outputs in `ret_dict`
-        
+
     Inputs: inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio
-        - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which 
+        - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which
           each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default is `None`)
-        - **encoder_hidden** (batch, seq_len, hidden_size): tensor containing the features in the hidden state `h` of 
+        - **encoder_hidden** (batch, seq_len, hidden_size): tensor containing the features in the hidden state `h` of
           encoder. Used as the initial hidden state of the decoder.
-        - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder. 
+        - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
           Used for attention mechanism (default is `None`).
-        - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state 
+        - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state
           (default is `torch.nn.functional.log_softmax`).
-        - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is 
-          drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value, 
+        - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is
+          drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,
           teacher forcing would be used (default is 0).
 
     Outputs: decoder_outputs, decoder_hidden, ret_dict
-        - **decoder_outputs** (batch): batch-length list of tensors with size (max_length, hidden_size) containing the 
+        - **decoder_outputs** (batch): batch-length list of tensors with size (max_length, hidden_size) containing the
           outputs of the decoder.
-        - **decoder_hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden 
+        - **decoder_hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden
           state of the decoder.
-        - **ret_dict**: dictionary containing additional information as follows {*KEY_LENGTH* : list of integers 
-          representing lengths of output sequences, *KEY_SEQUENCE* : list of sequences, where each sequence is a list of 
+        - **ret_dict**: dictionary containing additional information as follows {*KEY_LENGTH* : list of integers
+          representing lengths of output sequences, *KEY_SEQUENCE* : list of sequences, where each sequence is a list of
           predicted token IDs, *KEY_INPUT* : target outputs if provided for decoding, *KEY_ATTN_SCORE* : list of
           sequences, where each list is of attention weights }.
     """
@@ -86,8 +86,8 @@ class DecoderRNN(BaseRNN):
                 self.init_input = self.init_input.cuda()
         return self.init_input
 
-    def forward_step(self, input, hidden, encoder_outputs, function):
-        embedded = self.embedding(input)
+    def forward_step(self, input_var, hidden, encoder_outputs, function):
+        embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
 
         output, hidden = self.rnn(embedded, hidden)
