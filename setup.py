@@ -16,7 +16,7 @@ setup(
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version='0.0.3',
-    description='A sample implementation of seq2seq using py-Torch',
+    description='A framework for sequence-to-sequence (seq2seq) models implemented in PyTorch.',
     long_description=long_description,
 
     # The project's main homepage.
