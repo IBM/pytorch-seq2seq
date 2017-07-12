@@ -30,9 +30,8 @@ parser.add_argument(
     action='store',
     dest='expt_dir',
     default='./experiment',
-    help=
-    'Path to experiment directory. If load_checkpoint is True, then path to checkpoint directory has to be provided'
-)
+    help=('Path to experiment directory. If load_checkpoint is True,'
+          'then path to checkpoint directory has to be provided'))
 parser.add_argument(
     '--load_checkpoint',
     action='store',
