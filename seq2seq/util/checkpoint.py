@@ -1,10 +1,13 @@
 import os
 import time
 import shutil
+import logging
 
 import torch
 
 from seq2seq.dataset.vocabulary import Vocabulary
+
+logger = logging.getLogger(__name__)
 
 
 class Checkpoint(object):
@@ -36,7 +39,8 @@ class Checkpoint(object):
     INPUT_VOCAB_FILE = 'input_vocab'
     OUTPUT_VOCAB_FILE = 'output_vocab'
 
-    def __init__(self, root_dir, model, optimizer_state_dict, epoch, step, input_vocab, output_vocab):
+    def __init__(self, root_dir, model, optimizer_state_dict, epoch, step, input_vocab,
+                 output_vocab):
         self.root_dir = root_dir
         self.model = model
         self.optimizer_state_dict = optimizer_state_dict
@@ -58,10 +62,11 @@ class Checkpoint(object):
         if os.path.exists(path):
             shutil.rmtree(path)
         os.makedirs(path)
-        torch.save({'epoch': self.epoch,
-                    'step': self.step,
-                    'optimizer': self.optimizer_state_dict},
-                   os.path.join(path, self.MODEL_DIR_NAME))
+        torch.save({
+            'epoch': self.epoch,
+            'step': self.step,
+            'optimizer': self.optimizer_state_dict
+        }, os.path.join(path, self.MODEL_DIR_NAME))
         self.model.save(path)
 
         if not os.path.isfile(os.path.join(path, self.INPUT_VOCAB_FILE)):
@@ -82,16 +87,19 @@ class Checkpoint(object):
         Returns:
             checkpoint (Checkpoint): checkpoint object with fields copied from those stored on disk
         """
-        print "Loading checkpoints from {}".format(path)
+        logger.info("Loading checkpoints from %s", path)
         resume_checkpoint = torch.load(os.path.join(path, cls.MODEL_DIR_NAME))
         model = torch.load(path)
         input_vocab = Vocabulary.load(os.path.join(path, cls.INPUT_VOCAB_FILE))
         output_vocab = Vocabulary.load(os.path.join(path, cls.OUTPUT_VOCAB_FILE))
-        return Checkpoint(root_dir=path, model=model, input_vocab=input_vocab,
-                          output_vocab=output_vocab,
-                          optimizer_state_dict=resume_checkpoint['optimizer'],
-                          epoch=resume_checkpoint['epoch'],
-                          step=resume_checkpoint['step'])
+        return Checkpoint(
+            root_dir=path,
+            model=model,
+            input_vocab=input_vocab,
+            output_vocab=output_vocab,
+            optimizer_state_dict=resume_checkpoint['optimizer'],
+            epoch=resume_checkpoint['epoch'],
+            step=resume_checkpoint['step'])
 
     @classmethod
     def get_latest_checkpoint(cls, experiment_path):

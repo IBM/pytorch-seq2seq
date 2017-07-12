@@ -1,8 +1,7 @@
-from __future__ import print_function
-
 import torch
 
 from seq2seq.loss import NLLLoss
+
 
 class Evaluator(object):
 
@@ -33,7 +32,8 @@ class Evaluator(object):
             input_variables = batch[0]
             target_variables = batch[1]
 
-            decoder_outputs, decoder_hidden, other = model(input_variables, target_variables, volatile=True)
+            decoder_outputs, decoder_hidden, other = model(
+                input_variables, target_variables, volatile=True)
 
             # Evaluation
             targets = other['inputs']
