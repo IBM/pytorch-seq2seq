@@ -21,14 +21,14 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.ibm.com/fail/pytorch-seq2seq',
+    url='https://github.com/LatticeData/pytorch-seq2seq',
 
     # Author details
-    author='Foundations of Artificial Intelligence and Learning group',
-    author_email='kyle.gao@ibm.com',
+    author='Siri Lion Team',
+    author_email='mpetrochuk@apple.com',
 
     # Choose your license
-    license='IBM proprietary',
+    license='Apache 2.0',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -43,7 +43,7 @@ setup(
         'Topic :: Software Development',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: IBM proprietary',
+        'License :: Apache 2.0',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
