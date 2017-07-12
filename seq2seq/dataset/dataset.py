@@ -1,6 +1,7 @@
 import random
 from seq2seq.dataset import Vocabulary, utils
 
+
 class Dataset(object):
     """
     A class that encapsulates a dataset.
@@ -28,7 +29,13 @@ class Dataset(object):
         tgt_max_vocab (int): maximum target vocabulary size
     """
 
-    def __init__(self, path, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
+    def __init__(self,
+                 path,
+                 src_max_len,
+                 tgt_max_len,
+                 src_vocab=None,
+                 tgt_vocab=None,
+                 src_max_vocab=50000,
                  tgt_max_vocab=50000):
         # Prepare data
         self.src_max_len = src_max_len
@@ -58,8 +65,10 @@ class Dataset(object):
             for tok in utils.read_vocabulary(vocab, max_num_vocab):
                 resp_vocab.add_token(tok)
         else:
-            raise AttributeError('{} is not a valid instance on a vocabulary. None, instance of Vocabulary class \
-                                 and str are only supported formats for the vocabulary'.format(vocab))
+            raise AttributeError(
+                '{} is not a valid instance on a vocabulary. None, instance of Vocabulary class \
+                                 and str are only supported formats for the vocabulary'
+                .format(vocab))
         return resp_vocab
 
     def __len__(self):
@@ -89,8 +98,8 @@ class Dataset(object):
 
         """
         if len(self.data) < batch_size:
-            raise OverflowError("batch size = {} cannot be larger than data size = {}".
-                                format(batch_size, len(self.data)))
+            raise OverflowError("batch size = {} cannot be larger than data size = {}".format(
+                batch_size, len(self.data)))
         for i in range(0, len(self.data), batch_size):
             cur_batch = self.data[i:i + batch_size]
             source_variables = [pair[0] for pair in cur_batch]

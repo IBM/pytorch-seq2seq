@@ -17,6 +17,7 @@ class Vocabulary(object):
     Args:
          size(int): maximum number of words allowed in this vocabulary
     """
+
     def __init__(self, size):
         self.MASK_token_name = "MASK"
         self.SOS_token_name = "SOS"
@@ -26,11 +27,9 @@ class Vocabulary(object):
         self.EOS_token_id = 2
 
         self._reserved = set([self.MASK_token_name, self.SOS_token_name, self.EOS_token_name])
-        self._reserved_token_id = [
-                (self.MASK_token_name, self.MASK_token_id),
-                (self.SOS_token_name, self.SOS_token_id),
-                (self.EOS_token_name, self.EOS_token_id)
-        ]
+        self._reserved_token_id = [(self.MASK_token_name, self.MASK_token_id),
+                                   (self.SOS_token_name, self.SOS_token_id), (self.EOS_token_name,
+                                                                              self.EOS_token_id)]
 
         self._token2index = dict([(tok, idx) for tok, idx in self._reserved_token_id])
         self._index2token = dict([(idx, tok) for tok, idx in self._reserved_token_id])
@@ -47,8 +46,10 @@ class Vocabulary(object):
         """
         Sorts the vocabulary in descending order based on frequency
         """
-        sorted_vocab_count = sorted(self._token2count.items(), key=lambda x: x[1], reverse=True)[:self.size]
-        self._token2index = dict([(w, self._num_reserved + idx) for idx, (w, _) in enumerate(sorted_vocab_count)])
+        sorted_vocab_count = sorted(
+            self._token2count.items(), key=lambda x: x[1], reverse=True)[:self.size]
+        self._token2index = dict([(w, self._num_reserved + idx)
+                                  for idx, (w, _) in enumerate(sorted_vocab_count)])
         self._index2token = dict([(idx, w) for w, idx in self._token2index.items()])
         for tok, idx in self._reserved_token_id:
             self._token2index[tok] = idx
@@ -124,10 +125,10 @@ class Vocabulary(object):
             list(int): list of mapped IDs
         """
         self.check_sorted()
-        return [self._token2index[tok]
-                if tok in self._token2index
-                else self.MASK_token_id
-                for tok in sequence]
+        return [
+            self._token2index[tok] if tok in self._token2index else self.MASK_token_id
+            for tok in sequence
+        ]
 
     def sequence_from_indices(self, indices):
         """

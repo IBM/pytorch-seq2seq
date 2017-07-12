@@ -9,6 +9,7 @@ from torch.autograd import Variable
 from seq2seq.loss.loss import Loss
 from seq2seq.loss import NLLLoss, Perplexity
 
+
 class TestLoss(unittest.TestCase):
 
     def test_loss_init(self):
@@ -37,11 +38,14 @@ class TestLoss(unittest.TestCase):
         num_batch = 10
         batch_size = 5
 
-        outputs = [F.softmax(Variable(torch.randn(batch_size, num_class)))
-                   for _ in range(num_batch)]
-        targets = [Variable(torch.LongTensor([random.randint(0, num_class - 1)
-                                              for _ in range(batch_size)]))
-                   for _ in range(num_batch)]
+        outputs = [
+            F.softmax(Variable(torch.randn(batch_size, num_class))) for _ in range(num_batch)
+        ]
+        targets = [
+            Variable(
+                torch.LongTensor([random.randint(0, num_class - 1) for _ in range(batch_size)]))
+            for _ in range(num_batch)
+        ]
 
         loss = NLLLoss()
         pytorch_loss = 0
@@ -64,11 +68,14 @@ class TestLoss(unittest.TestCase):
         num_batch = 10
         batch_size = 5
 
-        outputs = [F.softmax(Variable(torch.randn(batch_size, num_class)))
-                   for _ in range(num_batch)]
-        targets = [Variable(torch.LongTensor([random.randint(0, num_class - 1)
-                                              for _ in range(batch_size)]))
-                   for _ in range(num_batch)]
+        outputs = [
+            F.softmax(Variable(torch.randn(batch_size, num_class))) for _ in range(num_batch)
+        ]
+        targets = [
+            Variable(
+                torch.LongTensor([random.randint(0, num_class - 1) for _ in range(batch_size)]))
+            for _ in range(num_batch)
+        ]
 
         nll = NLLLoss()
         ppl = Perplexity()

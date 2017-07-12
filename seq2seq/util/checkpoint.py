@@ -6,6 +6,7 @@ import logging
 import torch
 
 from seq2seq.dataset.vocabulary import Vocabulary
+from seq2seq.models.seq2seq import Seq2seq
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +90,8 @@ class Checkpoint(object):
         """
         logger.info("Loading checkpoints from %s", path)
         resume_checkpoint = torch.load(os.path.join(path, cls.MODEL_DIR_NAME))
-        model = torch.load(path)
+        # TODO: Check IBM repo for the proper fix.
+        model = Seq2seq.load(path)
         input_vocab = Vocabulary.load(os.path.join(path, cls.INPUT_VOCAB_FILE))
         output_vocab = Vocabulary.load(os.path.join(path, cls.OUTPUT_VOCAB_FILE))
         return Checkpoint(

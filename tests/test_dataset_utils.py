@@ -20,15 +20,15 @@ class TestDatasetUtils(unittest.TestCase):
     #  filterPair(pairs, src_max_len, tgt_max_len)
     ######################################################################
     def test_filterPair_WITH_VALID_PAIR(self):
-        test_pair = [["you", "are", "wrong", "."],	["tu", "as", "tort", "."]]
+        test_pair = [["you", "are", "wrong", "."], ["tu", "as", "tort", "."]]
         self.assertTrue(utils.filter_pair(test_pair, 10, 10))
 
     def test_filterPair_WITH_INVALID_PAIR_LONG_INPUT(self):
-        test_pair = [["you", "are", "wrong", "."],	["tu", "as", "tort", "."]]
+        test_pair = [["you", "are", "wrong", "."], ["tu", "as", "tort", "."]]
         self.assertFalse(utils.filter_pair(test_pair, 1, 10))
 
     def test_filterPair_WITH_INVALID_PAIR_LONG_OUTPUT(self):
-        test_pair = [["you", "are", "wrong", "."],	["tu", "as", "tort", "."]]
+        test_pair = [["you", "are", "wrong", "."], ["tu", "as", "tort", "."]]
         self.assertFalse(utils.filter_pair(test_pair, 10, 1))
 
     ########################################################################################################
@@ -54,6 +54,7 @@ class TestDatasetUtils(unittest.TestCase):
 
     def test_prepare_data_WITH_INVALID_PATH(self):
         self.assertRaises(IOError, utils.prepare_data, "eng-fra.txt", 20, 20)
+
 
 ######################################################################
 #   M A I N

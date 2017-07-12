@@ -1,7 +1,5 @@
 # pytorch-seq2seq
 
-**[Documentation](https://ibm.github.io/pytorch-seq2seq/public/index.html)**
-
 This is a framework for sequence-to-sequence (seq2seq) models implemented in [PyTorch](http://pytorch.org).  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc. We appreciate any kind of feedback or contribution.
 
 # Roadmap

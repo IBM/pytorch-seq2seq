@@ -44,7 +44,11 @@ class TopKDecoder(BaseRNN):
         self.SOS = self.rnn.lang.SOS_token_id
         self.EOS = self.rnn.lang.EOS_token_id
 
-    def forward_rnn(self, inputs=None, encoder_hidden=None, encoder_outputs=None, function=F.log_softmax,
+    def forward_rnn(self,
+                    inputs=None,
+                    encoder_hidden=None,
+                    encoder_outputs=None,
+                    function=F.log_softmax,
                     retain_output_probs=True):
         """
         Forward rnn for MAX_LENGTH steps.  Look at :func:`seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn` for details.
@@ -71,13 +75,13 @@ class TopKDecoder(BaseRNN):
 
         # Initialize the scores; for the first step,
         # ignore the inflated copies to avoid duplicate entries in the top k
-        sequence_scores = torch.Tensor(b*self.k, 1)
+        sequence_scores = torch.Tensor(b * self.k, 1)
         sequence_scores.fill_(-float('Inf'))
-        sequence_scores.index_fill_(0, torch.LongTensor([i*self.k for i in range(0, b)]), 0.0)
+        sequence_scores.index_fill_(0, torch.LongTensor([i * self.k for i in range(0, b)]), 0.0)
         sequence_scores = Variable(sequence_scores)
 
         # Initialize the input vector
-        input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS]*b*self.k]), 0, 1))
+        input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS] * b * self.k]), 0, 1))
 
         # Store decisions for backtracking
         stored_outputs = list()
@@ -89,7 +93,8 @@ class TopKDecoder(BaseRNN):
         for _ in range(0, self.rnn.max_length):
 
             # Run the RNN one step forward
-            log_softmax_output, hidden, _ = self.rnn.forward_step(input_var, hidden, inflated_encoder_outputs, function=function)
+            log_softmax_output, hidden, _ = self.rnn.forward_step(
+                input_var, hidden, inflated_encoder_outputs, function=function)
 
             # If doing local backprop (e.g. supervised training), retain the output layer
             if retain_output_probs:
@@ -105,7 +110,8 @@ class TopKDecoder(BaseRNN):
             sequence_scores = scores.view(b * self.k, 1)
 
             # Update fields for next timestep
-            predecessors = (candidates / self.V + self.pos_index.expand_as(candidates)).view(b*self.k, 1)
+            predecessors = (candidates / self.V + self.pos_index.expand_as(candidates)).view(
+                b * self.k, 1)
             hidden = hidden.index_select(1, predecessors.squeeze())
 
             # Update sequence scores and erase scores for end-of-sentence symbol so that they aren't expanded
@@ -121,7 +127,8 @@ class TopKDecoder(BaseRNN):
 
         # Do backtracking to return the optimal values
         output, h_t, h_n, s, l, p = self._backtrack(stored_outputs, stored_hidden,
-                                                 stored_predecessors, stored_emitted_symbols, stored_scores, b, h)
+                                                    stored_predecessors, stored_emitted_symbols,
+                                                    stored_scores, b, h)
 
         # Build return objects
         decoder_outputs = [step[:, 0, :] for step in output]
@@ -167,12 +174,14 @@ class TopKDecoder(BaseRNN):
         output = list()
         h_t = list()
         p = list()
-        h_n = torch.zeros(nw_hidden[0].size())  # Placeholder for last hidden state of top-k sequences.
-                                                # If a (top-k) sequence ends early in decoding, `h_n` contains
-                                                # its hidden state when it sees EOS.  Otherwise, `h_n` contains
-                                                # the last hidden state of decoding.
-        l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
-                                                                # Similar to `h_n`
+        h_n = torch.zeros(
+            nw_hidden[0].size())  # Placeholder for last hidden state of top-k sequences.
+        # If a (top-k) sequence ends early in decoding, `h_n` contains
+        # its hidden state when it sees EOS.  Otherwise, `h_n` contains
+        # the last hidden state of decoding.
+        l = [[self.rnn.max_length] * self.k
+             for _ in range(b)]  # Placeholder for lengths of top-k sequences
+        # Similar to `h_n`
 
         # the last step output of the beams are not sorted
         # thus they are sorted here
@@ -180,8 +189,8 @@ class TopKDecoder(BaseRNN):
         # initialize the sequence scores with the sorted last step beam scores
         s = sorted_score.clone()
 
-        batch_eos_found = [0] * b   # the number of EOS found
-                                    # in the backward loop below for each batch
+        batch_eos_found = [0] * b  # the number of EOS found
+        # in the backward loop below for each batch
 
         t = self.rnn.max_length - 1
         # initialize the back pointer with the sorted order of the last step beams.
@@ -215,7 +224,7 @@ class TopKDecoder(BaseRNN):
             #
             eos_indices = symbols[t].data.squeeze(1).eq(self.EOS).nonzero()
             if eos_indices.dim() > 0:
-                for i in range(eos_indices.size(0)-1, -1, -1):
+                for i in range(eos_indices.size(0) - 1, -1, -1):
                     # Indices of the EOS symbol for both variables
                     # with b*k as the first dimension, and b, k for
                     # the first two dimensions
@@ -248,15 +257,20 @@ class TopKDecoder(BaseRNN):
         # the order (very unlikely)
         s, re_sorted_idx = s.topk(self.k)
         for b_idx in range(b):
-            l[b_idx] = [l[b_idx][k_idx.data[0]] for k_idx in re_sorted_idx[b_idx,:]]
+            l[b_idx] = [l[b_idx][k_idx.data[0]] for k_idx in re_sorted_idx[b_idx, :]]
 
         re_sorted_idx = (re_sorted_idx + self.pos_index.expand_as(re_sorted_idx)).view(b * self.k)
 
         # Reverse the sequences and re-order at the same time
         # It is reversed because the backtracking happens in reverse time order
-        output = [step.index_select(0, re_sorted_idx).view(b, self.k, -1) for step in reversed(output)]
+        output = [
+            step.index_select(0, re_sorted_idx).view(b, self.k, -1) for step in reversed(output)
+        ]
         p = [step.index_select(0, re_sorted_idx).view(b, self.k, -1) for step in reversed(p)]
-        h_t = [step.index_select(1, re_sorted_idx).view(-1, b, self.k, hidden_size) for step in reversed(h_t)]
+        h_t = [
+            step.index_select(1, re_sorted_idx).view(-1, b, self.k, hidden_size)
+            for step in reversed(h_t)
+        ]
         h_n = h_n.index_select(1, re_sorted_idx.data).view(-1, b, self.k, hidden_size)
         s = s.data
 
@@ -266,7 +280,7 @@ class TopKDecoder(BaseRNN):
         return output, h_t, h_n, s, l, p
 
     def _mask_symbol_scores(self, score, idx, masking_score=-float('inf')):
-            score[idx] = masking_score
+        score[idx] = masking_score
 
     def _mask(self, tensor, idx, dim=0, masking_score=-float('inf')):
         if len(idx.size()) > 0:
@@ -316,5 +330,5 @@ class TopKDecoder(BaseRNN):
             b = tensor.size(0)
             return tensor.repeat(times).view(b, -1)
         else:
-            raise ValueError("Tensor can be of 1D, 2D or 3D only. This one is {}D.".format(tensor_dim))
-
+            raise ValueError(
+                "Tensor can be of 1D, 2D or 3D only. This one is {}D.".format(tensor_dim))

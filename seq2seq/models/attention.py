@@ -37,9 +37,10 @@ class Attention(nn.Module):
          >>> output, attn = attention(output, context)
 
     """
+
     def __init__(self, dim):
         super(Attention, self).__init__()
-        self.linear_out = nn.Linear(dim*2, dim)
+        self.linear_out = nn.Linear(dim * 2, dim)
         self.mask = None
 
     def set_mask(self, mask):
