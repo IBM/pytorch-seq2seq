@@ -9,8 +9,8 @@ from seq2seq.dataset.dataset import Dataset
 class TestDataset(unittest.TestCase):
 
     def setUp(self):
-        self.ds = Dataset("./tests/data/eng-fra.txt", 10, 10,
-                src_max_vocab=50000, tgt_max_vocab=50000)
+        self.ds = Dataset(
+            "./tests/data/eng-fra.txt", 10, 10, src_max_vocab=50000, tgt_max_vocab=50000)
 
     ######################################################################
     #  __init__()
@@ -18,12 +18,17 @@ class TestDataset(unittest.TestCase):
     def test_init(self):
         self.assertEqual(100, self.ds.input_vocab.get_vocab_size())
         self.assertEqual(146, self.ds.output_vocab.get_vocab_size())
-        self.assertFalse(set(self.ds.input_vocab._token2index.keys()) == set(self.ds.output_vocab._token2index.keys()))
+        self.assertFalse(
+            set(self.ds.input_vocab._token2index.keys()) == set(
+                self.ds.output_vocab._token2index.keys()))
 
     def test_init_WITH_VOCABULARY(self):
-        new_ds = Dataset("./tests/data/eng-fra-dev.txt", 10, 10,
-                         src_vocab=self.ds.input_vocab,
-                         tgt_vocab=self.ds.output_vocab)
+        new_ds = Dataset(
+            "./tests/data/eng-fra-dev.txt",
+            10,
+            10,
+            src_vocab=self.ds.input_vocab,
+            tgt_vocab=self.ds.output_vocab)
         self.assertEqual(self.ds.input_vocab, new_ds.input_vocab)
         self.assertEqual(self.ds.output_vocab, new_ds.output_vocab)
 
@@ -37,7 +42,6 @@ class TestDataset(unittest.TestCase):
         new_output_vocab = set(ds_with_new_vocab.output_vocab._token2count.keys())
         self.assertFalse(output_vocab & new_output_vocab)
 
-
         # Since there's no overlap between vocabularies
         # The dev set loaded with the training vocabulary should be
         # all masked sequences
@@ -47,18 +51,27 @@ class TestDataset(unittest.TestCase):
             self.assertEquals([0], tgt[0])
 
     def test_init_WITH_VOCABULARY_FILE(self):
-        new_ds = Dataset("./tests/data/eng-fra-dev.txt", 10, 10,
-                         src_vocab="./tests/data/src_vocab.txt",
-                         tgt_vocab="./tests/data/tgt_vocab.txt")
+        new_ds = Dataset(
+            "./tests/data/eng-fra-dev.txt",
+            10,
+            10,
+            src_vocab="./tests/data/src_vocab.txt",
+            tgt_vocab="./tests/data/tgt_vocab.txt")
         self.assertEqual(8, new_ds.input_vocab.get_vocab_size())
         self.assertEqual(8, new_ds.output_vocab.get_vocab_size())
         self.assertEqual({'good day', 'welcome', 'MASK', 'EOS', 'thank you', 'SOS', 'hi', 'hello'},
                          set(new_ds.input_vocab._token2index.keys()))
-        self.assertEqual({'bienvenue', 'MASK', 'EOS', 'SOS', 'bonne journee', 'salut', 'Je vous remercie', 'bonjour'},
-                         set(new_ds.output_vocab._token2index.keys()))
+        self.assertEqual({
+            'bienvenue', 'MASK', 'EOS', 'SOS', 'bonne journee', 'salut', 'Je vous remercie',
+            'bonjour'
+        }, set(new_ds.output_vocab._token2index.keys()))
 
-        self.assertFalse(set(self.ds.input_vocab._token2index.keys()) == set(new_ds.input_vocab._token2index.keys()))
-        self.assertFalse(set(self.ds.output_vocab._token2index.keys()) == set(new_ds.output_vocab._token2index.keys()))
+        self.assertFalse(
+            set(self.ds.input_vocab._token2index.keys()) == set(
+                new_ds.input_vocab._token2index.keys()))
+        self.assertFalse(
+            set(self.ds.output_vocab._token2index.keys()) == set(
+                new_ds.output_vocab._token2index.keys()))
 
     ######################################################################
     #  make_batches(batch_size)
@@ -120,6 +133,7 @@ class TestDataset(unittest.TestCase):
         self.ds.shuffle(seed=123)
         reseeded_data = self.ds.data[:]
         self.assertListEqual(seeded_data, reseeded_data)
+
 
 ######################################################################
 #   M A I N

@@ -1,5 +1,6 @@
 import torch
 
+
 class Optimizer(object):
     """ The Optimizer class encapsulates torch.optim package and provides functionalities
     for learning rate scheduling and gradient norm clipping.

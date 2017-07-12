@@ -57,12 +57,17 @@ class DecoderRNN(BaseRNN):
     KEY_SEQUENCE = 'sequence'
     KEY_INPUT = 'inputs'
 
-    def __init__(self, vocab, max_len, hidden_size,
-            n_layers=1, rnn_cell='gru',
-            input_dropout_p=0, dropout_p=0, use_attention=False):
-        super(DecoderRNN, self).__init__(vocab, max_len, hidden_size,
-                input_dropout_p, dropout_p,
-                n_layers, rnn_cell)
+    def __init__(self,
+                 vocab,
+                 max_len,
+                 hidden_size,
+                 n_layers=1,
+                 rnn_cell='gru',
+                 input_dropout_p=0,
+                 dropout_p=0,
+                 use_attention=False):
+        super(DecoderRNN, self).__init__(vocab, max_len, hidden_size, input_dropout_p, dropout_p,
+                                         n_layers, rnn_cell)
 
         self.output_size = self.vocab.get_vocab_size()
         self.dropout_p = dropout_p
@@ -81,7 +86,8 @@ class DecoderRNN(BaseRNN):
     def init_start_input(self, batch_size):
         # GO input for decoder # Re-initialize when batch size changes
         if self.init_input is None or self.init_input.size(0) != batch_size:
-            self.init_input = Variable(torch.LongTensor([[self.vocab.SOS_token_id]*batch_size])).view(batch_size, -1)
+            self.init_input = Variable(
+                torch.LongTensor([[self.vocab.SOS_token_id] * batch_size])).view(batch_size, -1)
             if torch.cuda.is_available():
                 self.init_input = self.init_input.cuda()
         return self.init_input
@@ -101,8 +107,12 @@ class DecoderRNN(BaseRNN):
         predicted_softmax = function(self.out(output))
         return predicted_softmax, hidden, attn
 
-    def forward_rnn(self, inputs=None, encoder_hidden=None, function=F.log_softmax,
-                    encoder_outputs=None, teacher_forcing_ratio=0):
+    def forward_rnn(self,
+                    inputs=None,
+                    encoder_hidden=None,
+                    function=F.log_softmax,
+                    encoder_outputs=None,
+                    teacher_forcing_ratio=0):
         ret_dict = dict()
         if self.use_attention:
             if encoder_outputs is None:
@@ -110,7 +120,8 @@ class DecoderRNN(BaseRNN):
             ret_dict[DecoderRNN.KEY_ATTN_SCORE] = list()
         if inputs is None:
             if teacher_forcing_ratio > 0:
-                raise ValueError("Teacher forcing has to be disabled (set 0) when no inputs is provided.")
+                raise ValueError(
+                    "Teacher forcing has to be disabled (set 0) when no inputs is provided.")
         if inputs is None and encoder_hidden is None:
             batch_size = 1
         else:
@@ -135,8 +146,8 @@ class DecoderRNN(BaseRNN):
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
         h_t = []
         for di in range(self.max_length):
-            decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
-                                                                     function=function)
+            decoder_output, decoder_hidden, attn = self.forward_step(
+                decoder_input, decoder_hidden, encoder_outputs, function=function)
             decoder_outputs.append(decoder_output)
             h_t.append(decoder_hidden)
             if self.use_attention:
@@ -146,7 +157,7 @@ class DecoderRNN(BaseRNN):
             sequence_symbols.append(symbols)
             eos_batches = symbols.data.eq(self.vocab.EOS_token_id).nonzero()
             if eos_batches.dim() > 0:
-                for b_idx in eos_batches[:,0]:
+                for b_idx in eos_batches[:, 0]:
                     if di < lengths[b_idx]:
                         lengths[b_idx] = di + 1
 
