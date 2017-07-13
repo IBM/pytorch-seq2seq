@@ -103,7 +103,7 @@ class Checkpoint(object):
         Returns:
             checkpoint (Checkpoint): checkpoint object with fields copied from those stored on disk
         """
-        print "Loading checkpoints from {}".format(path)
+        logger.info("Loading checkpoints from %s".format(path))
         resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME))
         model = torch.load(os.path.join(path, cls.MODEL_NAME))
         input_vocab = Vocabulary.load(os.path.join(path, cls.INPUT_VOCAB_FILE))

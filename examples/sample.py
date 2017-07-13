@@ -12,7 +12,9 @@ from seq2seq.loss import Perplexity
 from seq2seq.dataset import Dataset
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
+from seq2seq.util.config import init_logging
 
+init_logging()
 logger = logging.getLogger(__name__)
 # Sample usage:
 #     # training

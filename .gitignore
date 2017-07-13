@@ -79,3 +79,4 @@ target/
 
 vocab_pickle
 data/**
+experiment/**

@@ -23,15 +23,15 @@ def get_root_path():
 def init_logging():
     """ Setup logging configuration using logging.yaml
     """
-    root_path = get_root_path()
-    log_dump_path = path.join(root_path, 'log')
-    if not path.exists(log_dump_path):
-        makedirs(log_dump_path)
-
-    logging_path = path.join(root_path, 'logging.yaml')
-
-    # Only configure logging if it has not been configured yet.
     if len(logging.root.handlers) == 0:
+        root_path = get_root_path()
+        log_dump_path = path.join(root_path, 'log')
+        if not path.exists(log_dump_path):
+            makedirs(log_dump_path)
+
+        logging_path = path.join(root_path, 'logging.yaml')
+
+        # Only configure logging if it has not been configured yet.
         with open(logging_path, 'rt') as file_:
             config = yaml.safe_load(file_.read())
         logging.config.dictConfig(config)
