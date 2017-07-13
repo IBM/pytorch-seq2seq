@@ -12,7 +12,9 @@ from seq2seq.loss import Perplexity
 from seq2seq.dataset import Dataset
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
+from seq2seq.util.config import init_logging
 
+init_logging()
 logger = logging.getLogger(__name__)
 # Sample usage:
 #     # training
@@ -64,29 +66,26 @@ else:
     dev_set = Dataset(
         opt.dev_path, src_max_len=50, tgt_max_len=50, src_vocab=input_vocab, tgt_vocab=output_vocab)
 
-    # Prepare model
-    hidden_size = 128
-    encoder = EncoderRNN(input_vocab, dataset.src_max_len, hidden_size)
-    decoder = DecoderRNN(
-        output_vocab, dataset.tgt_max_len, hidden_size, dropout_p=0.2, use_attention=True)
-    seq2seq = Seq2seq(encoder, decoder)
-
-    if opt.resume:
-        logger.info('Resuming training')
-        latest_checkpoint = Checkpoint.get_latest_checkpoint(opt.expt_dir)
-        seq2seq.load(latest_checkpoint)
-    else:
-        for param in seq2seq.parameters():
-            param.data.uniform_(-0.08, 0.08)
-
     # Prepare loss
     weight = torch.ones(output_vocab.get_vocab_size())
     mask = output_vocab.MASK_token_id
     loss = Perplexity(weight, mask)
-
     if torch.cuda.is_available():
-        seq2seq.cuda()
         loss.cuda()
+
+    seq2seq = None
+    if not opt.resume:
+        # Initialize model
+        hidden_size = 128
+        encoder = EncoderRNN(input_vocab, dataset.src_max_len, hidden_size)
+        decoder = DecoderRNN(
+            output_vocab, dataset.tgt_max_len, hidden_size, dropout_p=0.2, use_attention=True)
+        seq2seq = Seq2seq(encoder, decoder)
+        if torch.cuda.is_available():
+            seq2seq.cuda()
+
+        for param in seq2seq.parameters():
+            param.data.uniform_(-0.08, 0.08)
 
     # train
     t = SupervisedTrainer(

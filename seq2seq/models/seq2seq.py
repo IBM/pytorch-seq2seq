@@ -60,27 +60,3 @@ class Seq2seq(nn.Module):
             volatile=volatile)
         return result
 
-    def save(self, path):
-        """
-        Saves the current seq2seq object and related training parameters into specified path.
-
-        Args:
-         path (str): path to the directory to be saved
-        """
-        torch.save(self.encoder, os.path.join(path, "encoder"))
-        torch.save(self.decoder, os.path.join(path, "decoder"))
-
-    @classmethod
-    def load(cls, path):
-        """
-        Loads a seq2seq object that was previously saved to disk.
-
-        Args:
-            path (str): path to the saved model directory
-
-        Returns:
-            Seq2seq: seq2seq object with fields copied from those stored on disk
-        """
-        encoder = torch.load(os.path.join(path, "encoder"))
-        decoder = torch.load(os.path.join(path, "decoder"))
-        return Seq2seq(encoder, decoder)

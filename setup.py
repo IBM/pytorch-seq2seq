@@ -15,19 +15,16 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.4',
+    version='0.1.1',
+
     description='A framework for sequence-to-sequence (seq2seq) models implemented in PyTorch.',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/LatticeData/pytorch-seq2seq',
-
-    # Author details
-    author='Siri Lion Team',
-    author_email='mpetrochuk@apple.com',
+    url='https://github.com/IBM/pytorch-seq2seq',
 
     # Choose your license
-    license='Apache 2.0',
+    license='Apache License 2.0',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -42,7 +39,7 @@ setup(
         'Topic :: Software Development',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: Apache 2.0',
+        'License :: Apache License 2.0',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
