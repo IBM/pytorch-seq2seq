@@ -17,7 +17,7 @@ class Optimizer(object):
             refer http://pytorch.org/docs/optim.html#algorithms for more information
     """
 
-    _ARG_MAX_GRAD_NORM = 'max_grad_norm'
+    _ARG_MAX_GRAD_NORM = "max_grad_norm"
     _ARG_DECAY_AFTER = "decay_after_epoch"
     _ARG_LR_DECAY = "lr_decay"
     _ARG_LR = "lr"
@@ -33,7 +33,11 @@ class Optimizer(object):
 
         # If learning rate is set to None, do not pass it to optim_class.
         if Optimizer._ARG_LR in kwargs and kwargs[Optimizer._ARG_LR] is None:
-            self._get_remove(kwargs, Optimizer._ARG_LR, 0)
+            # https://github.com/pytorch/pytorch/issues/2085
+            if optim_class == torch.optim.SGD:
+                kwargs[Optimizer._ARG_LR] = 1
+            else:
+                self._get_remove(kwargs, Optimizer._ARG_LR, 0)
 
         self.optim_args = kwargs
 
