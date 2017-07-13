@@ -125,11 +125,11 @@ class SupervisedTrainer(object):
 
                 # Checkpoint
                 if step % self.checkpoint_every == 0 or step == total_steps:
-                    Checkpoint(root_dir=self.expt_dir, model=model,
+                    Checkpoint(model=model,
                                optimizer_state_dict=self.optimizer.state_dict(),
                                epoch=epoch, step=step,
                                input_vocab=data.input_vocab,
-                               output_vocab=data.output_vocab).save()
+                               output_vocab=data.output_vocab).save(self.expt_dir)
 
             log_msg = "Finished epoch {0}".format(epoch)
             if dev_data is not None:
