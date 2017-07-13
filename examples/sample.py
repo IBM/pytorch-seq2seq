@@ -52,25 +52,26 @@ else:
                     src_vocab=input_vocab,
                     tgt_vocab=output_vocab)
 
-    # Prepare model
-    hidden_size=128
-    encoder = EncoderRNN(input_vocab, dataset.src_max_len, hidden_size)
-    decoder = DecoderRNN(output_vocab, dataset.tgt_max_len, hidden_size,
-                        dropout_p=0.2, use_attention=True)
-    seq2seq = Seq2seq(encoder, decoder)
-
-    if not opt.resume:
-        for param in seq2seq.parameters():
-            param.data.uniform_(-0.08, 0.08)
-
     # Prepare loss
     weight = torch.ones(output_vocab.get_vocab_size())
     mask = output_vocab.MASK_token_id
     loss = Perplexity(weight, mask)
-
     if torch.cuda.is_available():
-        seq2seq.cuda()
         loss.cuda()
+
+    seq2seq = None
+    if not opt.resume:
+        # Initialize model
+        hidden_size=128
+        encoder = EncoderRNN(input_vocab, dataset.src_max_len, hidden_size)
+        decoder = DecoderRNN(output_vocab, dataset.tgt_max_len, hidden_size,
+                            dropout_p=0.2, use_attention=True)
+        seq2seq = Seq2seq(encoder, decoder)
+        if torch.cuda.is_available():
+            seq2seq.cuda()
+
+        for param in seq2seq.parameters():
+            param.data.uniform_(-0.08, 0.08)
 
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
