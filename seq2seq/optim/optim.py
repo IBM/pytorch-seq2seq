@@ -20,6 +20,7 @@ class Optimizer(object):
     _ARG_MAX_GRAD_NORM = 'max_grad_norm'
     _ARG_DECAY_AFTER = "decay_after_epoch"
     _ARG_LR_DECAY = "lr_decay"
+    _ARG_LR = "lr"
 
     def __init__(self, optim_class, **kwargs):
         self.optim_class = optim_class
@@ -29,6 +30,11 @@ class Optimizer(object):
         self.max_grad_norm = self._get_remove(kwargs, Optimizer._ARG_MAX_GRAD_NORM, 0)
         self.lr_decay = self._get_remove(kwargs, Optimizer._ARG_LR_DECAY, 1)
         self.decay_after_epoch = self._get_remove(kwargs, Optimizer._ARG_DECAY_AFTER, 0)
+
+        # If learning rate is set to None, do not pass it to optim_class.
+        if Optimizer._ARG_LR in kwargs and kwargs[Optimizer._ARG_LR] is None:
+            self._get_remove(kwargs, Optimizer._ARG_LR, 0)
+
         self.optim_args = kwargs
 
     def _get_remove(self, args, key, default):

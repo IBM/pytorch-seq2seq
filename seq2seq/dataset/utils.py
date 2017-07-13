@@ -62,9 +62,9 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
                 raise
             counter += 1
             if counter % 100 == 0:
-                logger.info("\rRead %d lines", counter)
+                logger.info("Read %d lines", counter)
 
-    logger.info("\nNumber of pairs: %s", len(pairs))
+    logger.info("Number of pairs: %s", len(pairs))
     return pairs
 
 
