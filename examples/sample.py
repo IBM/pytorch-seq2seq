@@ -59,11 +59,7 @@ else:
                         dropout_p=0.2, use_attention=True)
     seq2seq = Seq2seq(encoder, decoder)
 
-    if opt.resume:
-        print("resuming training")
-        latest_checkpoint = Checkpoint.get_latest_checkpoint(opt.expt_dir)
-        seq2seq.load(latest_checkpoint)
-    else:
+    if not opt.resume:
         for param in seq2seq.parameters():
             param.data.uniform_(-0.08, 0.08)
 
