@@ -67,7 +67,7 @@ Vagrant.configure("2") do |config|
    config.vm.provision "shell", inline: <<-SHELL
      apt-get update
      apt-get install git-all
-     apt-get -y install python-dev python-pip
+     apt-get -y --force-yes install python-dev python-pip
      pip install --upgrade pip
      pip install nose
      pip install mock

@@ -44,7 +44,8 @@ class BaseRNN(nn.Module):
             raise ValueError("Unsupported RNN Cell: {0}".format(rnn_cell))
 
         self.dropout_p = dropout_p
-        self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p)
+        self.rnn = self.rnn_cell(
+            hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p)
 
     def balance(self, batch, volatile):
         """
@@ -62,7 +63,8 @@ class BaseRNN(nn.Module):
         outputs = []
         for seq in batch:
             seq = seq[:min(len(seq), max_len - 1)]
-            outputs.append(seq + [self.vocab.EOS_token_id] + [self.vocab.MASK_token_id] * (max_len - len(seq) - 1))
+            outputs.append(seq + [self.vocab.EOS_token_id] + [self.vocab.MASK_token_id] *
+                           (max_len - len(seq) - 1))
 
         outputs_var = torch.autograd.Variable(torch.LongTensor(outputs), volatile=volatile)
         if torch.cuda.is_available():

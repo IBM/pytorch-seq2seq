@@ -1,20 +1,24 @@
 import random
 from seq2seq.dataset import Vocabulary, utils
 
+
 class Dataset(object):
     """
-    A class that encapsulates a dataset.
+    A class that encapsulates a dataset of sequence.
+    Initialize a dataset from the file at given path.
 
-    Initialize a dataset from the file at given path. The file
-    must contains a list of TAB-separated pairs of sequences.
+    Note: - The file must contains a list of TAB-separated pairs of sequences.
 
-    Note:
-        Source or target sequences that are longer than the respective
-        max length will be filtered.
-        As specified by maximum vocabulary size, source and target
-        vocabularies will be sorted in descending token frequency and cutoff.
-        Tokens that are in the dataset but not retained in the vocabulary
-        will be dropped in the sequences.
+          - Source or target sequences that are longer than the respective
+            max length will be filtered.
+
+          - As specified by maximum vocabulary size, source and target
+            vocabularies will be sorted in descending token frequency and cutoff.
+            @TODO This is a hardcoded pre-processing decision. We should conisder
+            abstracting  it out.
+
+          - Tokens that are in the dataset but not retained in the vocabulary
+            will be dropped in the sequences.
 
     Args:
         path (str): path to the dataset file
@@ -28,7 +32,13 @@ class Dataset(object):
         tgt_max_vocab (int): maximum target vocabulary size
     """
 
-    def __init__(self, path, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
+    def __init__(self,
+                 path,
+                 src_max_len,
+                 tgt_max_len,
+                 src_vocab=None,
+                 tgt_vocab=None,
+                 src_max_vocab=50000,
                  tgt_max_vocab=50000):
         # Prepare data
         self.src_max_len = src_max_len
@@ -47,19 +57,54 @@ class Dataset(object):
             self.data.append((src, dst))
 
     def _init_vocab(self, sequences, max_num_vocab, vocab):
+        """
+        Initiate a vocabulary based off a list of sequences.
+
+        @TODO: This init is overloaded with multiple behavior for convenience
+               but poor modularity of function. Consider splitting.
+
+        Args:
+            sequence (Iterable)
+                S
+
+            max_num_vocab (int)
+                 Maximum number of entries allowed in the vocabulary.
+                 Trimmed by frequency.
+
+            vocab (str, Vocabulary)
+                IF Vocabulary: overrides the incoming sequence data by
+                               simply returning that vocab as is.
+
+                IF str: assumes it's in a vocabulary format and read
+                        accordingly.
+
+        Returns:
+            resp_vocab (Vocabulary)
+                Vocabulary object.
+        """
         resp_vocab = Vocabulary(max_num_vocab)
+
         if vocab is None:
+            # Build vocabulary from the sequence token
             for sequence in sequences:
                 resp_vocab.add_sequence(sequence)
+
+            # Sorts by frequency and trims to max_num_vocab
             resp_vocab.trim()
+
         elif isinstance(vocab, Vocabulary):
             resp_vocab = vocab
+
         elif isinstance(vocab, str):
+            # Read vocabulary from predefined forma
             for tok in utils.read_vocabulary(vocab, max_num_vocab):
                 resp_vocab.add_token(tok)
         else:
-            raise AttributeError('{} is not a valid instance on a vocabulary. None, instance of Vocabulary class \
-                                 and str are only supported formats for the vocabulary'.format(vocab))
+            raise AttributeError(
+                '{} is not a valid instance on a vocabulary. None, instance of Vocabulary class \
+                                 and str are only supported formats for the vocabulary'
+                .format(vocab))
+
         return resp_vocab
 
     def __len__(self):
@@ -89,8 +134,10 @@ class Dataset(object):
 
         """
         if len(self.data) < batch_size:
-            raise OverflowError("batch size = {} cannot be larger than data size = {}".
-                                format(batch_size, len(self.data)))
+            raise OverflowError("batch size = {} cannot be larger than data size = {}".format(
+                batch_size, len(self.data)))
+
+        # Yields data for every basic_size
         for i in range(0, len(self.data), batch_size):
             cur_batch = self.data[i:i + batch_size]
             source_variables = [pair[0] for pair in cur_batch]

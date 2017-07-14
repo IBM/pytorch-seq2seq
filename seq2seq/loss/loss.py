@@ -1,7 +1,11 @@
-from __future__ import print_function
 import math
+import logging
+
 import torch.nn as nn
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
 
 class Loss(object):
     """ Base class for encapsulation of the loss functions.
@@ -80,6 +84,7 @@ class Loss(object):
             raise ValueError("No loss to back propagate.")
         self.acc_loss.backward()
 
+
 class NLLLoss(Loss):
     """ Batch averaged negative log-likelihood loss.
 
@@ -98,9 +103,8 @@ class NLLLoss(Loss):
                 raise ValueError("Must provide weight with a mask.")
             weight[mask] = 0
 
-        super(NLLLoss, self).__init__(
-            self._NAME,
-            nn.NLLLoss(weight=weight, size_average=size_average))
+        super(NLLLoss, self).__init__(self._NAME,
+                                      nn.NLLLoss(weight=weight, size_average=size_average))
 
     def get_loss(self):
         if type(self.acc_loss) is int:
@@ -110,6 +114,7 @@ class NLLLoss(Loss):
     def eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
         self.norm_term += 1
+
 
 class Perplexity(NLLLoss):
     """ Language model perplexity loss.
@@ -138,6 +143,6 @@ class Perplexity(NLLLoss):
     def get_loss(self):
         nll = super(Perplexity, self).get_loss()
         if nll > Perplexity._MAX_EXP:
-            print("WARNING: Loss exceeded maximum value, capping to e^100")
+            logger.warn("Loss exceeded maximum value, capping to e^100")
             return math.exp(Perplexity._MAX_EXP)
         return math.exp(nll)

@@ -2,7 +2,9 @@ import unittest
 from seq2seq.dataset.vocabulary import Vocabulary
 import cPickle as pickle
 
+
 class TestVocabulary(unittest.TestCase):
+
     def setUp(self):
         self.vocab = Vocabulary(50000)
 
@@ -54,33 +56,38 @@ class TestVocabulary(unittest.TestCase):
         self.assertEqual(6, self.vocab.get_vocab_size())
 
     def test_add_sequence_WITH_PARTIAL_NEW_SEQUENCE(self):
-            self.assertEqual(3, self.vocab.get_vocab_size())
-            self.vocab.add_sequence(["i", "like", "python", "EOS"])
-            self.vocab.add_sequence(["i"])
-            self.assertEqual(6, self.vocab.get_vocab_size())
-            self.assertEqual(3, self.vocab.get_index('i'))
+        self.assertEqual(3, self.vocab.get_vocab_size())
+        self.vocab.add_sequence(["i", "like", "python", "EOS"])
+        self.vocab.add_sequence(["i"])
+        self.assertEqual(6, self.vocab.get_vocab_size())
+        self.assertEqual(3, self.vocab.get_index('i'))
 
     ######################################################################
     #  indices_from_sequence(sequence)
     ######################################################################
     def test_indices_from_sequence_WITH_NEW_SEQUENCE(self):
         self.vocab.add_sequence(["i", "like", "python"])
-        self.assertSetEqual(set([3, 4, 5]), set(self.vocab.indices_from_sequence(["i", "like", "python"])))
+        self.assertSetEqual(
+            set([3, 4, 5]), set(self.vocab.indices_from_sequence(["i", "like", "python"])))
 
     def test_indices_from_sequence_WITH_PARTIAL_NEW_SEQUENCE(self):
         self.vocab.add_sequence(["i", "like", "python", "EOS"])
-        self.assertSetEqual(set([3, 4, 5, 2]), set(self.vocab.indices_from_sequence(["i", "like", "python", "EOS"])))
+        self.assertSetEqual(
+            set([3, 4, 5, 2]),
+            set(self.vocab.indices_from_sequence(["i", "like", "python", "EOS"])))
 
     def test_indices_from_sequence_WITH_OUT_OF_VOCAB_TOKEN(self):
         self.vocab.add_sequence(["i", "like", "python", "EOS"])
-        self.assertSetEqual(set([3, 5, 0, 2]), set(self.vocab.indices_from_sequence(["i", "like", "java", "EOS"])))
+        self.assertSetEqual(
+            set([3, 5, 0, 2]), set(self.vocab.indices_from_sequence(["i", "like", "java", "EOS"])))
 
     def test_indices_from_sequence_WITH_SMALL_VOCAB_SIZE(self):
         vocab = Vocabulary(3)
         vocab.add_sequence(["i", "like", "python", "EOS"])
         vocab.add_sequence(["i", "also", "like", "java"])
         vocab.add_sequence(["some", "people", "like", "C++", "EOS"])
-        self.assertSetEqual(set([3, 4, 0, 2]), set(vocab.indices_from_sequence(["i", "like", "python", "EOS"])))
+        self.assertSetEqual(
+            set([3, 4, 0, 2]), set(vocab.indices_from_sequence(["i", "like", "python", "EOS"])))
 
     ######################################################################
     #  sequence_from_indices(indices)
@@ -93,7 +100,6 @@ class TestVocabulary(unittest.TestCase):
         sequence = vocab.sequence_from_indices(indices)
         self.assertEqual(seq, sequence)
 
-
     ######################################################################
     #  save(file_name)
     ######################################################################
@@ -102,7 +108,7 @@ class TestVocabulary(unittest.TestCase):
         seq = ["i", "like", "python"]
         vocab.add_sequence(seq)
         vocab.save("vocab_pickle")
-        with open("vocab_pickle","rb") as f:
+        with open("vocab_pickle", "rb") as f:
             loaded_vocab = pickle.load(f)
         self.assertEqual(vocab, loaded_vocab)
 
@@ -118,7 +124,7 @@ class TestVocabulary(unittest.TestCase):
         with open(pickle_file, "wb") as f:
             f.write(input_vocab_pickle)
 
-        with open(pickle_file,"rb") as f:
+        with open(pickle_file, "rb") as f:
             pickled_vocab = pickle.load(f)
 
         loaded_vocab = Vocabulary.load(pickle_file)
@@ -165,6 +171,7 @@ class TestVocabulary(unittest.TestCase):
         other_vocab.add_sequence(other_seq)
 
         self.assertEqual(vocab, other_vocab)
+
 
 ######################################################################
 #   M A I N

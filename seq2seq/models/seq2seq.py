@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class Seq2seq(nn.Module):
     """ Standard sequence-to-sequence architecture with configurable encoder
     and decoder.
@@ -40,45 +41,22 @@ class Seq2seq(nn.Module):
         self.decoder = decoder
         self.decode_function = decode_function
 
-    def forward(self, input_variable, target_variable=None,
-                teacher_forcing_ratio=0, volatile=False):
+    def forward(self, input_variable, target_variable=None, teacher_forcing_ratio=0,
+                volatile=False):
         if target_variable is None:
             input_variable = sorted(input_variable, len, reverse=True)
         else:
-            sorted_input = sorted(zip(input_variable, target_variable),
-                                  key=lambda x: len(x[0]), reverse=True)
+            sorted_input = sorted(
+                zip(input_variable, target_variable), key=lambda x: len(x[0]), reverse=True)
             input_variable = [p[0] for p in sorted_input]
             target_variable = [p[1] for p in sorted_input]
         encoder_outputs, encoder_hidden = self.encoder(input_variable, volatile=volatile)
-        result = self.decoder(inputs=target_variable,
-                              encoder_hidden=encoder_hidden,
-                              encoder_outputs=encoder_outputs,
-                              function=self.decode_function,
-                              teacher_forcing_ratio=teacher_forcing_ratio,
-                              volatile=volatile)
+        result = self.decoder(
+            inputs=target_variable,
+            encoder_hidden=encoder_hidden,
+            encoder_outputs=encoder_outputs,
+            function=self.decode_function,
+            teacher_forcing_ratio=teacher_forcing_ratio,
+            volatile=volatile)
         return result
 
-    def save(self, path):
-        """
-        Saves the current seq2seq object and related training parameters into specified path.
-
-        Args:
-         path (str): path to the directory to be saved
-        """
-        torch.save(self.encoder, os.path.join(path, "encoder"))
-        torch.save(self.decoder, os.path.join(path, "decoder"))
-
-    @classmethod
-    def load(cls, path):
-        """
-        Loads a seq2seq object that was previously saved to disk.
-
-        Args:
-            path (str): path to the saved model directory
-
-        Returns:
-            Seq2seq: seq2seq object with fields copied from those stored on disk
-        """
-        encoder = torch.load(os.path.join(path, "encoder"))
-        decoder = torch.load(os.path.join(path, "decoder"))
-        return Seq2seq(encoder, decoder)

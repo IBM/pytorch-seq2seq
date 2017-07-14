@@ -1,9 +1,6 @@
 # pytorch-seq2seq
-[![Build Status](https://travis-ci.org/IBM/pytorch-seq2seq.svg?branch=master)](https://travis-ci.org/IBM/pytorch-seq2seq)
 
-**[Documentation](https://ibm.github.io/pytorch-seq2seq/public/index.html)**
-
-This is a framework for sequence-to-sequence (seq2seq) models implemented in [PyTorch](http://pytorch.org).  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
+This is a framework for sequence-to-sequence (seq2seq) models implemented in [PyTorch](http://pytorch.org).  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc. We appreciate any kind of feedback or contribution.
 
 # Roadmap
 Seq2seq is a fast evolving field with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
@@ -61,13 +58,13 @@ Checkpoints are organized by experiments and timestamps as shown in the followin
 
 The sample script by default saves checkpoints in the `experiment` folder of the root directory.  Look at the usages of the sample code for more options, including resuming and loading from checkpoints.
 
-# Troubleshoots and Contributing
-If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/IBM/pytorch-seq2seq/issues/new) on Github.
-
-We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like bug fixes, documentation improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.  
-
 ### Development Environment
 We setup the development environment using [Vagrant](https://www.vagrantup.com/).  Run `vagrant up` with our 'Vagrantfile' to get started.
+
+### Testing
+Whether your running in the development environment or not you can 
+run tests with this command:
+`nosetests --with-coverage --cover-erase --cover-package=seq2seq` 
 
 ### Code Style
 We follow [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) for code style.  Especially the style of docstrings is important to generate documentation.

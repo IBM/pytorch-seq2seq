@@ -28,11 +28,17 @@ class EncoderRNN(BaseRNN):
          >>> output, hidden = encoder(input)
 
     """
-    def __init__(self, vocab, max_len, hidden_size,
-            input_dropout_p=0, dropout_p=0,
-            n_layers=1, rnn_cell='gru'):
-        super(EncoderRNN, self).__init__(vocab, max_len, hidden_size,
-                input_dropout_p, dropout_p, n_layers, rnn_cell)
+
+    def __init__(self,
+                 vocab,
+                 max_len,
+                 hidden_size,
+                 input_dropout_p=0,
+                 dropout_p=0,
+                 n_layers=1,
+                 rnn_cell='gru'):
+        super(EncoderRNN, self).__init__(vocab, max_len, hidden_size, input_dropout_p, dropout_p,
+                                         n_layers, rnn_cell)
 
         self.embedding = nn.Embedding(self.vocab.get_vocab_size(), hidden_size)
         self.lengths = None
