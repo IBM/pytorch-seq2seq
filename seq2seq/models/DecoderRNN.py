@@ -1,4 +1,7 @@
 import random
+
+import numpy as np
+
 import torch
 if torch.cuda.is_available():
     import torch.cuda as device
@@ -131,16 +134,14 @@ class DecoderRNN(BaseRNN):
 
         decoder_outputs = []
         sequence_symbols = []
-        lengths = device.LongTensor([self.max_length] * batch_size)
+        lengths = np.array([self.max_length] * batch_size)
 
         # Manual unrolling is used to support random teacher forcing.
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
-        h_t = []
         for di in range(self.max_length):
             decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                      function=function)
             decoder_outputs.append(decoder_output)
-            h_t.append(decoder_hidden)
             if self.use_attention:
                 ret_dict[DecoderRNN.KEY_ATTN_SCORE].append(attn)
 
@@ -148,7 +149,9 @@ class DecoderRNN(BaseRNN):
             sequence_symbols.append(symbols)
             eos_batches = symbols.data.eq(self.vocab.EOS_token_id)
             if eos_batches.dim() > 0:
-                lengths[eos_batches] = len(sequence_symbols)
+                eos_batches = eos_batches.cpu().view(-1).numpy()
+                update_idx = ((lengths > di) & eos_batches) != 0
+                lengths[update_idx] = len(sequence_symbols)
 
             if use_teacher_forcing:
                 # Teacher forcing: Feed the target as the next input
