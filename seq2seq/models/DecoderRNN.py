@@ -1,5 +1,9 @@
 import random
 import torch
+if torch.cuda.is_available():
+    import torch.cuda as device
+else:
+    import torch as device
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F
@@ -81,9 +85,7 @@ class DecoderRNN(BaseRNN):
     def init_start_input(self, batch_size):
         # GO input for decoder # Re-initialize when batch size changes
         if self.init_input is None or self.init_input.size(0) != batch_size:
-            self.init_input = Variable(torch.LongTensor([[self.vocab.SOS_token_id]*batch_size])).view(batch_size, -1)
-            if torch.cuda.is_available():
-                self.init_input = self.init_input.cuda()
+            self.init_input = Variable(device.LongTensor([[self.vocab.SOS_token_id]*batch_size])).view(batch_size, -1)
         return self.init_input
 
     def forward_step(self, input_var, hidden, encoder_outputs, function):
@@ -129,7 +131,7 @@ class DecoderRNN(BaseRNN):
 
         decoder_outputs = []
         sequence_symbols = []
-        lengths = [self.max_length] * batch_size
+        lengths = device.LongTensor([self.max_length] * batch_size)
 
         # Manual unrolling is used to support random teacher forcing.
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
@@ -144,11 +146,9 @@ class DecoderRNN(BaseRNN):
 
             symbols = decoder_output.topk(1)[1]
             sequence_symbols.append(symbols)
-            eos_batches = symbols.data.eq(self.vocab.EOS_token_id).nonzero()
+            eos_batches = symbols.data.eq(self.vocab.EOS_token_id)
             if eos_batches.dim() > 0:
-                for b_idx in eos_batches[:,0]:
-                    if di < lengths[b_idx]:
-                        lengths[b_idx] = di + 1
+                lengths[eos_batches] = len(sequence_symbols)
 
             if use_teacher_forcing:
                 # Teacher forcing: Feed the target as the next input
@@ -158,7 +158,7 @@ class DecoderRNN(BaseRNN):
                 decoder_input = symbols
 
         ret_dict[DecoderRNN.KEY_SEQUENCE] = sequence_symbols
-        ret_dict[DecoderRNN.KEY_LENGTH] = lengths
+        ret_dict[DecoderRNN.KEY_LENGTH] = lengths.tolist()
         ret_dict[DecoderRNN.KEY_INPUT] = inputs
 
         return decoder_outputs, decoder_hidden, ret_dict
