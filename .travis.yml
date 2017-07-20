@@ -1,7 +1,10 @@
+dist: trusty
+sudo: false
 language: python
 cache: pip
 python:
   - "2.7"
+  - "3.6"
 # command to install dependencies
 install:
   - pip install -U pip
@@ -9,12 +12,16 @@ install:
   - pip install -q http://download.pytorch.org/whl/cu80/torch-0.1.12.post2-cp27-none-linux_x86_64.whl
 
   # dev dependencies
+  - pip install flake8
   - pip install nose
   - pip install mock
   - pip install coverage
 
 # command to run tests
-script: nosetests --with-coverage --cover-erase --cover-package=seq2seq
+before_script:
+  # stop the build if there are Python syntax errors or undefined names
+  - time flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
+  # exit-zero treats all errors as warnings.  The GitHub editor is 127 chars wide
+  - time flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-dist: trusty
-sudo: false
+script: nosetests --with-coverage --cover-erase --cover-package=seq2seq
