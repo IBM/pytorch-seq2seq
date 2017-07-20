@@ -1,6 +1,7 @@
 import unittest
 from seq2seq.dataset.vocabulary import Vocabulary
 import cPickle as pickle
+import os
 
 class TestVocabulary(unittest.TestCase):
     def setUp(self):
@@ -101,9 +102,11 @@ class TestVocabulary(unittest.TestCase):
         vocab = self.vocab
         seq = ["i", "like", "python"]
         vocab.add_sequence(seq)
-        vocab.save("vocab_pickle")
-        with open("vocab_pickle","rb") as f:
+        file_name = "vocab_pickle"
+        vocab.save(file_name)
+        with open(file_name,"rb") as f:
             loaded_vocab = pickle.load(f)
+        os.remove(file_name)
         self.assertEqual(vocab, loaded_vocab)
 
     ######################################################################
@@ -122,6 +125,7 @@ class TestVocabulary(unittest.TestCase):
             pickled_vocab = pickle.load(f)
 
         loaded_vocab = Vocabulary.load(pickle_file)
+        os.remove(pickle_file)
         self.assertEqual(pickled_vocab, loaded_vocab)
 
     ######################################################################

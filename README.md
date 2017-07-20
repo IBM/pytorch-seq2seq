@@ -1,5 +1,7 @@
 # pytorch-seq2seq
+
 [![Build Status](https://travis-ci.org/IBM/pytorch-seq2seq.svg?branch=master)](https://travis-ci.org/IBM/pytorch-seq2seq)
+[![Join the chat at https://gitter.im/pytorch-seq2seq/Lobby](https://badges.gitter.im/pytorch-seq2seq/Lobby.svg)](https://gitter.im/pytorch-seq2seq/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **[Documentation](https://ibm.github.io/pytorch-seq2seq/public/index.html)**
 
