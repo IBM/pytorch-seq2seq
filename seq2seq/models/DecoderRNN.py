@@ -92,18 +92,19 @@ class DecoderRNN(BaseRNN):
         return self.init_input
 
     def forward_step(self, input_var, hidden, encoder_outputs, function):
+        batch_size = input_var.size(0)
+        output_size = input_var.size(1)
         embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
 
         output, hidden = self.rnn(embedded, hidden)
         output = self.dropout(output)
-        output = output.squeeze(1)
 
         attn = None
         if self.use_attention:
             output, attn = self.attention(output, encoder_outputs)
 
-        predicted_softmax = function(self.out(output))
+        predicted_softmax = function(self.out(output.view(-1, self.hidden_size))).view(batch_size, output_size, -1)
         return predicted_softmax, hidden, attn
 
     def forward_rnn(self, inputs=None, encoder_hidden=None, function=F.log_softmax,
@@ -138,26 +139,40 @@ class DecoderRNN(BaseRNN):
 
         # Manual unrolling is used to support random teacher forcing.
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
-        for di in range(self.max_length):
+        if use_teacher_forcing:
+            decoder_input = torch.cat([decoder_input, inputs], dim=1)
             decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                      function=function)
-            decoder_outputs.append(decoder_output)
-            if self.use_attention:
-                ret_dict[DecoderRNN.KEY_ATTN_SCORE].append(attn)
 
-            symbols = decoder_output.topk(1)[1]
-            sequence_symbols.append(symbols)
-            eos_batches = symbols.data.eq(self.vocab.EOS_token_id)
-            if eos_batches.dim() > 0:
-                eos_batches = eos_batches.cpu().view(-1).numpy()
-                update_idx = ((lengths > di) & eos_batches) != 0
-                lengths[update_idx] = len(sequence_symbols)
+            for di in range(self.max_length):
+                decoder_outputs.append(decoder_output[:, di, :])
+                if self.use_attention:
+                    ret_dict[DecoderRNN.KEY_ATTN_SCORE].append(attn[:, di, :])
+                symbols = decoder_outputs[-1].topk(1)[1]
+                sequence_symbols.append(symbols)
 
-            if use_teacher_forcing:
-                # Teacher forcing: Feed the target as the next input
-                decoder_input = inputs[:, di].contiguous().view(batch_size, 1)  # Teacher forcing
-            else:
-                # Without teacher forcing: use its own predictions as the next input
+                eos_batches = symbols.data.eq(self.vocab.EOS_token_id)
+                if eos_batches.dim() > 0:
+                    eos_batches = eos_batches.cpu().view(-1).numpy()
+                    update_idx = ((lengths > di) & eos_batches) != 0
+                    lengths[update_idx] = len(sequence_symbols)
+        else:
+            for di in range(self.max_length):
+                decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
+                                                                         function=function)
+                decoder_output = decoder_output.squeeze(1)
+                decoder_outputs.append(decoder_output)
+                if self.use_attention:
+                    ret_dict[DecoderRNN.KEY_ATTN_SCORE].append(attn)
+
+                symbols = decoder_output.topk(1)[1]
+                sequence_symbols.append(symbols)
+                eos_batches = symbols.data.eq(self.vocab.EOS_token_id)
+                if eos_batches.dim() > 0:
+                    eos_batches = eos_batches.cpu().view(-1).numpy()
+                    update_idx = ((lengths > di) & eos_batches) != 0
+                    lengths[update_idx] = len(sequence_symbols)
+
                 decoder_input = symbols
 
         ret_dict[DecoderRNN.KEY_SEQUENCE] = sequence_symbols
