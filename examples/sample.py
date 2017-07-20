@@ -10,6 +10,11 @@ from seq2seq.dataset import Dataset
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
 
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
+
 # Sample usage:
 #     # training
 #     python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH
