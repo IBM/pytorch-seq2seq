@@ -23,7 +23,7 @@ class Attention(nn.Module):
 
     Outputs: output, attn
         - **output** (batch, output_len, dimensions): tensor containing the attended output features from the decoder.
-        - **attn** (batch, input_len): tensor containing attention weights.
+        - **attn** (batch, output_len, input_len): tensor containing attention weights.
 
     Attributes:
         linear_out (torch.nn.Linear): applies a linear transformation to the incoming data: :math:`y = Ax + b`.
