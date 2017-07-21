@@ -71,5 +71,24 @@ We appreciate any kind of feedback or contribution.  Feel free to proceed with s
 ### Development Environment
 We setup the development environment using [Vagrant](https://www.vagrantup.com/).  Run `vagrant up` with our 'Vagrantfile' to get started.
 
+The following tools are needed and installed in the development environment by default:
+* Git
+* Python
+* Python packages: nose, mock, coverage, flake8
+
+### Test
+The quality and the maintainability of the project is ensured by comprehensive tests.  We encourage writing unit tests and integration tests when contributing new codes.
+
+Locally please run `nosetests` in the package root directory to run unit tests.  We use TravisCI to require that a pull request has to pass all unit tests to be eligible to merge.  See [travis configuration](https://github.com/IBM/pytorch-seq2seq/blob/master/.travis.yml) for more information.
+
 ### Code Style
-We follow [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) for code style.  Especially the style of docstrings is important to generate documentation.
+We follow [PEP8](https://www.python.org/dev/peps/pep-0008/) for code style.  Especially the style of docstrings is important to generate documentation.
+
+* *Local*: Run the following commands in the package root directory
+```
+# Python syntax errors or undefined names
+flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
+# Style checks
+flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+```
+* *Github*: We use [Codacy](https://www.codacy.com) to check styles on pull requests and branches.
