@@ -1,8 +1,8 @@
 language: python
-cache: pip
+# cache: pip
 python:
-  - "2.7"
   - "pypy"
+  - "2.7"
 # command to install dependencies
 install:
   - pip install -U pip
