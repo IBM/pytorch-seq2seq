@@ -1,3 +1,5 @@
+dist: trusty
+sudo: false
 language: python
 # cache: pip
 python:
@@ -16,6 +18,3 @@ install:
 
 # command to run tests
 script: nosetests --with-coverage --cover-erase --cover-package=seq2seq
-
-dist: trusty
-sudo: false
