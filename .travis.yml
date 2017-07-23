@@ -4,6 +4,9 @@ language: python
 # cache: pip
 python:
   - "pypy"
+  - "pypy-5"
+  - "pypy-5.8"
+  - "pypy-5.8.0"
   # - "2.7"
 # command to install dependencies
 install:
