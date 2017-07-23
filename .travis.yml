@@ -1,7 +1,13 @@
+dist: trusty
+sudo: false
 language: python
-cache: pip
+# cache: pip
 python:
-  - "2.7"
+  - "pypy"
+  - "pypy-5"
+  - "pypy-5.8"
+  - "pypy-5.8.0"
+  # - "2.7"
 # command to install dependencies
 install:
   - pip install -U pip
@@ -15,6 +21,3 @@ install:
 
 # command to run tests
 script: nosetests --with-coverage --cover-erase --cover-package=seq2seq
-
-dist: trusty
-sudo: false
