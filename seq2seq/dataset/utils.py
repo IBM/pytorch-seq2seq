@@ -89,7 +89,7 @@ def prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokeniz
     pairs = []
     counter = 0
 
-    for index in range(len(src_list)):
+    for index, _ in enumerate(src_list):
         pair = map(tokenize_func, [src_list[index], tgt_list[index]])
         if filter_pair(pair, src_max_len, tgt_max_len):
             pairs.append(pair)
