@@ -66,13 +66,9 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
    config.vm.provision "shell", inline: <<-SHELL
      apt-get update
-     apt-get install git-all
-     apt-get -y install python-dev python-pip
+     apt-get -y install git-all python-dev python-pip
      pip install --upgrade pip
-     pip install nose
-     pip install mock
-     pip install coverage
-     pip install numpy
+     pip install nose mock coverage numpy flake8 
      pip install http://download.pytorch.org/whl/cu80/torch-0.1.12.post2-cp27-none-linux_x86_64.whl
 
    SHELL
