@@ -28,23 +28,47 @@ class Dataset(object):
         tgt_max_vocab (int): maximum target vocabulary size
     """
 
-    def __init__(self, path, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
-                 tgt_max_vocab=50000):
+    def __init__(self, src_max_len, tgt_max_len):
         # Prepare data
         self.src_max_len = src_max_len
         self.tgt_max_len = tgt_max_len
+
+
+    @classmethod
+    def from_file(cls, path, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
+                 tgt_max_vocab=50000):
+        obj = cls(src_max_len, tgt_max_len)
         pairs = utils.prepare_data(path, src_max_len, tgt_max_len)
 
         # Read in vocabularies
-        self.input_vocab = self._init_vocab(zip(*pairs)[0], src_max_vocab, src_vocab)
-        self.output_vocab = self._init_vocab(zip(*pairs)[1], tgt_max_vocab, tgt_vocab)
+        obj.input_vocab = obj._init_vocab(zip(*pairs)[0], src_max_vocab, src_vocab)
+        obj.output_vocab = obj._init_vocab(zip(*pairs)[1], tgt_max_vocab, tgt_vocab)
 
         # Translate input sequences to token ids
-        self.data = []
+        obj.data = []
         for pair in pairs:
-            src = self.input_vocab.indices_from_sequence(pair[0])
-            dst = self.output_vocab.indices_from_sequence(pair[1])
-            self.data.append((src, dst))
+            src = obj.input_vocab.indices_from_sequence(pair[0])
+            dst = obj.output_vocab.indices_from_sequence(pair[1])
+            obj.data.append((src, dst))
+        return obj
+
+    @classmethod
+    def from_list(cls, src_data, tgt_data, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
+                  tgt_max_vocab=50000):
+        obj = cls(src_max_len, tgt_max_len)
+        pairs = utils.prepare_data_from_list(src_data, tgt_data, src_max_len, tgt_max_len)
+
+        # Read in vocabularies
+        obj.input_vocab = obj._init_vocab(zip(*pairs)[0], src_max_vocab, src_vocab)
+        obj.output_vocab = obj._init_vocab(zip(*pairs)[1], tgt_max_vocab, tgt_vocab)
+
+        # Translate input sequences to token ids
+        obj.data = []
+        for pair in pairs:
+            src = obj.input_vocab.indices_from_sequence(pair[0])
+            dst = obj.output_vocab.indices_from_sequence(pair[1])
+            obj.data.append((src, dst))
+        return obj
 
     def _init_vocab(self, sequences, max_num_vocab, vocab):
         resp_vocab = Vocabulary(max_num_vocab)

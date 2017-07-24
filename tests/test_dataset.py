@@ -9,7 +9,7 @@ from seq2seq.dataset.dataset import Dataset
 class TestDataset(unittest.TestCase):
 
     def setUp(self):
-        self.ds = Dataset("./tests/data/eng-fra.txt", 10, 10,
+        self.ds = Dataset.from_file("./tests/data/eng-fra.txt", 10, 10,
                 src_max_vocab=50000, tgt_max_vocab=50000)
 
     ######################################################################
@@ -21,13 +21,13 @@ class TestDataset(unittest.TestCase):
         self.assertFalse(set(self.ds.input_vocab._token2index.keys()) == set(self.ds.output_vocab._token2index.keys()))
 
     def test_init_WITH_VOCABULARY(self):
-        new_ds = Dataset("./tests/data/eng-fra-dev.txt", 10, 10,
+        new_ds = Dataset.from_file("./tests/data/eng-fra-dev.txt", 10, 10,
                          src_vocab=self.ds.input_vocab,
                          tgt_vocab=self.ds.output_vocab)
         self.assertEqual(self.ds.input_vocab, new_ds.input_vocab)
         self.assertEqual(self.ds.output_vocab, new_ds.output_vocab)
 
-        ds_with_new_vocab = Dataset("./tests/data/eng-fra-dev.txt", 10, 10)
+        ds_with_new_vocab = Dataset.from_file("./tests/data/eng-fra-dev.txt", 10, 10)
         # Vocabulary of the training data should have no overlap with
         # that of the develop data
         input_vocab = set(self.ds.input_vocab._token2index.keys())
@@ -47,7 +47,7 @@ class TestDataset(unittest.TestCase):
             self.assertEquals([0], tgt[0])
 
     def test_init_WITH_VOCABULARY_FILE(self):
-        new_ds = Dataset("./tests/data/eng-fra-dev.txt", 10, 10,
+        new_ds = Dataset.from_file("./tests/data/eng-fra-dev.txt", 10, 10,
                          src_vocab="./tests/data/src_vocab.txt",
                          tgt_vocab="./tests/data/tgt_vocab.txt")
         self.assertEqual(8, new_ds.input_vocab.get_vocab_size())
