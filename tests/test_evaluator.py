@@ -1,7 +1,6 @@
 import os
 import unittest
 
-import mock
 from mock import MagicMock, patch, call, ANY
 import torch
 
