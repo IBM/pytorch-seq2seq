@@ -48,6 +48,4 @@ class Evaluator(object):
                 # Evaluate loss
                 loss.eval_batch(batch_output, batch_target)
 
-        model.train(True)
-
         return loss.get_loss()

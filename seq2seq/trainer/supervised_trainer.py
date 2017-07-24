@@ -102,6 +102,7 @@ class SupervisedTrainer(object):
             for _ in range((epoch - 1) * steps_per_epoch, step):
                 next(batch_generator)
 
+            model.train(True)
             for batch in batch_generator:
                 step += 1
 

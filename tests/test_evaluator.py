@@ -24,20 +24,17 @@ class TestPredictor(unittest.TestCase):
         for param in self.seq2seq.parameters():
             param.data.uniform_(-0.08, 0.08)
 
-    @patch.object(Seq2seq, 'train')
     @patch.object(Seq2seq, '__call__', return_value=(None, None, dict(inputs=[], length=None)))
     @patch.object(Seq2seq, 'eval')
-    def test_set_eval_mode(self, mock_eval, mock_call, mock_train):
+    def test_set_eval_mode(self, mock_eval, mock_call):
         """ Make sure that evaluation is done in evaluation mode. """
         mock_mgr = MagicMock()
         mock_mgr.attach_mock(mock_eval, 'eval')
         mock_mgr.attach_mock(mock_call, 'call')
-        mock_mgr.attach_mock(mock_train, 'train')
 
         evaluator = Evaluator()
         evaluator.evaluate(self.seq2seq, self.dataset)
 
         expected_calls = [call.eval()] + \
-            self.dataset.num_batches(evaluator.batch_size) * [call.call(ANY, ANY, volatile=ANY)] + \
-            [call.train(True)]
+            self.dataset.num_batches(evaluator.batch_size) * [call.call(ANY, ANY, volatile=ANY)]
         self.assertEquals(expected_calls, mock_mgr.mock_calls)
