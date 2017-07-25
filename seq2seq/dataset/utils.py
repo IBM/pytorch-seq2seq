@@ -1,5 +1,7 @@
 from __future__ import print_function
+import logging
 
+logger = logging.getLogger(__name__)
 def filter_pair(pair, src_max_len, tgt_max_len):
     """
     Returns true if a sentence pair meets the length requirements, false otherwise.
@@ -42,8 +44,7 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
         list((str, str)): list of (source, target) string pairs
     """
 
-    print("Reading lines...")
-
+    logger.info("Reading Lines form {}".format(path))
     # Read the file and split into lines
     pairs = []
     counter = 0
@@ -55,13 +56,13 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
                 if filter_pair(pair, src_max_len, tgt_max_len):
                     pairs.append(pair)
             except:
-                print("Error when reading line: {0}".format(line))
+                logger.error("Error when reading line: {0}".format(line))
                 raise
             counter += 1
             if counter % 100 == 0:
-                print("\rRead {0} lines".format(counter), end="")
+                logger.info("\rRead {0} lines".format(counter))
 
-    print("\nNumber of pairs: %s" % len(pairs))
+    logger.info("\nNumber of pairs: %s" % len(pairs))
     return pairs
 
 
@@ -76,8 +77,7 @@ def read_vocabulary(path, max_num_vocab=50000):
     Returns:
         set: read words from vocabulary file
     """
-    print("Reading vocabulary...")
-
+    logger.info("Reading vocabulary from {}".format(path))
     # Read the file and create list of tokens in vocabulary
     vocab = set()
     with open(path) as fin:
@@ -87,9 +87,9 @@ def read_vocabulary(path, max_num_vocab=50000):
             try:
                 vocab.add(line.strip())
             except:
-                print ("Error when reading line: {0}".format(line))
+                logger.error("Error when reading line: {0}".format(line))
                 raise
 
-    print("\nSize of Vocabulary: %s" % len(vocab))
+    logger.info("\nSize of Vocabulary: %s" % len(vocab))
     return vocab
 

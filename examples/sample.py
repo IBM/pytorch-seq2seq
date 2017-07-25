@@ -1,5 +1,6 @@
 import os
 import argparse
+import logging
 
 import torch
 
@@ -31,9 +32,11 @@ parser.add_argument('--resume', action='store_true', dest='resume',
                     default=False,
                     help='Indicates if training has to be resumed from the latest checkpoint')
 
-opt = parser.parse_args()
-print(opt)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+opt = parser.parse_args()
+logger.info(opt)
 
 if opt.load_checkpoint is not None:
     print("loading checkpoint...")

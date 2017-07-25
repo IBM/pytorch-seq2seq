@@ -1,5 +1,6 @@
 import os
 import random
+import logging
 
 import torch
 from torch import optim
@@ -47,6 +48,8 @@ class SupervisedTrainer(object):
         self.input_vocab_file = os.path.join(self.expt_dir, 'input_vocab')
         self.output_vocab_file = os.path.join(self.expt_dir, 'output_vocab')
 
+        self.logger = logging.getLogger(__name__)
+
     def _train_batch(self, input_variable, target_variable, model, teacher_forcing_ratio):
         loss = self.loss
         # Forward propagation
@@ -56,7 +59,6 @@ class SupervisedTrainer(object):
         loss.reset()
         targets = other['inputs']
         lengths = other['length']
-        # print(lengths)
         for batch in range(len(targets)):
             # Batch wise loss
             batch_target = targets[batch]
@@ -121,7 +123,7 @@ class SupervisedTrainer(object):
                         float(step) / total_steps * 100,
                         self.loss.name,
                         print_loss_avg)
-                    print(log_msg)
+                    self.logger.info(log_msg)
 
                 # Checkpoint
                 if step % self.checkpoint_every == 0 or step == total_steps:
@@ -138,7 +140,7 @@ class SupervisedTrainer(object):
                 self.optimizer.update(dev_loss, epoch)
                 log_msg += ", Dev %s: %.4f" % (self.loss.name, dev_loss)
                 model.train(mode=True)
-            print(log_msg)
+            self.logger.info(log_msg)
 
     def train(self, model, data, num_epochs=5, resume=False, dev_data=None, teacher_forcing_ratio=0):
         """ Run training for a given model.
