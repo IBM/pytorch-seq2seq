@@ -57,7 +57,7 @@ class Dataset(object):
         """
         obj = cls(src_max_len, tgt_max_len)
         pairs = utils.prepare_data(path, src_max_len, tgt_max_len)
-        return cls.encode(obj, pairs, src_vocab, tgt_vocab, src_max_vocab, tgt_max_vocab)
+        return cls._encode(obj, pairs, src_vocab, tgt_vocab, src_max_vocab, tgt_max_vocab)
 
     @classmethod
     def from_list(cls, src_data, tgt_data, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
@@ -87,9 +87,9 @@ class Dataset(object):
         """
         obj = cls(src_max_len, tgt_max_len)
         pairs = utils.prepare_data_from_list(src_data, tgt_data, src_max_len, tgt_max_len)
-        return cls.encode(obj, pairs, src_vocab, tgt_vocab, src_max_vocab, tgt_max_vocab)
+        return cls._encode(obj, pairs, src_vocab, tgt_vocab, src_max_vocab, tgt_max_vocab)
 
-    def encode(self, pairs, src_vocab=None, tgt_vocab=None, src_max_vocab=50000, tgt_max_vocab=50000):
+    def _encode(self, pairs, src_vocab=None, tgt_vocab=None, src_max_vocab=50000, tgt_max_vocab=50000):
         """
         Encodes the source and target lists of sequences using source and target vocabularies.
 
