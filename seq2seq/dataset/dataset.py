@@ -5,27 +5,16 @@ class Dataset(object):
     """
     A class that encapsulates a dataset.
 
-    Initialize a dataset from the file at given path. The file
-    must contains a list of TAB-separated pairs of sequences.
+    Warning:
+        Do not use this constructor directly, use one of the class methods to initialize.
 
     Note:
         Source or target sequences that are longer than the respective
         max length will be filtered.
-        As specified by maximum vocabulary size, source and target
-        vocabularies will be sorted in descending token frequency and cutoff.
-        Tokens that are in the dataset but not retained in the vocabulary
-        will be dropped in the sequences.
 
     Args:
-        path (str): path to the dataset file
         src_max_len (int): maximum source sequence length
         tgt_max_len (int): maximum target sequence length
-        src_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the source language,
-            default `None`. If a pre-populated Vocabulary object, `src_max_vocab` wouldn't be used.
-        tgt_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the target language,
-            default `None`. If a pre-populated Vocabulary object, `tgt_max_vocab` wouldn't be used.
-        src_max_vocab (int): maximum source vocabulary size
-        tgt_max_vocab (int): maximum target vocabulary size
     """
 
     def __init__(self, src_max_len, tgt_max_len):
@@ -33,42 +22,105 @@ class Dataset(object):
         self.src_max_len = src_max_len
         self.tgt_max_len = tgt_max_len
 
+        # Declare vocabulary objects
+        self.input_vocab = None
+        self.output_vocab = None
+
+        self.data = None
+
 
     @classmethod
     def from_file(cls, path, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
                  tgt_max_vocab=50000):
+        """
+        Initialize a dataset from the file at given path. The file
+        must contains a list of TAB-separated pairs of sequences.
+
+        Note:
+            Source or target sequences that are longer than the respective
+            max length will be filtered.
+            As specified by maximum vocabulary size, source and target
+            vocabularies will be sorted in descending token frequency and cutoff.
+            Tokens that are in the dataset but not retained in the vocabulary
+            will be dropped in the sequences.
+
+        Args:
+            path (str): path to the dataset file
+            src_max_len (int): maximum source sequence length
+            tgt_max_len (int): maximum target sequence length
+            src_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the source language,
+            default `None`. If a pre-populated Vocabulary object, `src_max_vocab` wouldn't be used.
+            tgt_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the target language,
+            default `None`. If a pre-populated Vocabulary object, `tgt_max_vocab` wouldn't be used.
+            src_max_vocab (int): maximum source vocabulary size
+            tgt_max_vocab (int): maximum target vocabulary size
+        """
         obj = cls(src_max_len, tgt_max_len)
         pairs = utils.prepare_data(path, src_max_len, tgt_max_len)
-
-        # Read in vocabularies
-        obj.input_vocab = obj._init_vocab(zip(*pairs)[0], src_max_vocab, src_vocab)
-        obj.output_vocab = obj._init_vocab(zip(*pairs)[1], tgt_max_vocab, tgt_vocab)
-
-        # Translate input sequences to token ids
-        obj.data = []
-        for pair in pairs:
-            src = obj.input_vocab.indices_from_sequence(pair[0])
-            dst = obj.output_vocab.indices_from_sequence(pair[1])
-            obj.data.append((src, dst))
-        return obj
+        return cls.encode(obj, pairs, src_vocab, tgt_vocab, src_max_vocab, tgt_max_vocab)
 
     @classmethod
     def from_list(cls, src_data, tgt_data, src_max_len, tgt_max_len, src_vocab=None, tgt_vocab=None, src_max_vocab=50000,
                   tgt_max_vocab=50000):
+        """
+        Initialize a dataset from the source and target lists of sequences.
+
+        Note:
+            Source or target sequences that are longer than the respective
+            max length will be filtered.
+            As specified by maximum vocabulary size, source and target
+            vocabularies will be sorted in descending token frequency and cutoff.
+            Tokens that are in the dataset but not retained in the vocabulary
+            will be dropped in the sequences.
+
+        Args:
+            src_data (list): list of source sequences
+            tgt_data (list): list of target sequences
+            src_max_len (int): maximum source sequence length
+            tgt_max_len (int): maximum target sequence length
+            src_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the source language,
+            default `None`. If a pre-populated Vocabulary object, `src_max_vocab` wouldn't be used.
+            tgt_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the target language,
+            default `None`. If a pre-populated Vocabulary object, `tgt_max_vocab` wouldn't be used.
+            src_max_vocab (int): maximum source vocabulary size
+            tgt_max_vocab (int): maximum target vocabulary size
+        """
         obj = cls(src_max_len, tgt_max_len)
         pairs = utils.prepare_data_from_list(src_data, tgt_data, src_max_len, tgt_max_len)
+        return cls.encode(obj, pairs, src_vocab, tgt_vocab, src_max_vocab, tgt_max_vocab)
 
+    def encode(self, pairs, src_vocab=None, tgt_vocab=None, src_max_vocab=50000, tgt_max_vocab=50000):
+        """
+        Encodes the source and target lists of sequences using source and target vocabularies.
+
+        Note:
+            Source or target sequences that are longer than the respective
+            max length will be filtered.
+            As specified by maximum vocabulary size, source and target
+            vocabularies will be sorted in descending token frequency and cutoff.
+            Tokens that are in the dataset but not retained in the vocabulary
+            will be dropped in the sequences.
+
+        Args:
+            pairs (list): list of tuples (source sequences, target sequence)
+            src_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the source language,
+            default `None`. If a pre-populated Vocabulary object, `src_max_vocab` wouldn't be used.
+            tgt_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the target language,
+            default `None`. If a pre-populated Vocabulary object, `tgt_max_vocab` wouldn't be used.
+            src_max_vocab (int): maximum source vocabulary size
+            tgt_max_vocab (int): maximum target vocabulary size
+        """
         # Read in vocabularies
-        obj.input_vocab = obj._init_vocab(zip(*pairs)[0], src_max_vocab, src_vocab)
-        obj.output_vocab = obj._init_vocab(zip(*pairs)[1], tgt_max_vocab, tgt_vocab)
+        self.input_vocab = self._init_vocab(zip(*pairs)[0], src_max_vocab, src_vocab)
+        self.output_vocab = self._init_vocab(zip(*pairs)[1], tgt_max_vocab, tgt_vocab)
 
         # Translate input sequences to token ids
-        obj.data = []
+        self.data = []
         for pair in pairs:
-            src = obj.input_vocab.indices_from_sequence(pair[0])
-            dst = obj.output_vocab.indices_from_sequence(pair[1])
-            obj.data.append((src, dst))
-        return obj
+            src = self.input_vocab.indices_from_sequence(pair[0])
+            dst = self.output_vocab.indices_from_sequence(pair[1])
+            self.data.append((src, dst))
+        return self
 
     def _init_vocab(self, sequences, max_num_vocab, vocab):
         resp_vocab = Vocabulary(max_num_vocab)
