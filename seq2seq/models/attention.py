@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class Attention(nn.Module):
     r"""
-    Applies an attention Mechansims on the output features from the decoder.
+    Applies an attention mechanism on the output features from the decoder.
 
     .. math::
             \begin{array}{ll}
