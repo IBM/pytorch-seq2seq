@@ -9,7 +9,7 @@ class TestDecoderRNN(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.test_wd = os.getcwd()
-        self.dataset = Dataset(path=os.path.join(self.test_wd,'tests/data/eng-fra.txt'),
+        self.dataset = Dataset.from_file(path=os.path.join(self.test_wd,'tests/data/eng-fra.txt'),
                                src_max_len=50, tgt_max_len=50, src_max_vocab=50000, tgt_max_vocab=50000)
 
     def test_input_dropout_WITH_PROB_ZERO(self):

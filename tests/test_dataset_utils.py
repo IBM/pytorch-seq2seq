@@ -55,6 +55,20 @@ class TestDatasetUtils(unittest.TestCase):
     def test_prepare_data_WITH_INVALID_PATH(self):
         self.assertRaises(IOError, utils.prepare_data, "eng-fra.txt", 20, 20)
 
+    ########################################################################################################
+    #   prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokenize_func=space_tokenize)
+    ########################################################################################################
+    def test_prepare_data_from_list_WITH_VALID_LISTS(self):
+        src_list = ['I am fat', 'I am busy', 'I am calm', 'I am cold']
+        tgt_list = ['Je suis gras', 'Je suis occupe', 'Je suis calme', 'J`ai froid']
+        pairs = utils.prepare_data_from_list(src_list, tgt_list, 20, 20)
+        self.assertEqual(4, len(pairs))
+
+    def test_prepare_data_WITH_DIFFERENT_SIZE_SOURCE_AND_TARGET_LISTS(self):
+        src_list = ['I am fat', 'I am busy']
+        tgt_list = ['Je suis gras', 'Je suis occupe', 'Je suis calme', 'J`ai froid']
+        self.assertRaises(ValueError, utils.prepare_data_from_list, src_list, tgt_list, 20, 20)
+
 ######################################################################
 #   M A I N
 ######################################################################
