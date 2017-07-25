@@ -1,4 +1,3 @@
-from __future__ import print_function
 import logging
 
 logger = logging.getLogger(__name__)
@@ -60,9 +59,9 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
                 raise
             counter += 1
             if counter % 100 == 0:
-                logger.info("\rRead {0} lines".format(counter))
+                logger.info("Read {0} lines".format(counter))
 
-    logger.info("\nNumber of pairs: %s" % len(pairs))
+    logger.info("Number of pairs: %s" % len(pairs))
     return pairs
 
 
@@ -84,7 +83,7 @@ def prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokeniz
     if not len(src_list) == len(tgt_list):
         raise ValueError('source sequence list and target sequence list has different number of entries.')
 
-    print("Preparing pairs...")
+    logger.info("Preparing pairs...")
 
     # Read the file and split into lines
     pairs = []
@@ -96,9 +95,9 @@ def prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokeniz
             pairs.append(pair)
     counter += 1
     if counter % 100 == 0:
-        print("\rProcessed {0} sequences".format(counter), end="")
+        logger.info("Processed {0} sequences".format(counter), end="")
 
-    print("\nNumber of pairs: %s" % len(pairs))
+    logger.info("Number of pairs: %s" % len(pairs))
     return pairs
 
 
@@ -126,6 +125,6 @@ def read_vocabulary(path, max_num_vocab=50000):
                 logger.error("Error when reading line: {0}".format(line))
                 raise
 
-    logger.info("\nSize of Vocabulary: %s" % len(vocab))
+    logger.info("Size of Vocabulary: %s" % len(vocab))
     return vocab
 
