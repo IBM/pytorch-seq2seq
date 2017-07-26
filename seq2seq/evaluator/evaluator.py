@@ -5,14 +5,13 @@ import torch
 from seq2seq.loss import NLLLoss
 
 class Evaluator(object):
+    """ Class to evaluate models with given datasets.
+    Args:
+        loss (seq2seq.loss, optional): loss for evaluator (default: seq2seq.loss.NLLLoss)
+        batch_size (int, optional): batch size for evaluator (default: 64)
+    """
 
     def __init__(self, loss=NLLLoss(), batch_size=64):
-        """Class to initialize an evaluator
-
-        Args:
-            loss (seq2seq.loss, optional): loss for evaluator (default: seq2seq.loss.NLLLoss)
-            batch_size (int, optional): batch size for evaluator (default: 64)
-        """
         self.loss = loss
         self.batch_size = batch_size
 
@@ -26,6 +25,7 @@ class Evaluator(object):
         Returns:
             loss (float): loss of the given model on the given dataset
         """
+        model.eval()
         loss = self.loss
         loss.reset()
 

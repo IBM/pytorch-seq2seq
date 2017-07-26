@@ -9,11 +9,25 @@ from seq2seq.dataset.dataset import Dataset
 class TestDataset(unittest.TestCase):
 
     def setUp(self):
-        self.ds = Dataset("./tests/data/eng-fra.txt", 10, 10,
-                src_max_vocab=50000, tgt_max_vocab=50000)
+        self.ds = Dataset.from_file("./tests/data/eng-fra.txt", 10, 10, src_max_vocab=50000, tgt_max_vocab=50000)
 
     ######################################################################
-    #  __init__()
+    #  __init__() from list
+    ######################################################################
+    def test_init_from_list(self):
+        src_list = ['I am fat', 'I am busy', 'I am calm', 'I am cold']
+        tgt_list = ['Je suis gras', 'Je suis occupe', 'Je suis calme', 'J`ai froid']
+        new_ds = Dataset.from_list(src_list, tgt_list, 10, 10, src_max_vocab=50000, tgt_max_vocab=50000)
+        self.assertEqual(9, new_ds.input_vocab.get_vocab_size())
+        self.assertEqual(9, new_ds.input_vocab.get_vocab_size())
+        self.assertItemsEqual(set(new_ds.input_vocab._token2index.keys()),
+                              {'I', 'am', 'MASK', 'EOS', 'fat', 'SOS', 'busy', 'calm', 'cold'})
+        self.assertItemsEqual(set(new_ds.output_vocab._token2index.keys()),
+                              {'Je', 'MASK', 'EOS', 'SOS', 'suis', 'gras', 'occupe', 'calme', 'J`ai', 'froid'})
+
+
+    ######################################################################
+    #  __init__() from file
     ######################################################################
     def test_init(self):
         self.assertEqual(100, self.ds.input_vocab.get_vocab_size())
@@ -21,13 +35,13 @@ class TestDataset(unittest.TestCase):
         self.assertFalse(set(self.ds.input_vocab._token2index.keys()) == set(self.ds.output_vocab._token2index.keys()))
 
     def test_init_WITH_VOCABULARY(self):
-        new_ds = Dataset("./tests/data/eng-fra-dev.txt", 10, 10,
+        new_ds = Dataset.from_file("./tests/data/eng-fra-dev.txt", 10, 10,
                          src_vocab=self.ds.input_vocab,
                          tgt_vocab=self.ds.output_vocab)
         self.assertEqual(self.ds.input_vocab, new_ds.input_vocab)
         self.assertEqual(self.ds.output_vocab, new_ds.output_vocab)
 
-        ds_with_new_vocab = Dataset("./tests/data/eng-fra-dev.txt", 10, 10)
+        ds_with_new_vocab = Dataset.from_file("./tests/data/eng-fra-dev.txt", 10, 10)
         # Vocabulary of the training data should have no overlap with
         # that of the develop data
         input_vocab = set(self.ds.input_vocab._token2index.keys())
@@ -47,7 +61,7 @@ class TestDataset(unittest.TestCase):
             self.assertEquals([0], tgt[0])
 
     def test_init_WITH_VOCABULARY_FILE(self):
-        new_ds = Dataset("./tests/data/eng-fra-dev.txt", 10, 10,
+        new_ds = Dataset.from_file("./tests/data/eng-fra-dev.txt", 10, 10,
                          src_vocab="./tests/data/src_vocab.txt",
                          tgt_vocab="./tests/data/tgt_vocab.txt")
         self.assertEqual(8, new_ds.input_vocab.get_vocab_size())
@@ -94,6 +108,18 @@ class TestDataset(unittest.TestCase):
             self.assertEqual(batch_size, len(batch[0]))
             self.assertEqual(batch_size, len(batch[1]))
         self.assertEqual(batch_size, num_batches)
+
+    ######################################################################
+    #  _init_vocab(self, sequences, max_num_vocab, vocab)
+    ######################################################################
+    def test__init_vocab_WITH_INVALID_VOCAB_OBJECT(self):
+        self.assertRaises(AttributeError, self.ds._init_vocab, ['I am fat', 'I am busy', 'I am calm', 'I am cold'], 20, set())
+
+    ######################################################################
+    #  num_batches(batch_size)
+    ######################################################################
+    def test_num_batches(self):
+        self.assertEqual(10, self.ds.num_batches(10))
 
     ######################################################################
     #  __len__()

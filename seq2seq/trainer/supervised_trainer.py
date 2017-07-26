@@ -102,6 +102,7 @@ class SupervisedTrainer(object):
             for _ in range((epoch - 1) * steps_per_epoch, step):
                 next(batch_generator)
 
+            model.train(True)
             for batch in batch_generator:
                 step += 1
 
@@ -133,11 +134,9 @@ class SupervisedTrainer(object):
 
             log_msg = "Finished epoch {0}".format(epoch)
             if dev_data is not None:
-                model.train(mode=False)
                 dev_loss = self.evaluator.evaluate(model, dev_data)
                 self.optimizer.update(dev_loss, epoch)
                 log_msg += ", Dev %s: %.4f" % (self.loss.name, dev_loss)
-                model.train(mode=True)
             print(log_msg)
 
     def train(self, model, data, num_epochs=5, resume=False, dev_data=None, teacher_forcing_ratio=0):

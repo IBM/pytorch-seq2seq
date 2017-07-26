@@ -49,11 +49,11 @@ if opt.load_checkpoint is not None:
     output_vocab = checkpoint.output_vocab
 else:
     # Prepare dataset
-    dataset = Dataset(opt.train_path, src_max_len=50, tgt_max_len=50)
+    dataset = Dataset.from_file(opt.train_path, src_max_len=50, tgt_max_len=50)
     input_vocab = dataset.input_vocab
     output_vocab = dataset.output_vocab
 
-    dev_set = Dataset(opt.dev_path, src_max_len=50, tgt_max_len=50,
+    dev_set = Dataset.from_file(opt.dev_path, src_max_len=50, tgt_max_len=50,
                     src_vocab=input_vocab,
                     tgt_vocab=output_vocab)
 

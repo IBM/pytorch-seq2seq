@@ -12,7 +12,7 @@ class TestPredictor(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.test_wd = os.getcwd()
-        self.dataset = Dataset(path=os.path.join(self.test_wd,'tests/data/eng-fra.txt'),
+        self.dataset = Dataset.from_file(path=os.path.join(self.test_wd,'tests/data/eng-fra.txt'),
                                src_max_len=50, tgt_max_len=50, src_max_vocab=50000, tgt_max_vocab=50000)
         self.encoder = EncoderRNN(self.dataset.input_vocab,max_len=10, hidden_size=10, rnn_cell='lstm')
         self.decoder = DecoderRNN(self.dataset.output_vocab, max_len=10, hidden_size=10, rnn_cell='lstm')
