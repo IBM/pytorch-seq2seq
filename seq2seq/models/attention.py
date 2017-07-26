@@ -18,12 +18,12 @@ class Attention(nn.Module):
         dim(int): The number of expected features in the output
 
     Inputs: output, context
-        - **output** (batch, dimensions): tensor containing the output features from the decoder.
-        - **context** (batch, seq_len, dimensions): tensor containing features of the encoded input sequence.
+        - **output** (batch, output_len, dimensions): tensor containing the output features from the decoder.
+        - **context** (batch, input_len, dimensions): tensor containing features of the encoded input sequence.
 
     Outputs: output, attn
-        - **output** (batch, seq_len, dimensions): tensor containing the attended output features from the decoder.
-        - **attn** (batch, seq_len): tensor containing attention weights.
+        - **output** (batch, output_len, dimensions): tensor containing the attended output features from the decoder.
+        - **attn** (batch, output_len, input_len): tensor containing attention weights.
 
     Attributes:
         linear_out (torch.nn.Linear): applies a linear transformation to the incoming data: :math:`y = Ax + b`.
@@ -33,7 +33,7 @@ class Attention(nn.Module):
 
          >>> attention = seq2seq.models.Attention(256)
          >>> context = Variable(torch.randn(5, 3, 256))
-         >>> output = Variable(torch.randn(5, 256))
+         >>> output = Variable(torch.randn(5, 5, 256))
          >>> output, attn = attention(output, context)
 
     """
@@ -52,16 +52,21 @@ class Attention(nn.Module):
         self.mask = mask
 
     def forward(self, output, context):
-        # (batch, len, dim) * (batch, dim, 1) -> (batch, len)
-        attn = torch.bmm(context, output.unsqueeze(2)).squeeze(2)
+        batch_size = output.size(0)
+        hidden_size = output.size(2)
+        input_size = context.size(1)
+        # (batch, out_len, dim) * (batch, in_len, dim) -> (batch, out_len, in_len)
+        attn = torch.bmm(output, context.transpose(1, 2))
         if self.mask is not None:
             attn.data.masked_fill_(self.mask, -float('inf'))
-        attn = F.softmax(attn)
+        attn = F.softmax(attn.view(-1, input_size)).view(batch_size, -1, input_size)
 
-        # (batch, 1, len) * (batch, len, dim) -> (batch, dim)
-        mix = torch.bmm(attn.unsqueeze(1), context).squeeze(1)
+        # (batch, out_len, in_len) * (batch, in_len, dim) -> (batch, out_len, dim)
+        mix = torch.bmm(attn, context)
 
-        combined = torch.cat((mix, output), 1)
-        output = F.tanh(self.linear_out(combined))
+        # concat -> (batch, out_len, 2*dim)
+        combined = torch.cat((mix, output), dim=2)
+        # output -> (batch, out_len, dim)
+        output = F.tanh(self.linear_out(combined.view(-1, 2 * hidden_size))).view(batch_size, -1, hidden_size)
 
         return output, attn
