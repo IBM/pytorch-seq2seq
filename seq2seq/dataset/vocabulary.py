@@ -173,7 +173,13 @@ class Vocabulary(object):
             Vocabulary: loaded Vocabulary
         """
         with open(file_name, "rb") as f:
-            return pickle.load(f)
+            size_details = f.readline()
+            sequence = f.readlines()
+        size = int(size_details.replace("size is","").strip())
+        vocab = Vocabulary(size)
+        sequence = [token.strip() for token in sequence]
+        vocab.add_sequence(sequence)
+        return vocab
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

@@ -103,7 +103,7 @@ class TestVocabulary(unittest.TestCase):
         vocab = self.vocab
         seq = ["i", "like", "python"]
         vocab.add_sequence(seq)
-        file_name = "vocab_pickle"
+        file_name = "vocab_file"
         vocab.save(file_name)
         with open(file_name,"rb") as f:
             size_details = f.readline()
@@ -123,17 +123,12 @@ class TestVocabulary(unittest.TestCase):
         vocab = self.vocab
         seq = ["i", "like", "python"]
         vocab.add_sequence(seq)
-        pickle_file = "vocab_pickle"
-        input_vocab_pickle = pickle.dumps(vocab)
-        with open(pickle_file, "wb") as f:
-            f.write(input_vocab_pickle)
+        file_name = "vocab_file"
+        vocab.save(file_name)
 
-        with open(pickle_file,"rb") as f:
-            pickled_vocab = pickle.load(f)
-
-        loaded_vocab = Vocabulary.load(pickle_file)
-        os.remove(pickle_file)
-        self.assertEqual(pickled_vocab, loaded_vocab)
+        loaded_vocab = Vocabulary.load(file_name)
+        os.remove(file_name)
+        self.assertEqual(vocab, loaded_vocab)
 
     ######################################################################
     #  __eq__(self, other)
