@@ -2,6 +2,7 @@ import unittest
 from seq2seq.dataset.vocabulary import Vocabulary
 import cPickle as pickle
 import os
+from collections import Counter
 
 class TestVocabulary(unittest.TestCase):
     def setUp(self):
@@ -105,9 +106,15 @@ class TestVocabulary(unittest.TestCase):
         file_name = "vocab_pickle"
         vocab.save(file_name)
         with open(file_name,"rb") as f:
-            loaded_vocab = pickle.load(f)
+            size_details = f.readline()
+            loaded_vocab = f.readlines()
+        loaded_vocab = [token.strip() for token in loaded_vocab]
+        loaded_counter = Counter(loaded_vocab)
+        original_counter = Counter(seq)
         os.remove(file_name)
-        self.assertEqual(vocab, loaded_vocab)
+        self.assertEqual(original_counter, loaded_counter)
+        loaded_size = int(size_details.replace("size is", "").strip())
+        self.assertEqual(loaded_size, vocab.size)
 
     ######################################################################
     #  load(file_name)

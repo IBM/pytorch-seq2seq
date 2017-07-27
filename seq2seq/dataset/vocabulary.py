@@ -149,9 +149,17 @@ class Vocabulary(object):
         Args:
              file_name (str): path to the target pickle file
         """
-        input_vocab_pickle = pickle.dumps(self)
-        with open(file_name, "wb") as f:
-            f.write(input_vocab_pickle)
+        self.check_sorted()
+        vocab_size = self.get_vocab_size()
+        with open(file_name, "w+") as f:
+            f.write("size is %d \n" %self.size)
+            for index, token in self._index2token.items():
+                if token in self._reserved:
+                    continue
+                if index < vocab_size -1:
+                    f.write(token + "\n")
+                else:
+                    f.write(token)
 
     @classmethod
     def load(cls, file_name):
