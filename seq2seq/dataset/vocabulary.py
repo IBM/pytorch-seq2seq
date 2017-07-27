@@ -151,8 +151,7 @@ class Vocabulary(object):
         """
         self.check_sorted()
         vocab_size = self.get_vocab_size()
-        with open(file_name, "w+") as f:
-            f.write("size is %d \n" %self.size)
+        with open(file_name, "w") as f:
             for index, token in self._index2token.items():
                 if token in self._reserved:
                     continue
@@ -172,13 +171,11 @@ class Vocabulary(object):
         Returns:
             Vocabulary: loaded Vocabulary
         """
-        with open(file_name, "rb") as f:
-            size_details = f.readline()
-            sequence = f.readlines()
-        size = int(size_details.replace("size is","").strip())
-        vocab = Vocabulary(size)
-        sequence = [token.strip() for token in sequence]
-        vocab.add_sequence(sequence)
+        with open(file_name, "r") as f:
+            tokens = f.readlines()
+        vocab = Vocabulary(len(tokens))
+        for token in tokens:
+            vocab.add_token(token.strip())
         return vocab
 
     def __eq__(self, other):
