@@ -32,10 +32,10 @@ class Checkpoint(object):
     """
 
     CHECKPOINT_DIR_NAME = 'checkpoints'
-    TRAINER_STATE_NAME = 'trainer_states'
-    MODEL_NAME = 'model'
-    INPUT_VOCAB_FILE = 'input_vocab'
-    OUTPUT_VOCAB_FILE = 'output_vocab'
+    TRAINER_STATE_NAME = 'trainer_states.pt'
+    MODEL_NAME = 'model.pt'
+    INPUT_VOCAB_FILE = 'input_vocab.pt'
+    OUTPUT_VOCAB_FILE = 'output_vocab.pt'
 
     def __init__(self, model, optimizer_state_dict, epoch, step, input_vocab, output_vocab, path=None):
         self.model = model

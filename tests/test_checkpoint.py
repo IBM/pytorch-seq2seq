@@ -67,8 +67,8 @@ class TestCheckpoint(unittest.TestCase):
                                input_vocab=input_vocab, output_vocab=output_vocab)
         chk_point.save(self._get_experiment_dir())
 
-        input_vocab.save.assert_called_once_with(os.path.join(chk_point.path, "input_vocab"))
-        output_vocab.save.assert_called_once_with(os.path.join(chk_point.path, "output_vocab"))
+        input_vocab.save.assert_called_once_with(os.path.join(chk_point.path, "input_vocab.pt"))
+        output_vocab.save.assert_called_once_with(os.path.join(chk_point.path, "output_vocab.pt"))
 
     @mock.patch('seq2seq.util.checkpoint.torch')
     @mock.patch('seq2seq.util.checkpoint.Vocabulary')
