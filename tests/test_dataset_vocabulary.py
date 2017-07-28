@@ -122,7 +122,6 @@ class TestVocabulary(unittest.TestCase):
         vocab.add_sequence(seq)
         file_name = "vocab_file"
         vocab.save(file_name)
-
         loaded_vocab = Vocabulary.load(file_name)
         os.remove(file_name)
         self.assertEqual(vocab, loaded_vocab)

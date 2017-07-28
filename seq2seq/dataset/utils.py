@@ -65,6 +65,42 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
     return pairs
 
 
+def prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
+    """
+    Reads a tab-separated data file where each line contains a source sentence and a target sentence. Pairs containing
+    a sentence that exceeds the maximum length allowed for its language are not added.
+
+    Args:
+        src_list (list): list of source sequences
+        tgt_list (list): list of target sequences
+        src_max_len (int): maximum length cutoff for sentences in the source language
+        tgt_max_len (int): maximum length cutoff for sentences in the target language
+        tokenize_func (func): function for splitting words in a sentence (default is single-space-delimited)
+
+    Returns:
+        list((str, str)): list of (source, target) string pairs
+    """
+    if not len(src_list) == len(tgt_list):
+        raise ValueError('source sequence list and target sequence list has different number of entries.')
+
+    print("Preparing pairs...")
+
+    # Read the file and split into lines
+    pairs = []
+    counter = 0
+
+    for index, _ in enumerate(src_list):
+        pair = map(tokenize_func, [src_list[index], tgt_list[index]])
+        if filter_pair(pair, src_max_len, tgt_max_len):
+            pairs.append(pair)
+    counter += 1
+    if counter % 100 == 0:
+        print("\rProcessed {0} sequences".format(counter), end="")
+
+    print("\nNumber of pairs: %s" % len(pairs))
+    return pairs
+
+
 def read_vocabulary(path, max_num_vocab=50000):
     """
     Helper function to read a vocabulary file.

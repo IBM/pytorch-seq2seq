@@ -10,11 +10,16 @@ from seq2seq.dataset import Dataset
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
 
+try:
+    raw_input          # Python 2
+except NameError:
+    raw_input = input  # Python 3
+
 # Sample usage:
 #     # training
 #     python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH
 #     # resuming from the latest checkpoint of the experiment
-#      python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH -resume
+#      python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --resume
 #      # resuming from a specific checkpoint
 #      python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH --expt_dir $EXPT_PATH --load_checkpoint $CHECKPOINT_DIR
 
@@ -44,37 +49,34 @@ if opt.load_checkpoint is not None:
     output_vocab = checkpoint.output_vocab
 else:
     # Prepare dataset
-    dataset = Dataset(opt.train_path, src_max_len=50, tgt_max_len=50)
+    dataset = Dataset.from_file(opt.train_path, src_max_len=50, tgt_max_len=50)
     input_vocab = dataset.input_vocab
     output_vocab = dataset.output_vocab
 
-    dev_set = Dataset(opt.dev_path, src_max_len=50, tgt_max_len=50,
+    dev_set = Dataset.from_file(opt.dev_path, src_max_len=50, tgt_max_len=50,
                     src_vocab=input_vocab,
                     tgt_vocab=output_vocab)
-
-    # Prepare model
-    hidden_size=128
-    encoder = EncoderRNN(input_vocab, dataset.src_max_len, hidden_size)
-    decoder = DecoderRNN(output_vocab, dataset.tgt_max_len, hidden_size,
-                        dropout_p=0.2, use_attention=True)
-    seq2seq = Seq2seq(encoder, decoder)
-
-    if opt.resume:
-        print("resuming training")
-        latest_checkpoint = Checkpoint.get_latest_checkpoint(opt.expt_dir)
-        seq2seq.load(latest_checkpoint)
-    else:
-        for param in seq2seq.parameters():
-            param.data.uniform_(-0.08, 0.08)
 
     # Prepare loss
     weight = torch.ones(output_vocab.get_vocab_size())
     mask = output_vocab.MASK_token_id
     loss = Perplexity(weight, mask)
-
     if torch.cuda.is_available():
-        seq2seq.cuda()
         loss.cuda()
+
+    seq2seq = None
+    if not opt.resume:
+        # Initialize model
+        hidden_size=128
+        encoder = EncoderRNN(input_vocab, dataset.src_max_len, hidden_size)
+        decoder = DecoderRNN(output_vocab, dataset.tgt_max_len, hidden_size,
+                            dropout_p=0.2, use_attention=True)
+        seq2seq = Seq2seq(encoder, decoder)
+        if torch.cuda.is_available():
+            seq2seq.cuda()
+
+        for param in seq2seq.parameters():
+            param.data.uniform_(-0.08, 0.08)
 
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
