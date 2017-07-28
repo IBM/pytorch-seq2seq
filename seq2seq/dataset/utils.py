@@ -1,4 +1,5 @@
 import logging
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 def filter_pair(pair, src_max_len, tgt_max_len):
@@ -48,7 +49,7 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
     pairs = []
     counter = 0
     with open(path) as fin:
-        for line in fin:
+        for line in tqdm(fin):
             try:
                 src, dst = line.strip().split("\t")
                 pair = map(tokenize_func, [src, dst])
@@ -57,9 +58,6 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
             except:
                 logger.error("Error when reading line: {0}".format(line))
                 raise
-            counter += 1
-            if counter % 100 == 0:
-                logger.info("Read {0} lines".format(counter))
 
     logger.info("Number of pairs: %s" % len(pairs))
     return pairs
@@ -89,13 +87,10 @@ def prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokeniz
     pairs = []
     counter = 0
 
-    for index, _ in enumerate(src_list):
+    for index, _ in tqdm(enumerate(src_list)):
         pair = map(tokenize_func, [src_list[index], tgt_list[index]])
         if filter_pair(pair, src_max_len, tgt_max_len):
             pairs.append(pair)
-    counter += 1
-    if counter % 100 == 0:
-        logger.info("Processed {0} sequences".format(counter), end="")
 
     logger.info("Number of pairs: %s" % len(pairs))
     return pairs

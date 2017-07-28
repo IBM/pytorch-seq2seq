@@ -38,7 +38,7 @@ parser.add_argument('--resume', action='store_true', dest='resume',
                     default=False,
                     help='Indicates if training has to be resumed from the latest checkpoint')
 
-fileConfig('logging_config.ini',disable_existing_loggers=False)
+fileConfig('examples/logging_config.ini', disable_existing_loggers=False)
 logger = logging.getLogger()
 
 opt = parser.parse_args()
