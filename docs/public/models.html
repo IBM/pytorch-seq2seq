@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Models &mdash; pytorch-seq2seq 0.1.1 documentation</title>
+  <title>Models &mdash; pytorch-seq2seq 0.1.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.1 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="index.html"/>
         <link rel="prev" title="Trainer" href="trainer.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.2
               </div>
             
           
@@ -188,7 +188,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>vocab</strong> (<em>Vocabulary</em>) – object of Vocabulary class</li>
+<li><strong>vocab</strong> (<a class="reference internal" href="dataset.html#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – object of Vocabulary class</li>
 <li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum allowed length for the sequence to be processed</li>
 <li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of features in the hidden state <cite>h</cite></li>
 <li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – dropout probability for the input sequence</li>
@@ -317,7 +317,7 @@ will not be even calling .backward().</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>vocab</strong> (<em>Vocabulary</em>) – an object of Vocabulary class</li>
+<li><strong>vocab</strong> (<a class="reference internal" href="dataset.html#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – an object of Vocabulary class</li>
 <li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – a maximum allowed length for the sequence to be processed</li>
 <li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – the number of features in the hidden state <cite>h</cite></li>
 <li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of recurrent layers (default: 1)</li>
@@ -381,7 +381,7 @@ sequences, where each list is of attention weights }.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>decoder_rnn</strong> (<a class="reference internal" href="#seq2seq.models.DecoderRNN.DecoderRNN" title="seq2seq.models.DecoderRNN.DecoderRNN"><em>DecoderRNN</em></a>) – An object of DecoderRNN used for decoding.</li>
+<li><strong>decoder_rnn</strong> (<a class="reference internal" href="#module-seq2seq.models.DecoderRNN" title="seq2seq.models.DecoderRNN"><em>DecoderRNN</em></a>) – An object of DecoderRNN used for decoding.</li>
 <li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Size of the beam.</li>
 </ul>
 </td>
@@ -582,7 +582,7 @@ sequences, where each list is of attention weights }.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1',
+            VERSION:'0.1.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
