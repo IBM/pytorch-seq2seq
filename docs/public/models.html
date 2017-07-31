@@ -180,18 +180,15 @@
 <p>A base class for RNN.</p>
 <dl class="class">
 <dt id="seq2seq.models.baseRNN.BaseRNN">
-<em class="property">class </em><code class="descclassname">seq2seq.models.baseRNN.</code><code class="descname">BaseRNN</code><span class="sig-paren">(</span><em>vocab</em>, <em>max_len</em>, <em>hidden_size</em>, <em>input_dropout_p</em>, <em>dropout_p</em>, <em>n_layers</em>, <em>rnn_cell</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.baseRNN.BaseRNN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies a multi-layer RNN to an input sequence.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Do not use this class directly, use one of the sub classes.</p>
-</div>
+<em class="property">class </em><code class="descclassname">seq2seq.models.baseRNN.</code><code class="descname">BaseRNN</code><span class="sig-paren">(</span><em>vocab</em>, <em>max_len</em>, <em>hidden_size</em>, <em>input_dropout_p</em>, <em>dropout_p</em>, <em>n_layers</em>, <em>rnn_cell</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/baseRNN.html#BaseRNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.baseRNN.BaseRNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies a multi-layer RNN to an input sequence.
+.. note:: Do not use this class directly, use one of the sub classes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>vocab</strong> (<a class="reference internal" href="dataset.html#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – object of Vocabulary class</li>
+<li><strong>vocab</strong> (<em>Vocabulary</em>) – object of Vocabulary class</li>
 <li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum allowed length for the sequence to be processed</li>
 <li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of features in the hidden state <cite>h</cite></li>
 <li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – dropout probability for the input sequence</li>
@@ -225,25 +222,19 @@
 </table>
 <dl class="method">
 <dt id="seq2seq.models.baseRNN.BaseRNN.balance">
-<code class="descname">balance</code><span class="sig-paren">(</span><em>batch</em>, <em>volatile</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.baseRNN.BaseRNN.balance" title="Permalink to this definition">¶</a></dt>
+<code class="descname">balance</code><span class="sig-paren">(</span><em>batch</em>, <em>volatile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/baseRNN.html#BaseRNN.balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.baseRNN.BaseRNN.balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add reserved symbols and balance batch input.
 It first appends EOS symbol to each sequence and then appends multiple
-MASK symbols to make the sequences the same length.</p>
+MASK symbols to make the sequences the same length.
+:param batch: list of sequences, each of which is a list of integers
+:param volatile: boolean flag specifying whether to preserve gradients, when you are sure you will not be even calling .backward().</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>batch</strong> – list of sequences, each of which is a list of integers</li>
-<li><strong>volatile</strong> – boolean flag specifying whether to preserve gradients, when you are sure you will not be even calling .backward().</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">variable with balanced input data.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">variable with balanced input data.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://pytorch.org/docs/master/autograd.html#torch.autograd.Variable" title="(in PyTorch vmaster (0.1.12+6df23b4 ))">torch.autograd.Variable</a></p>
-</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://pytorch.org/docs/master/autograd.html#torch.autograd.Variable" title="(in PyTorch vmaster (0.2.0+8262920 ))">torch.autograd.Variable</a></td>
 </tr>
 </tbody>
 </table>
@@ -256,25 +247,22 @@ MASK symbols to make the sequences the same length.</p>
 <span id="encoderrnn"></span><h2>EncoderRNN<a class="headerlink" href="#module-seq2seq.models.EncoderRNN" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.models.EncoderRNN.EncoderRNN">
-<em class="property">class </em><code class="descclassname">seq2seq.models.EncoderRNN.</code><code class="descname">EncoderRNN</code><span class="sig-paren">(</span><em>vocab</em>, <em>max_len</em>, <em>hidden_size</em>, <em>input_dropout_p=0</em>, <em>dropout_p=0</em>, <em>n_layers=1</em>, <em>rnn_cell=’gru’</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.EncoderRNN.EncoderRNN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies a multi-layer RNN to an input sequence.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>vocab</strong> (<a class="reference internal" href="dataset.html#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – an object of Vocabulary class</li>
-<li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – a maximum allowed length for the sequence to be processed</li>
-<li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – the number of features in the hidden state <cite>h</cite></li>
-<li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the input sequence (default: 0)</li>
-<li><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the output sequence (default: 0)</li>
-<li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of recurrent layers (default: 1)</li>
-<li><strong>rnn_cell</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>, </em><em>optional</em>) – type of RNN cell (default: gru)</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<em class="property">class </em><code class="descclassname">seq2seq.models.EncoderRNN.</code><code class="descname">EncoderRNN</code><span class="sig-paren">(</span><em>vocab</em>, <em>max_len</em>, <em>hidden_size</em>, <em>input_dropout_p=0</em>, <em>dropout_p=0</em>, <em>n_layers=1</em>, <em>rnn_cell='gru'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/EncoderRNN.html#EncoderRNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.EncoderRNN.EncoderRNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies a multi-layer RNN to an input sequence.
+:param vocab: an object of Vocabulary class
+:type vocab: Vocabulary
+:param max_len: a maximum allowed length for the sequence to be processed
+:type max_len: int
+:param hidden_size: the number of features in the hidden state <cite>h</cite>
+:type hidden_size: int
+:param input_dropout_p: dropout probability for the input sequence (default: 0)
+:type input_dropout_p: float, optional
+:param dropout_p: dropout probability for the output sequence (default: 0)
+:type dropout_p: float, optional
+:param n_layers: number of recurrent layers (default: 1)
+:type n_layers: int, optional
+:param rnn_cell: type of RNN cell (default: gru)
+:type rnn_cell: str, optional</p>
 <dl class="docutils">
 <dt>Inputs: inputs, volatile</dt>
 <dd><ul class="first last simple">
@@ -297,12 +285,12 @@ will not be even calling .backward().</li>
 </div>
 <dl class="method">
 <dt id="seq2seq.models.EncoderRNN.EncoderRNN.forward_rnn">
-<code class="descname">forward_rnn</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.EncoderRNN.EncoderRNN.forward_rnn" title="Permalink to this definition">¶</a></dt>
+<code class="descname">forward_rnn</code><span class="sig-paren">(</span><em>input_var</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/EncoderRNN.html#EncoderRNN.forward_rnn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.EncoderRNN.EncoderRNN.forward_rnn" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>Applies a multi-layer RNN to an input sequence.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>input (batch, seq_len): tensor containing the features of the input sequence.</dd>
+<dd>input_var (batch, seq_len): tensor containing the features of the input sequence.</dd>
 </dl>
 </div></blockquote>
 <dl class="docutils">
@@ -322,14 +310,14 @@ will not be even calling .backward().</li>
 <span id="decoderrnn"></span><h2>DecoderRNN<a class="headerlink" href="#module-seq2seq.models.DecoderRNN" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.models.DecoderRNN.DecoderRNN">
-<em class="property">class </em><code class="descclassname">seq2seq.models.DecoderRNN.</code><code class="descname">DecoderRNN</code><span class="sig-paren">(</span><em>vocab</em>, <em>max_len</em>, <em>hidden_size</em>, <em>n_layers=1</em>, <em>rnn_cell=’gru’</em>, <em>input_dropout_p=0</em>, <em>dropout_p=0</em>, <em>use_attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.DecoderRNN.DecoderRNN" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.models.DecoderRNN.</code><code class="descname">DecoderRNN</code><span class="sig-paren">(</span><em>vocab</em>, <em>max_len</em>, <em>hidden_size</em>, <em>n_layers=1</em>, <em>rnn_cell='gru'</em>, <em>input_dropout_p=0</em>, <em>dropout_p=0</em>, <em>use_attention=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/DecoderRNN.html#DecoderRNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.DecoderRNN.DecoderRNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides functionality for decoding in a seq2seq framework, with an option for attention.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>vocab</strong> (<a class="reference internal" href="dataset.html#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – an object of Vocabulary class</li>
+<li><strong>vocab</strong> (<em>Vocabulary</em>) – an object of Vocabulary class</li>
 <li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – a maximum allowed length for the sequence to be processed</li>
 <li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – the number of features in the hidden state <cite>h</cite></li>
 <li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of recurrent layers (default: 1)</li>
@@ -386,7 +374,7 @@ sequences, where each list is of attention weights }.</li>
 <span id="topkdecoder"></span><h2>TopKDecoder<a class="headerlink" href="#module-seq2seq.models.TopKDecoder" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.models.TopKDecoder.TopKDecoder">
-<em class="property">class </em><code class="descclassname">seq2seq.models.TopKDecoder.</code><code class="descname">TopKDecoder</code><span class="sig-paren">(</span><em>decoder_rnn</em>, <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.models.TopKDecoder.</code><code class="descname">TopKDecoder</code><span class="sig-paren">(</span><em>decoder_rnn</em>, <em>k</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/TopKDecoder.html#TopKDecoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Top-K decoding with beam search.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -430,7 +418,7 @@ predicted token IDs, <em>inputs</em> : target outputs if provided for decoding}.
 </dl>
 <dl class="method">
 <dt id="seq2seq.models.TopKDecoder.TopKDecoder.forward_rnn">
-<code class="descname">forward_rnn</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>function=&lt;function log_softmax&gt;</em>, <em>retain_output_probs=True</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder.forward_rnn" title="Permalink to this definition">¶</a></dt>
+<code class="descname">forward_rnn</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>function=&lt;function log_softmax&gt;</em>, <em>retain_output_probs=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/TopKDecoder.html#TopKDecoder.forward_rnn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder.forward_rnn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Forward rnn for MAX_LENGTH steps.  Look at <code class="xref py py-func docutils literal"><span class="pre">seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn()</span></code> for details.</p>
 </dd></dl>
 
@@ -441,8 +429,8 @@ predicted token IDs, <em>inputs</em> : target outputs if provided for decoding}.
 <span id="attention"></span><h2>attention<a class="headerlink" href="#module-seq2seq.models.attention" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.models.attention.Attention">
-<em class="property">class </em><code class="descclassname">seq2seq.models.attention.</code><code class="descname">Attention</code><span class="sig-paren">(</span><em>dim</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.attention.Attention" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies an attention Mechansims on the output features from the decoder.</p>
+<em class="property">class </em><code class="descclassname">seq2seq.models.attention.</code><code class="descname">Attention</code><span class="sig-paren">(</span><em>dim</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/attention.html#Attention"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.attention.Attention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies an attention mechanism on the output features from the decoder.</p>
 <div class="math">
 \[\begin{split}\begin{array}{ll}
 x = context*output \\
@@ -460,14 +448,14 @@ output = \tanh(w * (attn * context) + b * output)
 <dl class="docutils">
 <dt>Inputs: output, context</dt>
 <dd><ul class="first last simple">
-<li><strong>output</strong> (batch, dimensions): tensor containing the output features from the decoder.</li>
-<li><strong>context</strong> (batch, seq_len, dimensions): tensor containing features of the encoded input sequence.</li>
+<li><strong>output</strong> (batch, output_len, dimensions): tensor containing the output features from the decoder.</li>
+<li><strong>context</strong> (batch, input_len, dimensions): tensor containing features of the encoded input sequence.</li>
 </ul>
 </dd>
 <dt>Outputs: output, attn</dt>
 <dd><ul class="first last simple">
-<li><strong>output</strong> (batch, seq_len, dimensions): tensor containing the attended output features from the decoder.</li>
-<li><strong>attn</strong> (batch, seq_len): tensor containing attention weights.</li>
+<li><strong>output</strong> (batch, output_len, dimensions): tensor containing the attended output features from the decoder.</li>
+<li><strong>attn</strong> (batch, output_len, input_len): tensor containing attention weights.</li>
 </ul>
 </dd>
 </dl>
@@ -476,8 +464,8 @@ output = \tanh(w * (attn * context) + b * output)
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>linear_out</strong> (<a class="reference external" href="http://pytorch.org/docs/master/nn.html#torch.nn.Linear" title="(in PyTorch vmaster (0.1.12+6df23b4 ))"><em>torch.nn.Linear</em></a>) – applies a linear transformation to the incoming data: <span class="math">\(y = Ax + b\)</span>.</li>
-<li><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.1.12+6df23b4 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – applies a <span class="math">\(-inf\)</span> to the indices specified in the <cite>Tensor</cite>.</li>
+<li><strong>linear_out</strong> (<a class="reference external" href="http://pytorch.org/docs/master/nn.html#torch.nn.Linear" title="(in PyTorch vmaster (0.2.0+8262920 ))"><em>torch.nn.Linear</em></a>) – applies a linear transformation to the incoming data: <span class="math">\(y = Ax + b\)</span>.</li>
+<li><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+8262920 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – applies a <span class="math">\(-inf\)</span> to the indices specified in the <cite>Tensor</cite>.</li>
 </ul>
 </td>
 </tr>
@@ -486,19 +474,19 @@ output = \tanh(w * (attn * context) + b * output)
 <p>Examples:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attention</span> <span class="o">=</span> <span class="n">seq2seq</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Attention</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">context</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">,</span> <span class="n">attn</span> <span class="o">=</span> <span class="n">attention</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
 <dt id="seq2seq.models.attention.Attention.set_mask">
-<code class="descname">set_mask</code><span class="sig-paren">(</span><em>mask</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.attention.Attention.set_mask" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_mask</code><span class="sig-paren">(</span><em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/attention.html#Attention.set_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.attention.Attention.set_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets indices to be masked</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.1.12+6df23b4 ))"><em>torch.Tensor</em></a>) – tensor containing indices to be masked</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+8262920 ))"><em>torch.Tensor</em></a>) – tensor containing indices to be masked</td>
 </tr>
 </tbody>
 </table>
@@ -511,22 +499,15 @@ output = \tanh(w * (attn * context) + b * output)
 <span id="seq2seq"></span><h2>seq2seq<a class="headerlink" href="#module-seq2seq.models.seq2seq" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.models.seq2seq.Seq2seq">
-<em class="property">class </em><code class="descclassname">seq2seq.models.seq2seq.</code><code class="descname">Seq2seq</code><span class="sig-paren">(</span><em>encoder</em>, <em>decoder</em>, <em>decode_function=&lt;function log_softmax&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.models.seq2seq.</code><code class="descname">Seq2seq</code><span class="sig-paren">(</span><em>encoder</em>, <em>decoder</em>, <em>decode_function=&lt;function log_softmax&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/models/seq2seq.html#Seq2seq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Standard sequence-to-sequence architecture with configurable encoder
-and decoder.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>encoder</strong> (<a class="reference internal" href="#seq2seq.models.EncoderRNN.EncoderRNN" title="seq2seq.models.EncoderRNN.EncoderRNN"><em>EncoderRNN</em></a>) – object of EncoderRNN</li>
-<li><strong>decoder</strong> (<a class="reference internal" href="#seq2seq.models.DecoderRNN.DecoderRNN" title="seq2seq.models.DecoderRNN.DecoderRNN"><em>DecoderRNN</em></a>) – object of DecoderRNN</li>
-<li><strong>decode_function</strong> (<em>func</em><em>, </em><em>optional</em>) – function to generate symbols from output hidden states (default: F.log_softmax)</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+and decoder.
+:param encoder: object of EncoderRNN
+:type encoder: EncoderRNN
+:param decoder: object of DecoderRNN
+:type decoder: DecoderRNN
+:param decode_function: function to generate symbols from output hidden states (default: F.log_softmax)
+:type decode_function: func, optional</p>
 <dl class="docutils">
 <dt>Inputs: input_variable, target_variable, teacher_forcing_ratio, volatile</dt>
 <dd><ul class="first last simple">
@@ -554,38 +535,6 @@ sequences, where each list is of attention weights }.</li>
 </ul>
 </dd>
 </dl>
-<dl class="classmethod">
-<dt id="seq2seq.models.seq2seq.Seq2seq.load">
-<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a seq2seq object that was previously saved to disk.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the saved model directory</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">seq2seq object with fields copied from those stored on disk</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#seq2seq.models.seq2seq.Seq2seq" title="seq2seq.models.seq2seq.Seq2seq">Seq2seq</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="seq2seq.models.seq2seq.Seq2seq.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the current seq2seq object and related training parameters into specified path.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the directory to be saved</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -643,7 +592,7 @@ sequences, where each list is of attention weights }.</li>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

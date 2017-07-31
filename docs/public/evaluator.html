@@ -176,10 +176,15 @@
 <h2>evaluator<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-seq2seq.evaluator.evaluator"></span><dl class="class">
 <dt id="seq2seq.evaluator.evaluator.Evaluator">
-<em class="property">class </em><code class="descclassname">seq2seq.evaluator.evaluator.</code><code class="descname">Evaluator</code><span class="sig-paren">(</span><em>loss=&lt;seq2seq.loss.loss.NLLLoss object&gt;</em>, <em>batch_size=64</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.evaluator.Evaluator" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="descclassname">seq2seq.evaluator.evaluator.</code><code class="descname">Evaluator</code><span class="sig-paren">(</span><em>loss=&lt;seq2seq.loss.loss.NLLLoss object&gt;</em>, <em>batch_size=64</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/evaluator/evaluator.html#Evaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.evaluator.evaluator.Evaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to evaluate models with given datasets.
+:param loss: loss for evaluator (default: seq2seq.loss.NLLLoss)
+:type loss: seq2seq.loss, optional
+:param batch_size: batch size for evaluator (default: 64)
+:type batch_size: int, optional</p>
+<dl class="method">
 <dt id="seq2seq.evaluator.evaluator.Evaluator.evaluate">
-<code class="descname">evaluate</code><span class="sig-paren">(</span><em>model</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.evaluator.Evaluator.evaluate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>model</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/evaluator/evaluator.html#Evaluator.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.evaluator.evaluator.Evaluator.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate a model on given dataset and return performance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -208,10 +213,10 @@
 <span id="predictor"></span><h2>predictor<a class="headerlink" href="#module-seq2seq.evaluator.predictor" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.evaluator.predictor.Predictor">
-<em class="property">class </em><code class="descclassname">seq2seq.evaluator.predictor.</code><code class="descname">Predictor</code><span class="sig-paren">(</span><em>model</em>, <em>src_vocab</em>, <em>tgt_vocab</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.evaluator.predictor.</code><code class="descname">Predictor</code><span class="sig-paren">(</span><em>model</em>, <em>src_vocab</em>, <em>tgt_vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/evaluator/predictor.html#Predictor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="seq2seq.evaluator.predictor.Predictor.predict">
-<code class="descname">predict</code><span class="sig-paren">(</span><em>src_seq</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor.predict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">predict</code><span class="sig-paren">(</span><em>src_seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/evaluator/predictor.html#Predictor.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make prediction given <cite>src_seq</cite> as input.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -287,7 +292,7 @@ by the pre-trained model</td>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
