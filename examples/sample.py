@@ -38,8 +38,14 @@ parser.add_argument('--resume', action='store_true', dest='resume',
                     default=False,
                     help='Indicates if training has to be resumed from the latest checkpoint')
 
-fileConfig('examples/logging_config.ini', disable_existing_loggers=False)
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
+
 
 opt = parser.parse_args()
 logger.info(opt)

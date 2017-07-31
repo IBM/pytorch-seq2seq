@@ -1,7 +1,9 @@
 import logging
 from tqdm import tqdm
+import mmap
 
 logger = logging.getLogger(__name__)
+
 def filter_pair(pair, src_max_len, tgt_max_len):
     """
     Returns true if a sentence pair meets the length requirements, false otherwise.
@@ -44,7 +46,7 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
         list((str, str)): list of (source, target) string pairs
     """
 
-    logger.info("Reading Lines form {}".format(path))
+    logger.info("Reading Lines from {}".format(path))
     # Read the file and split into lines
     pairs = []
     counter = 0
@@ -122,4 +124,3 @@ def read_vocabulary(path, max_num_vocab=50000):
 
     logger.info("Size of Vocabulary: %s" % len(vocab))
     return vocab
-
