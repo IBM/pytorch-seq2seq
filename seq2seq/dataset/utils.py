@@ -1,6 +1,5 @@
 import logging
 from tqdm import tqdm
-import mmap
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +48,6 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
     logger.info("Reading Lines from {}".format(path))
     # Read the file and split into lines
     pairs = []
-    counter = 0
     with open(path) as fin:
         for line in tqdm(fin):
             try:
@@ -87,7 +85,6 @@ def prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokeniz
 
     # Read the file and split into lines
     pairs = []
-    counter = 0
 
     for index, _ in tqdm(enumerate(src_list)):
         pair = map(tokenize_func, [src_list[index], tgt_list[index]])
@@ -124,3 +121,4 @@ def read_vocabulary(path, max_num_vocab=50000):
 
     logger.info("Size of Vocabulary: %s" % len(vocab))
     return vocab
+
