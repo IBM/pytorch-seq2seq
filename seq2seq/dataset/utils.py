@@ -1,4 +1,7 @@
-from __future__ import print_function
+import logging
+from tqdm import tqdm
+
+logger = logging.getLogger(__name__)
 
 def filter_pair(pair, src_max_len, tgt_max_len):
     """
@@ -42,26 +45,21 @@ def prepare_data(path, src_max_len, tgt_max_len, tokenize_func=space_tokenize):
         list((str, str)): list of (source, target) string pairs
     """
 
-    print("Reading lines...")
-
+    logger.info("Reading Lines from {}".format(path))
     # Read the file and split into lines
     pairs = []
-    counter = 0
     with open(path) as fin:
-        for line in fin:
+        for line in tqdm(fin):
             try:
                 src, dst = line.strip().split("\t")
                 pair = map(tokenize_func, [src, dst])
                 if filter_pair(pair, src_max_len, tgt_max_len):
                     pairs.append(pair)
             except:
-                print("Error when reading line: {0}".format(line))
+                logger.error("Error when reading line: {0}".format(line))
                 raise
-            counter += 1
-            if counter % 100 == 0:
-                print("\rRead {0} lines".format(counter), end="")
 
-    print("\nNumber of pairs: %s" % len(pairs))
+    logger.info("Number of pairs: %s" % len(pairs))
     return pairs
 
 
@@ -83,21 +81,17 @@ def prepare_data_from_list(src_list, tgt_list, src_max_len, tgt_max_len, tokeniz
     if not len(src_list) == len(tgt_list):
         raise ValueError('source sequence list and target sequence list has different number of entries.')
 
-    print("Preparing pairs...")
+    logger.info("Preparing pairs...")
 
     # Read the file and split into lines
     pairs = []
-    counter = 0
 
-    for index, _ in enumerate(src_list):
+    for index, _ in tqdm(enumerate(src_list)):
         pair = map(tokenize_func, [src_list[index], tgt_list[index]])
         if filter_pair(pair, src_max_len, tgt_max_len):
             pairs.append(pair)
-    counter += 1
-    if counter % 100 == 0:
-        print("\rProcessed {0} sequences".format(counter), end="")
 
-    print("\nNumber of pairs: %s" % len(pairs))
+    logger.info("Number of pairs: %s" % len(pairs))
     return pairs
 
 
@@ -112,8 +106,7 @@ def read_vocabulary(path, max_num_vocab=50000):
     Returns:
         set: read words from vocabulary file
     """
-    print("Reading vocabulary...")
-
+    logger.info("Reading vocabulary from {}".format(path))
     # Read the file and create list of tokens in vocabulary
     vocab = set()
     with open(path) as fin:
@@ -123,9 +116,9 @@ def read_vocabulary(path, max_num_vocab=50000):
             try:
                 vocab.add(line.strip())
             except:
-                print ("Error when reading line: {0}".format(line))
+                logger.error("Error when reading line: {0}".format(line))
                 raise
 
-    print("\nSize of Vocabulary: %s" % len(vocab))
+    logger.info("Size of Vocabulary: %s" % len(vocab))
     return vocab
 
