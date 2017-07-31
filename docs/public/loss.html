@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Loss &mdash; pytorch-seq2seq 0.1.1 documentation</title>
+  <title>Loss &mdash; pytorch-seq2seq 0.1.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.1 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="index.html"/>
         <link rel="next" title="Optim" href="optim.html"/>
         <link rel="prev" title="Evaluator" href="evaluator.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.2
               </div>
             
           
@@ -177,7 +177,7 @@
 <h2>Loss<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.loss.loss.Loss">
-<em class="property">class </em><code class="descclassname">seq2seq.loss.loss.</code><code class="descname">Loss</code><span class="sig-paren">(</span><em>name</em>, <em>criterion</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Loss" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.loss.loss.</code><code class="descname">Loss</code><span class="sig-paren">(</span><em>name</em>, <em>criterion</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/loss/loss.html#Loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.loss.loss.Loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for encapsulation of the loss functions.</p>
 <p>This class defines interfaces that are commonly used with loss functions
 in training and inferencing.  For information regarding individual loss
@@ -215,7 +215,7 @@ sub-classes.</li>
 </table>
 <dl class="method">
 <dt id="seq2seq.loss.loss.Loss.eval_batch">
-<code class="descname">eval_batch</code><span class="sig-paren">(</span><em>outputs</em>, <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Loss.eval_batch" title="Permalink to this definition">¶</a></dt>
+<code class="descname">eval_batch</code><span class="sig-paren">(</span><em>outputs</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/loss/loss.html#Loss.eval_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.loss.loss.Loss.eval_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate and accumulate loss given outputs and expected results.</p>
 <p>This method is called after each batch with the batch outputs and
 the target (expected) results.  The loss and normalization term are
@@ -226,8 +226,8 @@ method.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outputs</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.1.12+6df23b4 ))"><em>torch.Tensor</em></a>) – outputs of a batch.</li>
-<li><strong>target</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.1.12+6df23b4 ))"><em>torch.Tensor</em></a>) – expected output of a batch.</li>
+<li><strong>outputs</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+8262920 ))"><em>torch.Tensor</em></a>) – outputs of a batch.</li>
+<li><strong>target</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+8262920 ))"><em>torch.Tensor</em></a>) – expected output of a batch.</li>
 </ul>
 </td>
 </tr>
@@ -237,7 +237,7 @@ method.</p>
 
 <dl class="method">
 <dt id="seq2seq.loss.loss.Loss.get_loss">
-<code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Loss.get_loss" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/loss/loss.html#Loss.get_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.loss.loss.Loss.get_loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the loss.</p>
 <p>This method defines how to calculate the averaged loss given the
 accumulated loss and the normalization term.  Override to define your
@@ -256,7 +256,7 @@ own logic.</p>
 
 <dl class="method">
 <dt id="seq2seq.loss.loss.Loss.reset">
-<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Loss.reset" title="Permalink to this definition">¶</a></dt>
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/loss/loss.html#Loss.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.loss.loss.Loss.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the accumulated loss.</p>
 </dd></dl>
 
@@ -267,14 +267,14 @@ own logic.</p>
 <h2>NLLLoss<a class="headerlink" href="#nllloss" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.loss.loss.NLLLoss">
-<em class="property">class </em><code class="descclassname">seq2seq.loss.loss.</code><code class="descname">NLLLoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>mask=None</em>, <em>size_average=True</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.NLLLoss" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.loss.loss.</code><code class="descname">NLLLoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>mask=None</em>, <em>size_average=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/loss/loss.html#NLLLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.loss.loss.NLLLoss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Batch averaged negative log-likelihood loss.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>weight</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.1.12+6df23b4 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
+<li><strong>weight</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+8262920 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
 <li><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – index of masked token, i.e. weight[mask] = 0.</li>
 <li><strong>size_average</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a><em>, </em><em>optional</em>) – refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
 </ul>
@@ -289,7 +289,7 @@ own logic.</p>
 <h2>Perplexity<a class="headerlink" href="#perplexity" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.loss.loss.Perplexity">
-<em class="property">class </em><code class="descclassname">seq2seq.loss.loss.</code><code class="descname">Perplexity</code><span class="sig-paren">(</span><em>weight=None</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Perplexity" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.loss.loss.</code><code class="descname">Perplexity</code><span class="sig-paren">(</span><em>weight=None</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/loss/loss.html#Perplexity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.loss.loss.Perplexity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Language model perplexity loss.</p>
 <p>Perplexity is the token averaged likelihood.  When the averaging options are the
 same, it is the exponential of negative log-likelihood.</p>
@@ -298,7 +298,7 @@ same, it is the exponential of negative log-likelihood.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>weight</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.1.12+6df23b4 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
+<li><strong>weight</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+8262920 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
 <li><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – index of masked token, i.e. weight[mask] = 0.</li>
 </ul>
 </td>
@@ -354,7 +354,7 @@ same, it is the exponential of negative log-likelihood.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1',
+            VERSION:'0.1.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -364,7 +364,7 @@ same, it is the exponential of negative log-likelihood.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

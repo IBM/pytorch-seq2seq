@@ -1,0 +1,554 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>seq2seq.models.TopKDecoder &mdash; pytorch-seq2seq 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/intro.html">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>seq2seq.models.TopKDecoder</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for seq2seq.models.TopKDecoder</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="k">import</span> <span class="n">Variable</span>
+<span class="kn">from</span> <span class="nn">baseRNN</span> <span class="k">import</span> <span class="n">BaseRNN</span>
+
+
+<div class="viewcode-block" id="TopKDecoder"><a class="viewcode-back" href="../../../models.html#seq2seq.models.TopKDecoder.TopKDecoder">[docs]</a><span class="k">class</span> <span class="nc">TopKDecoder</span><span class="p">(</span><span class="n">BaseRNN</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Top-K decoding with beam search.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        decoder_rnn (DecoderRNN): An object of DecoderRNN used for decoding.</span>
+<span class="sd">        k (int): Size of the beam.</span>
+
+<span class="sd">    Inputs: inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio</span>
+<span class="sd">        - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which</span>
+<span class="sd">          each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default is `None`)</span>
+<span class="sd">        - **encoder_hidden** (batch, seq_len, hidden_size): tensor containing the features in the hidden state `h` of</span>
+<span class="sd">          encoder. Used as the initial hidden state of the decoder.</span>
+<span class="sd">        - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.</span>
+<span class="sd">          Used for attention mechanism (default is `None`).</span>
+<span class="sd">        - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state</span>
+<span class="sd">          (default is `torch.nn.functional.log_softmax`).</span>
+<span class="sd">        - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is</span>
+<span class="sd">          drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,</span>
+<span class="sd">          teacher forcing would be used (default is 0).</span>
+
+<span class="sd">    Outputs: decoder_outputs, decoder_hidden, ret_dict</span>
+<span class="sd">        - **decoder_outputs** (batch): batch-length list of tensors with size (max_length, hidden_size) containing the</span>
+<span class="sd">          outputs of the decoder.</span>
+<span class="sd">        - **decoder_hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden</span>
+<span class="sd">          state of the decoder.</span>
+<span class="sd">        - **ret_dict**: dictionary containing additional information as follows {*length* : list of integers</span>
+<span class="sd">          representing lengths of output sequences, *sequence* : list of sequences, where each sequence is a list of</span>
+<span class="sd">          predicted token IDs, *inputs* : target outputs if provided for decoding}.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decoder_rnn</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TopKDecoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">decoder_rnn</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">decoder_rnn</span><span class="o">.</span><span class="n">max_length</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">decoder_rnn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">get_vocab_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">SOS_token_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EOS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">EOS_token_id</span>
+
+<div class="viewcode-block" id="TopKDecoder.forward_rnn"><a class="viewcode-back" href="../../../models.html#seq2seq.models.TopKDecoder.TopKDecoder.forward_rnn">[docs]</a>    <span class="k">def</span> <span class="nf">forward_rnn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_hidden</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoder_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">,</span>
+                    <span class="n">retain_output_probs</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Forward rnn for MAX_LENGTH steps.  Look at :func:`seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn` for details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: Looks like encoder_hidden is not optional, we need unit tests</span>
+        <span class="c1"># for this class</span>
+        <span class="c1"># Get batch size, assuming h_0 is num_layers*directions x b x hidden_dim</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">encoder_hidden</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">encoder_hidden</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_index</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Inflate the initial hidden states to be of size: b*k x h</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inflate</span><span class="p">(</span><span class="n">encoder_hidden</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="c1"># ... same idea for encoder_outputs and decoder_outputs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">use_attention</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">encoder_outputs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument encoder_outputs cannot be None when attention is used.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">inflated_encoder_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inflate</span><span class="p">(</span><span class="n">encoder_outputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inflated_encoder_outputs</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize the scores; for the first step,</span>
+        <span class="c1"># ignore the inflated copies to avoid duplicate entries in the top k</span>
+        <span class="n">sequence_scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">sequence_scores</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;Inf&#39;</span><span class="p">))</span>
+        <span class="n">sequence_scores</span><span class="o">.</span><span class="n">index_fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="n">i</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="p">)]),</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">sequence_scores</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">sequence_scores</span><span class="p">)</span>
+
+        <span class="c1"># Initialize the input vector</span>
+        <span class="n">input_var</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="bp">self</span><span class="o">.</span><span class="n">SOS</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Store decisions for backtracking</span>
+        <span class="n">stored_outputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">stored_scores</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">stored_predecessors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">stored_emitted_symbols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">stored_hidden</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">max_length</span><span class="p">):</span>
+
+            <span class="c1"># Run the RNN one step forward</span>
+            <span class="n">log_softmax_output</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">forward_step</span><span class="p">(</span><span class="n">input_var</span><span class="p">,</span> <span class="n">hidden</span><span class="p">,</span> <span class="n">inflated_encoder_outputs</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="n">function</span><span class="p">)</span>
+
+            <span class="c1"># If doing local backprop (e.g. supervised training), retain the output layer</span>
+            <span class="k">if</span> <span class="n">retain_output_probs</span><span class="p">:</span>
+                <span class="n">stored_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_softmax_output</span><span class="p">)</span>
+
+            <span class="c1"># To get the full sequence scores for the new candidates, add the local scores for t_i to the predecessor scores for t_(i-1)</span>
+            <span class="n">sequence_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inflate</span><span class="p">(</span><span class="n">sequence_scores</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">)</span>
+            <span class="n">sequence_scores</span> <span class="o">+=</span> <span class="n">log_softmax_output</span>
+            <span class="n">scores</span><span class="p">,</span> <span class="n">candidates</span> <span class="o">=</span> <span class="n">sequence_scores</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Reshape input = (bk, 1) and sequence_scores = (bk, 1)</span>
+            <span class="n">input_var</span> <span class="o">=</span> <span class="p">(</span><span class="n">candidates</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">sequence_scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Update fields for next timestep</span>
+            <span class="n">predecessors</span> <span class="o">=</span> <span class="p">(</span><span class="n">candidates</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_index</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">candidates</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">hidden</span> <span class="o">=</span> <span class="n">hidden</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
+
+            <span class="c1"># Update sequence scores and erase scores for end-of-sentence symbol so that they aren&#39;t expanded</span>
+            <span class="n">stored_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sequence_scores</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
+            <span class="n">eos_indices</span> <span class="o">=</span> <span class="n">input_var</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">EOS</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">eos_indices</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sequence_scores</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">eos_indices</span><span class="p">,</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">))</span>
+
+            <span class="c1"># Cache results for backtracking</span>
+            <span class="n">stored_predecessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predecessors</span><span class="p">)</span>
+            <span class="n">stored_emitted_symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_var</span><span class="p">)</span>
+            <span class="n">stored_hidden</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span>
+
+        <span class="c1"># Do backtracking to return the optimal values</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">h_t</span><span class="p">,</span> <span class="n">h_n</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backtrack</span><span class="p">(</span><span class="n">stored_outputs</span><span class="p">,</span> <span class="n">stored_hidden</span><span class="p">,</span>
+                                                 <span class="n">stored_predecessors</span><span class="p">,</span> <span class="n">stored_emitted_symbols</span><span class="p">,</span> <span class="n">stored_scores</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="c1"># Build return objects</span>
+        <span class="n">decoder_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">step</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
+        <span class="n">decoder_hidden</span> <span class="o">=</span> <span class="n">h_n</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;h_t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h_t</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="k">return</span> <span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">decoder_hidden</span><span class="p">,</span> <span class="n">metadata</span></div>
+
+    <span class="k">def</span> <span class="nf">_backtrack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nw_output</span><span class="p">,</span> <span class="n">nw_hidden</span><span class="p">,</span> <span class="n">predecessors</span><span class="p">,</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Backtracks over batch to generate optimal k-sequences.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nw_output [(batch*k, vocab_size)] * sequence_length: A Tensor of outputs from network</span>
+<span class="sd">            nw_hidden [(num_layers, batch*k, hidden_size)] * sequence_length: A Tensor of hidden states from network</span>
+<span class="sd">            predecessors [(batch*k)] * sequence_length: A Tensor of predecessors</span>
+<span class="sd">            symbols [(batch*k)] * sequence_length: A Tensor of predicted tokens</span>
+<span class="sd">            scores [(batch*k)] * sequence_length: A Tensor containing sequence scores for every token t = [0, ... , seq_len - 1]</span>
+<span class="sd">            b: Size of the batch</span>
+<span class="sd">            hidden_size: Size of the hidden state</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            output [(batch, k, vocab_size)] * sequence_length: A list of the output probabilities (p_n)</span>
+<span class="sd">            from the last layer of the RNN, for every n = [0, ... , seq_len - 1]</span>
+
+<span class="sd">            h_t [(batch, k, hidden_size)] * sequence_length: A list containing the output features (h_n)</span>
+<span class="sd">            from the last layer of the RNN, for every n = [0, ... , seq_len - 1]</span>
+
+<span class="sd">            h_n(batch, k, hidden_size): A Tensor containing the last hidden state for all top-k sequences.</span>
+
+<span class="sd">            score [batch, k]: A list containing the final scores for all top-k sequences</span>
+
+<span class="sd">            length [batch, k]: A list specifying the length of each sequence in the top-k candidates</span>
+
+<span class="sd">            p (batch, k, sequence_len): A Tensor containing predicted sequence</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># initialize return variables given different types</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">h_t</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">h_n</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nw_hidden</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>  <span class="c1"># Placeholder for last hidden state of top-k sequences.</span>
+                                                <span class="c1"># If a (top-k) sequence ends early in decoding, `h_n` contains</span>
+                                                <span class="c1"># its hidden state when it sees EOS.  Otherwise, `h_n` contains</span>
+                                                <span class="c1"># the last hidden state of decoding.</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">max_length</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b</span><span class="p">)]</span>  <span class="c1"># Placeholder for lengths of top-k sequences</span>
+                                                                <span class="c1"># Similar to `h_n`</span>
+
+        <span class="c1"># the last step output of the beams are not sorted</span>
+        <span class="c1"># thus they are sorted here</span>
+        <span class="n">sorted_score</span><span class="p">,</span> <span class="n">sorted_idx</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="c1"># initialize the sequence scores with the sorted last step beam scores</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sorted_score</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+        <span class="n">batch_eos_found</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span>   <span class="c1"># the number of EOS found</span>
+                                    <span class="c1"># in the backward loop below for each batch</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">max_length</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># initialize the back pointer with the sorted order of the last step beams.</span>
+        <span class="c1"># add self.pos_index for indexing variable with b*k as the first dimension.</span>
+        <span class="n">t_predecessors</span> <span class="o">=</span> <span class="p">(</span><span class="n">sorted_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_index</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">sorted_idx</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Re-order the variables with the back pointer</span>
+            <span class="n">current_output</span> <span class="o">=</span> <span class="n">nw_output</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_predecessors</span><span class="p">)</span>
+            <span class="n">current_hidden</span> <span class="o">=</span> <span class="n">nw_hidden</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">t_predecessors</span><span class="p">)</span>
+            <span class="n">current_symbol</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_predecessors</span><span class="p">)</span>
+            <span class="c1"># Re-order the back pointer of the previous step with the back pointer of</span>
+            <span class="c1"># the current step</span>
+            <span class="n">t_predecessors</span> <span class="o">=</span> <span class="n">predecessors</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_predecessors</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+            <span class="c1"># This tricky block handles dropped sequences that see EOS earlier.</span>
+            <span class="c1"># The basic idea is summarized below:</span>
+            <span class="c1">#</span>
+            <span class="c1">#   Terms:</span>
+            <span class="c1">#       Ended sequences = sequences that see EOS early and dropped</span>
+            <span class="c1">#       Survived sequences = sequences in the last step of the beams</span>
+            <span class="c1">#</span>
+            <span class="c1">#       Although the ended sequences are dropped during decoding,</span>
+            <span class="c1">#   their generated symbols and complete backtracking information are still</span>
+            <span class="c1">#   in the backtracking variables.</span>
+            <span class="c1">#   For each batch, everytime we see an EOS in the backtracking process,</span>
+            <span class="c1">#       1. If there is survived sequences in the return variables, replace</span>
+            <span class="c1">#       the one with the lowest survived sequence score with the new ended</span>
+            <span class="c1">#       sequences</span>
+            <span class="c1">#       2. Otherwise, replace the ended sequence with the lowest sequence</span>
+            <span class="c1">#       score with the new ended sequence</span>
+            <span class="c1">#</span>
+            <span class="n">eos_indices</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">EOS</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">eos_indices</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">eos_indices</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="c1"># Indices of the EOS symbol for both variables</span>
+                    <span class="c1"># with b*k as the first dimension, and b, k for</span>
+                    <span class="c1"># the first two dimensions</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">eos_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">b_idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span>
+                    <span class="c1"># The indices of the replacing position</span>
+                    <span class="c1"># according to the replacement strategy noted above</span>
+                    <span class="n">res_k_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">-</span> <span class="p">(</span><span class="n">batch_eos_found</span><span class="p">[</span><span class="n">b_idx</span><span class="p">]</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">batch_eos_found</span><span class="p">[</span><span class="n">b_idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">res_idx</span> <span class="o">=</span> <span class="n">b_idx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="n">res_k_idx</span>
+
+                    <span class="c1"># Replace the old information in return variables</span>
+                    <span class="c1"># with the new ended sequence information</span>
+                    <span class="n">t_predecessors</span><span class="p">[</span><span class="n">res_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">predecessors</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                    <span class="n">current_output</span><span class="p">[</span><span class="n">res_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">nw_output</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span>
+                    <span class="n">current_hidden</span><span class="p">[:,</span> <span class="n">res_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">nw_hidden</span><span class="p">[</span><span class="n">t</span><span class="p">][:,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span>
+                    <span class="n">h_n</span><span class="p">[:,</span> <span class="n">res_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">nw_hidden</span><span class="p">[</span><span class="n">t</span><span class="p">][:,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span><span class="o">.</span><span class="n">data</span>
+                    <span class="n">current_symbol</span><span class="p">[</span><span class="n">res_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                    <span class="n">s</span><span class="p">[</span><span class="n">b_idx</span><span class="p">,</span> <span class="n">res_k_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">l</span><span class="p">[</span><span class="n">b_idx</span><span class="p">][</span><span class="n">res_k_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># record the back tracked results</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_output</span><span class="p">)</span>
+            <span class="n">h_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_hidden</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_symbol</span><span class="p">)</span>
+
+            <span class="n">t</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="c1"># Sort and re-order again as the added ended sequences may change</span>
+        <span class="c1"># the order (very unlikely)</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">re_sorted_idx</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">b_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="n">l</span><span class="p">[</span><span class="n">b_idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="n">b_idx</span><span class="p">][</span><span class="n">k_idx</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">for</span> <span class="n">k_idx</span> <span class="ow">in</span> <span class="n">re_sorted_idx</span><span class="p">[</span><span class="n">b_idx</span><span class="p">,:]]</span>
+
+        <span class="n">re_sorted_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">re_sorted_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_index</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">re_sorted_idx</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+
+        <span class="c1"># Reverse the sequences and re-order at the same time</span>
+        <span class="c1"># It is reversed because the backtracking happens in reverse time order</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">re_sorted_idx</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">output</span><span class="p">)]</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">re_sorted_idx</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+        <span class="n">h_t</span> <span class="o">=</span> <span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">re_sorted_idx</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">h_t</span><span class="p">)]</span>
+        <span class="n">h_n</span> <span class="o">=</span> <span class="n">h_n</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">re_sorted_idx</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_l</span> <span class="ow">in</span> <span class="n">l</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">h_t</span><span class="p">,</span> <span class="n">h_n</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">_mask_symbol_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">masking_score</span><span class="o">=-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)):</span>
+            <span class="n">score</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">masking_score</span>
+
+    <span class="k">def</span> <span class="nf">_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">masking_score</span><span class="o">=-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">tensor</span><span class="o">.</span><span class="n">index_fill_</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">masking_score</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_inflate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a tensor, &#39;inflates&#39; it along the given dimension by replicating each slice specified number of times (in-place)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tensor: A :class:`Tensor` to inflate</span>
+<span class="sd">            times: number of repetitions</span>
+<span class="sd">            dimension: axis for inflation (default=0)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A :class:`Tensor`</span>
+
+<span class="sd">        Examples::</span>
+<span class="sd">            &gt;&gt; a = torch.LongTensor([[1, 2], [3, 4]])</span>
+<span class="sd">            &gt;&gt; a</span>
+<span class="sd">            1   2</span>
+<span class="sd">            3   4</span>
+<span class="sd">            [torch.LongTensor of size 2x2]</span>
+<span class="sd">            &gt;&gt; decoder = TopKDecoder(nn.RNN(10, 20, 2), 3)</span>
+<span class="sd">            &gt;&gt; b = decoder._inflate(a, 1, dimension=1)</span>
+<span class="sd">            &gt;&gt; b</span>
+<span class="sd">            1   1   2   2</span>
+<span class="sd">            3   3   4   4</span>
+<span class="sd">            [torch.LongTensor of size 2x4]</span>
+<span class="sd">            &gt;&gt; c = decoder._inflate(a, 1, dimension=0)</span>
+<span class="sd">            &gt;&gt; c</span>
+<span class="sd">            1   2</span>
+<span class="sd">            1   2</span>
+<span class="sd">            3   4</span>
+<span class="sd">            3   4</span>
+<span class="sd">            [torch.LongTensor of size 4x2]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tensor_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">tensor_dim</span> <span class="ow">is</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tensor</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b</span> <span class="o">*</span> <span class="n">times</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">tensor_dim</span> <span class="ow">is</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tensor</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">tensor_dim</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tensor</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">times</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Tensor can be of 1D, 2D or 3D only. This one is </span><span class="si">{}</span><span class="s2">D.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tensor_dim</span><span class="p">))</span></div>
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contritors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

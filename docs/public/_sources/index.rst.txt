@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pytorch-seq2seq's documentation!
-===========================================
+PyTorch-Seq2seq: A sequence-to-sequence framework for PyTorch
+=============================================================
 
 .. toctree::
    :maxdepth: 1

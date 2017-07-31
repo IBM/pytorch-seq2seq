@@ -1,0 +1,420 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>seq2seq.dataset.dataset &mdash; pytorch-seq2seq 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/intro.html">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>seq2seq.dataset.dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for seq2seq.dataset.dataset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">seq2seq.dataset</span> <span class="k">import</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">utils</span>
+
+<div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.dataset.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that encapsulates a dataset.</span>
+
+<span class="sd">    Warning:</span>
+<span class="sd">        Do not use this constructor directly, use one of the class methods to initialize.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Source or target sequences that are longer than the respective</span>
+<span class="sd">        max length will be filtered.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        src_max_len (int): maximum source sequence length</span>
+<span class="sd">        tgt_max_len (int): maximum target sequence length</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">):</span>
+        <span class="c1"># Prepare data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src_max_len</span> <span class="o">=</span> <span class="n">src_max_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tgt_max_len</span> <span class="o">=</span> <span class="n">tgt_max_len</span>
+
+        <span class="c1"># Declare vocabulary objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_vocab</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_vocab</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="Dataset.from_file"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.dataset.Dataset.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">,</span> <span class="n">src_vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tgt_vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">src_max_vocab</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>
+                 <span class="n">tgt_max_vocab</span><span class="o">=</span><span class="mi">50000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a dataset from the file at given path. The file</span>
+<span class="sd">        must contains a list of TAB-separated pairs of sequences.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Source or target sequences that are longer than the respective</span>
+<span class="sd">            max length will be filtered.</span>
+<span class="sd">            As specified by maximum vocabulary size, source and target</span>
+<span class="sd">            vocabularies will be sorted in descending token frequency and cutoff.</span>
+<span class="sd">            Tokens that are in the dataset but not retained in the vocabulary</span>
+<span class="sd">            will be dropped in the sequences.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): path to the dataset file</span>
+<span class="sd">            src_max_len (int): maximum source sequence length</span>
+<span class="sd">            tgt_max_len (int): maximum target sequence length</span>
+<span class="sd">            src_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the source language,</span>
+<span class="sd">            default `None`. If a pre-populated Vocabulary object, `src_max_vocab` wouldn&#39;t be used.</span>
+<span class="sd">            tgt_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the target language,</span>
+<span class="sd">            default `None`. If a pre-populated Vocabulary object, `tgt_max_vocab` wouldn&#39;t be used.</span>
+<span class="sd">            src_max_vocab (int): maximum source vocabulary size</span>
+<span class="sd">            tgt_max_vocab (int): maximum target vocabulary size</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">)</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_data</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span><span class="p">,</span> <span class="n">src_max_vocab</span><span class="p">,</span> <span class="n">tgt_max_vocab</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dataset.from_list"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.dataset.Dataset.from_list">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">src_data</span><span class="p">,</span> <span class="n">tgt_data</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">,</span> <span class="n">src_vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tgt_vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">src_max_vocab</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>
+                  <span class="n">tgt_max_vocab</span><span class="o">=</span><span class="mi">50000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a dataset from the source and target lists of sequences.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Source or target sequences that are longer than the respective</span>
+<span class="sd">            max length will be filtered.</span>
+<span class="sd">            As specified by maximum vocabulary size, source and target</span>
+<span class="sd">            vocabularies will be sorted in descending token frequency and cutoff.</span>
+<span class="sd">            Tokens that are in the dataset but not retained in the vocabulary</span>
+<span class="sd">            will be dropped in the sequences.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_data (list): list of source sequences</span>
+<span class="sd">            tgt_data (list): list of target sequences</span>
+<span class="sd">            src_max_len (int): maximum source sequence length</span>
+<span class="sd">            tgt_max_len (int): maximum target sequence length</span>
+<span class="sd">            src_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the source language,</span>
+<span class="sd">            default `None`. If a pre-populated Vocabulary object, `src_max_vocab` wouldn&#39;t be used.</span>
+<span class="sd">            tgt_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the target language,</span>
+<span class="sd">            default `None`. If a pre-populated Vocabulary object, `tgt_max_vocab` wouldn&#39;t be used.</span>
+<span class="sd">            src_max_vocab (int): maximum source vocabulary size</span>
+<span class="sd">            tgt_max_vocab (int): maximum target vocabulary size</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">)</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prepare_data_from_list</span><span class="p">(</span><span class="n">src_data</span><span class="p">,</span> <span class="n">tgt_data</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span><span class="p">,</span> <span class="n">src_max_vocab</span><span class="p">,</span> <span class="n">tgt_max_vocab</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">src_vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tgt_vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">src_max_vocab</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">tgt_max_vocab</span><span class="o">=</span><span class="mi">50000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Encodes the source and target lists of sequences using source and target vocabularies.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Source or target sequences that are longer than the respective</span>
+<span class="sd">            max length will be filtered.</span>
+<span class="sd">            As specified by maximum vocabulary size, source and target</span>
+<span class="sd">            vocabularies will be sorted in descending token frequency and cutoff.</span>
+<span class="sd">            Tokens that are in the dataset but not retained in the vocabulary</span>
+<span class="sd">            will be dropped in the sequences.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pairs (list): list of tuples (source sequences, target sequence)</span>
+<span class="sd">            src_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the source language,</span>
+<span class="sd">            default `None`. If a pre-populated Vocabulary object, `src_max_vocab` wouldn&#39;t be used.</span>
+<span class="sd">            tgt_vocab (Vocabulary): pre-populated Vocabulary object or a path of a file containing words for the target language,</span>
+<span class="sd">            default `None`. If a pre-populated Vocabulary object, `tgt_max_vocab` wouldn&#39;t be used.</span>
+<span class="sd">            src_max_vocab (int): maximum source vocabulary size</span>
+<span class="sd">            tgt_max_vocab (int): maximum target vocabulary size</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Read in vocabularies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_vocab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_vocab</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">pairs</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">src_max_vocab</span><span class="p">,</span> <span class="n">src_vocab</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_vocab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_vocab</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">pairs</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tgt_max_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span><span class="p">)</span>
+
+        <span class="c1"># Translate input sequences to token ids</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_vocab</span><span class="o">.</span><span class="n">indices_from_sequence</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_vocab</span><span class="o">.</span><span class="n">indices_from_sequence</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">_init_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">,</span> <span class="n">max_num_vocab</span><span class="p">,</span> <span class="n">vocab</span><span class="p">):</span>
+        <span class="n">resp_vocab</span> <span class="o">=</span> <span class="n">Vocabulary</span><span class="p">(</span><span class="n">max_num_vocab</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vocab</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sequence</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">:</span>
+                <span class="n">resp_vocab</span><span class="o">.</span><span class="n">add_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+            <span class="n">resp_vocab</span><span class="o">.</span><span class="n">trim</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">):</span>
+            <span class="n">resp_vocab</span> <span class="o">=</span> <span class="n">vocab</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_vocabulary</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">max_num_vocab</span><span class="p">):</span>
+                <span class="n">resp_vocab</span><span class="o">.</span><span class="n">add_token</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid instance on a vocabulary. None, instance of Vocabulary class </span><span class="se">\</span>
+<span class="s1">                                 and str are only supported formats for the vocabulary&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vocab</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">resp_vocab</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Dataset.num_batches"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.dataset.Dataset.num_batches">[docs]</a>    <span class="k">def</span> <span class="nf">num_batches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of batches given batch size.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch_size(int): number of examples in a batch</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: number of batches</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Dataset.make_batches"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.dataset.Dataset.make_batches">[docs]</a>    <span class="k">def</span> <span class="nf">make_batches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a generator that generates batches in batch_size over data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch_size (int): number of pairs in a mini-batch</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            (list(str), list(str)): next pair of source and target variable in a batch</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">batch_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="s2">&quot;batch size = </span><span class="si">{}</span><span class="s2"> cannot be larger than data size = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
+                                <span class="nb">format</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">cur_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span>
+            <span class="n">source_variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">cur_batch</span><span class="p">]</span>
+            <span class="n">target_variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">cur_batch</span><span class="p">]</span>
+
+            <span class="k">yield</span> <span class="p">(</span><span class="n">source_variables</span><span class="p">,</span> <span class="n">target_variables</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dataset.shuffle"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.dataset.Dataset.shuffle">[docs]</a>    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shuffle the data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seed(int): provide a value for the random seed; default seed=None is truly random</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contritors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

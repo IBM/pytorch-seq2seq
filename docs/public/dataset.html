@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Dataset &mdash; pytorch-seq2seq 0.1.1 documentation</title>
+  <title>Dataset &mdash; pytorch-seq2seq 0.1.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.1 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="index.html"/>
         <link rel="next" title="Util" href="util.html"/>
         <link rel="prev" title="Introduction" href="notes/intro.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.2
               </div>
             
           
@@ -177,9 +177,33 @@
 <h2>dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-seq2seq.dataset.dataset"></span><dl class="class">
 <dt id="seq2seq.dataset.dataset.Dataset">
-<em class="property">class </em><code class="descclassname">seq2seq.dataset.dataset.</code><code class="descname">Dataset</code><span class="sig-paren">(</span><em>path</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>src_vocab=None</em>, <em>tgt_vocab=None</em>, <em>src_max_vocab=50000</em>, <em>tgt_max_vocab=50000</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.dataset.dataset.</code><code class="descname">Dataset</code><span class="sig-paren">(</span><em>src_max_len</em>, <em>tgt_max_len</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/dataset.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class that encapsulates a dataset.</p>
-<p>Initialize a dataset from the file at given path. The file
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not use this constructor directly, use one of the class methods to initialize.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Source or target sequences that are longer than the respective
+max length will be filtered.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>src_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum source sequence length</li>
+<li><strong>tgt_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum target sequence length</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="seq2seq.dataset.dataset.Dataset.from_file">
+<em class="property">classmethod </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>path</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>src_vocab=None</em>, <em>tgt_vocab=None</em>, <em>src_max_vocab=50000</em>, <em>tgt_max_vocab=50000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/dataset.html#Dataset.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a dataset from the file at given path. The file
 must contains a list of TAB-separated pairs of sequences.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -198,10 +222,10 @@ will be dropped in the sequences.</p>
 <li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the dataset file</li>
 <li><strong>src_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum source sequence length</li>
 <li><strong>tgt_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum target sequence length</li>
-<li><strong>src_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the source language,
-default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>src_max_vocab</cite> wouldn’t be used.</li>
-<li><strong>tgt_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the target language,
-default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>tgt_max_vocab</cite> wouldn’t be used.</li>
+<li><strong>src_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the source language,</li>
+<li><strong>None. If a pre-populated Vocabulary object</strong><strong>, </strong><strong>src_max_vocab wouldn't be used.</strong> (<em>default</em>) – </li>
+<li><strong>tgt_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the target language,</li>
+<li><strong>None. If a pre-populated Vocabulary object</strong><strong>, </strong><strong>tgt_max_vocab wouldn't be used.</strong> (<em>default</em>) – </li>
 <li><strong>src_max_vocab</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum source vocabulary size</li>
 <li><strong>tgt_max_vocab</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum target vocabulary size</li>
 </ul>
@@ -209,9 +233,46 @@ default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>tgt_max_v
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="seq2seq.dataset.dataset.Dataset.from_list">
+<em class="property">classmethod </em><code class="descname">from_list</code><span class="sig-paren">(</span><em>src_data</em>, <em>tgt_data</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>src_vocab=None</em>, <em>tgt_vocab=None</em>, <em>src_max_vocab=50000</em>, <em>tgt_max_vocab=50000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/dataset.html#Dataset.from_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a dataset from the source and target lists of sequences.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Source or target sequences that are longer than the respective
+max length will be filtered.
+As specified by maximum vocabulary size, source and target
+vocabularies will be sorted in descending token frequency and cutoff.
+Tokens that are in the dataset but not retained in the vocabulary
+will be dropped in the sequences.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>src_data</strong> (<em>list</em>) – list of source sequences</li>
+<li><strong>tgt_data</strong> (<em>list</em>) – list of target sequences</li>
+<li><strong>src_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum source sequence length</li>
+<li><strong>tgt_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum target sequence length</li>
+<li><strong>src_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the source language,</li>
+<li><strong>None. If a pre-populated Vocabulary object</strong><strong>, </strong><strong>src_max_vocab wouldn't be used.</strong> (<em>default</em>) – </li>
+<li><strong>tgt_vocab</strong> (<a class="reference internal" href="#seq2seq.dataset.vocabulary.Vocabulary" title="seq2seq.dataset.vocabulary.Vocabulary"><em>Vocabulary</em></a>) – pre-populated Vocabulary object or a path of a file containing words for the target language,</li>
+<li><strong>None. If a pre-populated Vocabulary object</strong><strong>, </strong><strong>tgt_max_vocab wouldn't be used.</strong> (<em>default</em>) – </li>
+<li><strong>src_max_vocab</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum source vocabulary size</li>
+<li><strong>tgt_max_vocab</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum target vocabulary size</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="seq2seq.dataset.dataset.Dataset.make_batches">
-<code class="descname">make_batches</code><span class="sig-paren">(</span><em>batch_size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.make_batches" title="Permalink to this definition">¶</a></dt>
+<code class="descname">make_batches</code><span class="sig-paren">(</span><em>batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/dataset.html#Dataset.make_batches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.make_batches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a generator that generates batches in batch_size over data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -227,7 +288,7 @@ default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>tgt_max_v
 
 <dl class="method">
 <dt id="seq2seq.dataset.dataset.Dataset.num_batches">
-<code class="descname">num_batches</code><span class="sig-paren">(</span><em>batch_size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.num_batches" title="Permalink to this definition">¶</a></dt>
+<code class="descname">num_batches</code><span class="sig-paren">(</span><em>batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/dataset.html#Dataset.num_batches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.num_batches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of batches given batch size.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -245,7 +306,7 @@ default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>tgt_max_v
 
 <dl class="method">
 <dt id="seq2seq.dataset.dataset.Dataset.shuffle">
-<code class="descname">shuffle</code><span class="sig-paren">(</span><em>seed=None</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.shuffle" title="Permalink to this definition">¶</a></dt>
+<code class="descname">shuffle</code><span class="sig-paren">(</span><em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/dataset.html#Dataset.shuffle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.dataset.Dataset.shuffle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shuffle the data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -264,7 +325,7 @@ default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>tgt_max_v
 <span id="utils"></span><h2>utils<a class="headerlink" href="#module-seq2seq.dataset.utils" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="seq2seq.dataset.utils.filter_pair">
-<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">filter_pair</code><span class="sig-paren">(</span><em>pair</em>, <em>src_max_len</em>, <em>tgt_max_len</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.filter_pair" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">filter_pair</code><span class="sig-paren">(</span><em>pair</em>, <em>src_max_len</em>, <em>tgt_max_len</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/utils.html#filter_pair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.utils.filter_pair" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if a sentence pair meets the length requirements, false otherwise.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -289,7 +350,7 @@ default <cite>None</cite>. If a pre-populated Vocabulary object, <cite>tgt_max_v
 
 <dl class="function">
 <dt id="seq2seq.dataset.utils.prepare_data">
-<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">prepare_data</code><span class="sig-paren">(</span><em>path</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>tokenize_func=&lt;function space_tokenize&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.prepare_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">prepare_data</code><span class="sig-paren">(</span><em>path</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>tokenize_func=&lt;function space_tokenize&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/utils.html#prepare_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.utils.prepare_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads a tab-separated data file where each line contains a source sentence and a target sentence. Pairs containing
 a sentence that exceeds the maximum length allowed for its language are not added.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -315,8 +376,36 @@ a sentence that exceeds the maximum length allowed for its language are not adde
 </dd></dl>
 
 <dl class="function">
+<dt id="seq2seq.dataset.utils.prepare_data_from_list">
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">prepare_data_from_list</code><span class="sig-paren">(</span><em>src_list</em>, <em>tgt_list</em>, <em>src_max_len</em>, <em>tgt_max_len</em>, <em>tokenize_func=&lt;function space_tokenize&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/utils.html#prepare_data_from_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.utils.prepare_data_from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a tab-separated data file where each line contains a source sentence and a target sentence. Pairs containing
+a sentence that exceeds the maximum length allowed for its language are not added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src_list</strong> (<em>list</em>) – list of source sequences</li>
+<li><strong>tgt_list</strong> (<em>list</em>) – list of target sequences</li>
+<li><strong>src_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum length cutoff for sentences in the source language</li>
+<li><strong>tgt_max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum length cutoff for sentences in the target language</li>
+<li><strong>tokenize_func</strong> (<em>func</em>) – function for splitting words in a sentence (default is single-space-delimited)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of (source, target) string pairs</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list((<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a>, <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a>))</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="seq2seq.dataset.utils.read_vocabulary">
-<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">read_vocabulary</code><span class="sig-paren">(</span><em>path</em>, <em>max_num_vocab=50000</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.read_vocabulary" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">read_vocabulary</code><span class="sig-paren">(</span><em>path</em>, <em>max_num_vocab=50000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/utils.html#read_vocabulary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.utils.read_vocabulary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to read a vocabulary file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -340,7 +429,7 @@ a sentence that exceeds the maximum length allowed for its language are not adde
 
 <dl class="function">
 <dt id="seq2seq.dataset.utils.space_tokenize">
-<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">space_tokenize</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.utils.space_tokenize" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">seq2seq.dataset.utils.</code><code class="descname">space_tokenize</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/utils.html#space_tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.utils.space_tokenize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tokenizes a piece of text by splitting it up based on single spaces (” “).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -361,7 +450,7 @@ a sentence that exceeds the maximum length allowed for its language are not adde
 <span id="vocabulary"></span><h2>vocabulary<a class="headerlink" href="#module-seq2seq.dataset.vocabulary" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary">
-<em class="property">class </em><code class="descclassname">seq2seq.dataset.vocabulary.</code><code class="descname">Vocabulary</code><span class="sig-paren">(</span><em>size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.dataset.vocabulary.</code><code class="descname">Vocabulary</code><span class="sig-paren">(</span><em>size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary" title="Permalink to this definition">¶</a></dt>
 <dd><p>A Vocabulary stores a set of words belonging to a particular language. Words in the source vocabulary are mapped
 to unique integer IDs during encoding. Words in the target vocabulary are recovered from the model’s output
 during decoding.</p>
@@ -380,7 +469,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 </table>
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.add_sequence">
-<code class="descname">add_sequence</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.add_sequence" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_sequence</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.add_sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.add_sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a sequence of words to the vocabulary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -394,7 +483,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.add_token">
-<code class="descname">add_token</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.add_token" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_token</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.add_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.add_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds an occurrence of a token to the vocabulary, incrementing its observed frequency if the word already exists.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -408,13 +497,13 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.check_sorted">
-<code class="descname">check_sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.check_sorted" title="Permalink to this definition">¶</a></dt>
+<code class="descname">check_sorted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.check_sorted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.check_sorted" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sorts the vocabulary (if it is not already sorted).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.get_index">
-<code class="descname">get_index</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_index" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_index</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.get_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_index" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -429,7 +518,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.get_token">
-<code class="descname">get_token</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_token" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_token</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.get_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_token" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -444,7 +533,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.get_vocab_size">
-<code class="descname">get_vocab_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_vocab_size" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_vocab_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.get_vocab_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.get_vocab_size" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -459,7 +548,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.indices_from_sequence">
-<code class="descname">indices_from_sequence</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.indices_from_sequence" title="Permalink to this definition">¶</a></dt>
+<code class="descname">indices_from_sequence</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.indices_from_sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.indices_from_sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps a list of words to their token IDs, or else the ‘mask’ token if the word is rare/unknown.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -477,7 +566,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="classmethod">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.load">
-<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.load" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a Vocabulary from a pickle file on disk.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -495,7 +584,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes this Vocabulary to disk in a pickle file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -509,7 +598,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.sequence_from_indices">
-<code class="descname">sequence_from_indices</code><span class="sig-paren">(</span><em>indices</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.sequence_from_indices" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sequence_from_indices</code><span class="sig-paren">(</span><em>indices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.sequence_from_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.sequence_from_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recover a sentence from a list of token IDs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -527,7 +616,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
 
 <dl class="method">
 <dt id="seq2seq.dataset.vocabulary.Vocabulary.trim">
-<code class="descname">trim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.trim" title="Permalink to this definition">¶</a></dt>
+<code class="descname">trim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/dataset/vocabulary.html#Vocabulary.trim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.dataset.vocabulary.Vocabulary.trim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sorts the vocabulary in descending order based on frequency</p>
 </dd></dl>
 
@@ -580,7 +669,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1',
+            VERSION:'0.1.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -590,7 +679,7 @@ the maximum size of the Vocabulary, the remaining least-frequent words are ignor
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
