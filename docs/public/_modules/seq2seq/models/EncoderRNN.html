@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>seq2seq.models.EncoderRNN &mdash; pytorch-seq2seq 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/intro.html">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>seq2seq.models.EncoderRNN</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for seq2seq.models.EncoderRNN</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">baseRNN</span> <span class="k">import</span> <span class="n">BaseRNN</span>
+
+
+<div class="viewcode-block" id="EncoderRNN"><a class="viewcode-back" href="../../../models.html#seq2seq.models.EncoderRNN.EncoderRNN">[docs]</a><span class="k">class</span> <span class="nc">EncoderRNN</span><span class="p">(</span><span class="n">BaseRNN</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies a multi-layer RNN to an input sequence.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        vocab (Vocabulary): an object of Vocabulary class</span>
+<span class="sd">        max_len (int): a maximum allowed length for the sequence to be processed</span>
+<span class="sd">        hidden_size (int): the number of features in the hidden state `h`</span>
+<span class="sd">        input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)</span>
+<span class="sd">        dropout_p (float, optional): dropout probability for the output sequence (default: 0)</span>
+<span class="sd">        n_layers (int, optional): number of recurrent layers (default: 1)</span>
+<span class="sd">        rnn_cell (str, optional): type of RNN cell (default: gru)</span>
+
+<span class="sd">    Inputs: inputs, volatile</span>
+<span class="sd">        - **inputs**: list of sequences, whose length is the batch size and within which each sequence is a list of token IDs.</span>
+<span class="sd">        - **volatile** (bool, optional): boolean flag specifying whether to preserve gradients, when you are sure you</span>
+<span class="sd">          will not be even calling .backward().</span>
+<span class="sd">    Outputs: output, hidden</span>
+<span class="sd">        - **output** (batch, seq_len, hidden_size): tensor containing the encoded features of the input sequence</span>
+<span class="sd">        - **hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the features in the hidden state `h`</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">         &gt;&gt;&gt; encoder = EncoderRNN(input_vocab, max_seq_length, hidden_size)</span>
+<span class="sd">         &gt;&gt;&gt; output, hidden = encoder(input)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">max_len</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span>
+            <span class="n">input_dropout_p</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dropout_p</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">n_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rnn_cell</span><span class="o">=</span><span class="s1">&#39;gru&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EncoderRNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">max_len</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span>
+                <span class="n">input_dropout_p</span><span class="p">,</span> <span class="n">dropout_p</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> <span class="n">rnn_cell</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">get_vocab_size</span><span class="p">(),</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_len</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span> <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">EncoderRNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EncoderRNN.forward_rnn"><a class="viewcode-back" href="../../../models.html#seq2seq.models.EncoderRNN.EncoderRNN.forward_rnn">[docs]</a>    <span class="k">def</span> <span class="nf">forward_rnn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_var</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies a multi-layer RNN to an input sequence.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_var (batch, seq_len): tensor containing the features of the input sequence.</span>
+
+<span class="sd">       returns: output, hidden</span>
+<span class="sd">            - **output** (batch, seq_len, hidden_size): variable containing the encoded features of the input sequence</span>
+<span class="sd">            - **hidden** (num_layers * num_directions, batch, hidden_size): variable containing the features in the hidden state h</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">input_var</span><span class="p">)</span>
+        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_dropout</span><span class="p">(</span><span class="n">embedded</span><span class="p">)</span>
+        <span class="n">embedded</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">pack_padded_sequence</span><span class="p">(</span><span class="n">embedded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lengths</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">embedded</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">pad_packed_sequence</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">hidden</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contritors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

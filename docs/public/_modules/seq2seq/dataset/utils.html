@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>seq2seq.dataset.utils &mdash; pytorch-seq2seq 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/intro.html">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>seq2seq.dataset.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for seq2seq.dataset.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="filter_pair"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.utils.filter_pair">[docs]</a><span class="k">def</span> <span class="nf">filter_pair</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns true if a sentence pair meets the length requirements, false otherwise.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pair ((str, str)): (source, target) sentence pair</span>
+<span class="sd">        src_max_len (int): maximum length cutoff for sentences in the source language</span>
+<span class="sd">        tgt_max_len (int): maximum length cutoff for sentences in the target language</span>
+<span class="sd">    Returns:</span>
+<span class="sd">         bool: true if the pair is shorter than the length cutoffs, false otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">src_max_len</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">tgt_max_len</span></div>
+
+
+<div class="viewcode-block" id="space_tokenize"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.utils.space_tokenize">[docs]</a><span class="k">def</span> <span class="nf">space_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tokenizes a piece of text by splitting it up based on single spaces (&quot; &quot;).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">     text (str): input text as a single string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">         list(str): list of tokens obtained by splitting the text on single spaces</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prepare_data"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.utils.prepare_data">[docs]</a><span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">,</span> <span class="n">tokenize_func</span><span class="o">=</span><span class="n">space_tokenize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a tab-separated data file where each line contains a source sentence and a target sentence. Pairs containing</span>
+<span class="sd">    a sentence that exceeds the maximum length allowed for its language are not added.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): path to the data file</span>
+<span class="sd">        src_max_len (int): maximum length cutoff for sentences in the source language</span>
+<span class="sd">        tgt_max_len (int): maximum length cutoff for sentences in the target language</span>
+<span class="sd">        tokenize_func (func): function for splitting words in a sentence (default is single-space-delimited)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list((str, str)): list of (source, target) string pairs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading Lines from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="c1"># Read the file and split into lines</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">fin</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">pair</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">tokenize_func</span><span class="p">,</span> <span class="p">[</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">filter_pair</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">):</span>
+                    <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error when reading line: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                <span class="k">raise</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of pairs: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pairs</span></div>
+
+
+<div class="viewcode-block" id="prepare_data_from_list"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.utils.prepare_data_from_list">[docs]</a><span class="k">def</span> <span class="nf">prepare_data_from_list</span><span class="p">(</span><span class="n">src_list</span><span class="p">,</span> <span class="n">tgt_list</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">,</span> <span class="n">tokenize_func</span><span class="o">=</span><span class="n">space_tokenize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a tab-separated data file where each line contains a source sentence and a target sentence. Pairs containing</span>
+<span class="sd">    a sentence that exceeds the maximum length allowed for its language are not added.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        src_list (list): list of source sequences</span>
+<span class="sd">        tgt_list (list): list of target sequences</span>
+<span class="sd">        src_max_len (int): maximum length cutoff for sentences in the source language</span>
+<span class="sd">        tgt_max_len (int): maximum length cutoff for sentences in the target language</span>
+<span class="sd">        tokenize_func (func): function for splitting words in a sentence (default is single-space-delimited)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list((str, str)): list of (source, target) string pairs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">src_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">tgt_list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;source sequence list and target sequence list has different number of entries.&#39;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preparing pairs...&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Read the file and split into lines</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">src_list</span><span class="p">)):</span>
+        <span class="n">pair</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">tokenize_func</span><span class="p">,</span> <span class="p">[</span><span class="n">src_list</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">tgt_list</span><span class="p">[</span><span class="n">index</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">filter_pair</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">src_max_len</span><span class="p">,</span> <span class="n">tgt_max_len</span><span class="p">):</span>
+            <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of pairs: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pairs</span></div>
+
+
+<div class="viewcode-block" id="read_vocabulary"><a class="viewcode-back" href="../../../dataset.html#seq2seq.dataset.utils.read_vocabulary">[docs]</a><span class="k">def</span> <span class="nf">read_vocabulary</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">max_num_vocab</span><span class="o">=</span><span class="mi">50000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to read a vocabulary file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): filepath to raw vocabulary file</span>
+<span class="sd">        max_num_vocab (int): maximum number of words to read from vocabulary file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        set: read words from vocabulary file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading vocabulary from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="c1"># Read the file and create list of tokens in vocabulary</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vocab</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_num_vocab</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">vocab</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error when reading line: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                <span class="k">raise</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Size of Vocabulary: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">vocab</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">vocab</span></div>
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contritors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Util &mdash; pytorch-seq2seq 0.1.1 documentation</title>
+  <title>Util &mdash; pytorch-seq2seq 0.1.2 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.1 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="index.html"/>
         <link rel="next" title="Evaluator" href="evaluator.html"/>
         <link rel="prev" title="Dataset" href="dataset.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.2
               </div>
             
           
@@ -176,7 +176,7 @@
 <span id="checkpoint"></span><h2>checkpoint<a class="headerlink" href="#module-seq2seq.util.checkpoint" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.util.checkpoint.Checkpoint">
-<em class="property">class </em><code class="descclassname">seq2seq.util.checkpoint.</code><code class="descname">Checkpoint</code><span class="sig-paren">(</span><em>root_dir</em>, <em>model</em>, <em>optimizer_state_dict</em>, <em>epoch</em>, <em>step</em>, <em>input_vocab</em>, <em>output_vocab</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.util.checkpoint.</code><code class="descname">Checkpoint</code><span class="sig-paren">(</span><em>model</em>, <em>optimizer_state_dict</em>, <em>epoch</em>, <em>step</em>, <em>input_vocab</em>, <em>output_vocab</em>, <em>path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/util/checkpoint.html#Checkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Checkpoint class manages the saving and loading of a model during training. It allows training to be suspended
 and resumed at a later time (e.g. when running on a cluster using sequential jobs).</p>
 <p>To make a checkpoint, initialize a Checkpoint object with the following args; then call that object’s save() method
@@ -186,7 +186,6 @@ to write parameters to disk.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>root_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – main experiment directory</li>
 <li><strong>model</strong> (<a class="reference internal" href="models.html#module-seq2seq.models.seq2seq" title="seq2seq.models.seq2seq"><em>seq2seq</em></a>) – seq2seq model being trained</li>
 <li><strong>optimizer_state_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – stores the state of the optimizer</li>
 <li><strong>epoch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – current epoch (an epoch is a loop through the full training data)</li>
@@ -198,7 +197,8 @@ to write parameters to disk.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
 <li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME" title="seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME"><strong>CHECKPOINT_DIR_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the checkpoint directory</li>
-<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.MODEL_DIR_NAME" title="seq2seq.util.checkpoint.Checkpoint.MODEL_DIR_NAME"><strong>MODEL_DIR_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the directory storing models</li>
+<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME" title="seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME"><strong>TRAINER_STATE_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the file storing trainer states</li>
+<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.MODEL_NAME" title="seq2seq.util.checkpoint.Checkpoint.MODEL_NAME"><strong>MODEL_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the file storing model</li>
 <li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE" title="seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE"><strong>INPUT_VOCAB_FILE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the input vocab file</li>
 <li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE" title="seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE"><strong>OUTPUT_VOCAB_FILE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the output vocab file</li>
 </ul>
@@ -208,38 +208,43 @@ to write parameters to disk.</p>
 </table>
 <dl class="attribute">
 <dt id="seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME">
-<code class="descname">CHECKPOINT_DIR_NAME</code><em class="property"> = ‘checkpoints’</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME" title="Permalink to this definition">¶</a></dt>
+<code class="descname">CHECKPOINT_DIR_NAME</code><em class="property"> = 'checkpoints'</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE">
-<code class="descname">INPUT_VOCAB_FILE</code><em class="property"> = ‘input_vocab’</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE" title="Permalink to this definition">¶</a></dt>
+<code class="descname">INPUT_VOCAB_FILE</code><em class="property"> = 'input_vocab.pt'</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="seq2seq.util.checkpoint.Checkpoint.MODEL_DIR_NAME">
-<code class="descname">MODEL_DIR_NAME</code><em class="property"> = ‘model_checkpoint’</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.MODEL_DIR_NAME" title="Permalink to this definition">¶</a></dt>
+<dt id="seq2seq.util.checkpoint.Checkpoint.MODEL_NAME">
+<code class="descname">MODEL_NAME</code><em class="property"> = 'model.pt'</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.MODEL_NAME" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE">
-<code class="descname">OUTPUT_VOCAB_FILE</code><em class="property"> = ‘output_vocab’</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE" title="Permalink to this definition">¶</a></dt>
+<code class="descname">OUTPUT_VOCAB_FILE</code><em class="property"> = 'output_vocab.pt'</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME">
+<code class="descname">TRAINER_STATE_NAME</code><em class="property"> = 'trainer_states.pt'</em><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="seq2seq.util.checkpoint.Checkpoint.get_latest_checkpoint">
-<em class="property">classmethod </em><code class="descname">get_latest_checkpoint</code><span class="sig-paren">(</span><em>experiment_path</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.get_latest_checkpoint" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">get_latest_checkpoint</code><span class="sig-paren">(</span><em>experiment_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/util/checkpoint.html#Checkpoint.get_latest_checkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.get_latest_checkpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the path to an experiment directory, returns the path to the last saved checkpoint’s subdirectory.</p>
-<p>Precondition: at least one checkpoint has been made (i.e., latest checkpoint subdirectory exists).</p>
+<p>Precondition: at least one checkpoint has been made (i.e., latest checkpoint subdirectory exists).
+:param experiment_path: path to the experiment directory
+:type experiment_path: str</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>experiment_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the experiment directory</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">path to the last saved checkpoint’s subdirectory</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">path to the last saved checkpoint’s subdirectory</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -247,27 +252,34 @@ to write parameters to disk.</p>
 
 <dl class="classmethod">
 <dt id="seq2seq.util.checkpoint.Checkpoint.load">
-<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a Checkpoint object that was previously saved to disk.</p>
+<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/util/checkpoint.html#Checkpoint.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a Checkpoint object that was previously saved to disk.
+:param path: path to the checkpoint subdirectory
+:type path: str</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the checkpoint subdirectory</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">checkpoint object with fields copied from those stored on disk</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">checkpoint object with fields copied from those stored on disk</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-seq2seq.util.checkpoint" title="seq2seq.util.checkpoint">checkpoint</a> (<a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint" title="seq2seq.util.checkpoint.Checkpoint">Checkpoint</a>)</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-seq2seq.util.checkpoint" title="seq2seq.util.checkpoint">checkpoint</a> (<a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint" title="seq2seq.util.checkpoint.Checkpoint">Checkpoint</a>)</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="seq2seq.util.checkpoint.Checkpoint.path">
+<code class="descname">path</code><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="seq2seq.util.checkpoint.Checkpoint.save">
-<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>experiment_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/util/checkpoint.html#Checkpoint.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.util.checkpoint.Checkpoint.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves the current model and related training parameters into a subdirectory of the checkpoint directory.
-The name of the subdirectory is the current local time in Y_M_D_H_M_S format.</p>
+The name of the subdirectory is the current local time in Y_M_D_H_M_S format.
+:param experiment_dir: path to the experiment root directory
+:type experiment_dir: str</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -287,7 +299,7 @@ The name of the subdirectory is the current local time in Y_M_D_H_M_S format.</p
 <span id="custom-time"></span><h2>custom_time<a class="headerlink" href="#module-seq2seq.util.custom_time" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="seq2seq.util.custom_time.pretty_interval">
-<code class="descclassname">seq2seq.util.custom_time.</code><code class="descname">pretty_interval</code><span class="sig-paren">(</span><em>start_time</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.util.custom_time.pretty_interval" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">seq2seq.util.custom_time.</code><code class="descname">pretty_interval</code><span class="sig-paren">(</span><em>start_time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/util/custom_time.html#pretty_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.util.custom_time.pretty_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a previous point in time (e.g. the start of process, measured by calling time.time()), calculates
 the time elapsed since that point, divides the elapsed time days/hours/minutes/seconds, and returns that summary</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -306,7 +318,7 @@ the time elapsed since that point, divides the elapsed time days/hours/minutes/s
 
 <dl class="function">
 <dt id="seq2seq.util.custom_time.pretty_time">
-<code class="descclassname">seq2seq.util.custom_time.</code><code class="descname">pretty_time</code><span class="sig-paren">(</span><em>timespan_in_seconds</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.util.custom_time.pretty_time" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">seq2seq.util.custom_time.</code><code class="descname">pretty_time</code><span class="sig-paren">(</span><em>timespan_in_seconds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/seq2seq/util/custom_time.html#pretty_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#seq2seq.util.custom_time.pretty_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a length of time (measured in seconds), divides that timespan into
 days/hours/minutes/seconds and returns that summary.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -375,7 +387,7 @@ days/hours/minutes/seconds and returns that summary.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1',
+            VERSION:'0.1.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -385,7 +397,7 @@ days/hours/minutes/seconds and returns that summary.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

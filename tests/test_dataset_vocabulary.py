@@ -1,6 +1,8 @@
 import unittest
 from seq2seq.dataset.vocabulary import Vocabulary
 import cPickle as pickle
+import os
+from collections import Counter
 
 class TestVocabulary(unittest.TestCase):
     def setUp(self):
@@ -101,10 +103,15 @@ class TestVocabulary(unittest.TestCase):
         vocab = self.vocab
         seq = ["i", "like", "python"]
         vocab.add_sequence(seq)
-        vocab.save("vocab_pickle")
-        with open("vocab_pickle","rb") as f:
-            loaded_vocab = pickle.load(f)
-        self.assertEqual(vocab, loaded_vocab)
+        file_name = "vocab_file"
+        vocab.save(file_name)
+        with open(file_name,"rb") as f:
+            loaded_vocab = f.readlines()
+        loaded_vocab = [token.strip() for token in loaded_vocab]
+        loaded_counter = Counter(loaded_vocab)
+        original_counter = Counter(seq)
+        os.remove(file_name)
+        self.assertEqual(original_counter, loaded_counter)
 
     ######################################################################
     #  load(file_name)
@@ -113,16 +120,11 @@ class TestVocabulary(unittest.TestCase):
         vocab = self.vocab
         seq = ["i", "like", "python"]
         vocab.add_sequence(seq)
-        pickle_file = "vocab_pickle"
-        input_vocab_pickle = pickle.dumps(vocab)
-        with open(pickle_file, "wb") as f:
-            f.write(input_vocab_pickle)
-
-        with open(pickle_file,"rb") as f:
-            pickled_vocab = pickle.load(f)
-
-        loaded_vocab = Vocabulary.load(pickle_file)
-        self.assertEqual(pickled_vocab, loaded_vocab)
+        file_name = "vocab_file"
+        vocab.save(file_name)
+        loaded_vocab = Vocabulary.load(file_name)
+        os.remove(file_name)
+        self.assertEqual(vocab, loaded_vocab)
 
     ######################################################################
     #  __eq__(self, other)

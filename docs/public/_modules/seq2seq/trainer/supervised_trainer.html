@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>seq2seq.trainer.supervised_trainer &mdash; pytorch-seq2seq 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.2 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/intro.html">Introduction</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>seq2seq.trainer.supervised_trainer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for seq2seq.trainer.supervised_trainer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="k">import</span> <span class="n">optim</span>
+
+<span class="kn">from</span> <span class="nn">seq2seq.evaluator</span> <span class="k">import</span> <span class="n">Evaluator</span>
+<span class="kn">from</span> <span class="nn">seq2seq.loss</span> <span class="k">import</span> <span class="n">NLLLoss</span>
+<span class="kn">from</span> <span class="nn">seq2seq.optim</span> <span class="k">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span> <span class="nn">seq2seq.util.custom_time</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">seq2seq.util.checkpoint</span> <span class="k">import</span> <span class="n">Checkpoint</span>
+
+<div class="viewcode-block" id="SupervisedTrainer"><a class="viewcode-back" href="../../../trainer.html#seq2seq.trainer.supervised_trainer.SupervisedTrainer">[docs]</a><span class="k">class</span> <span class="nc">SupervisedTrainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The SupervisedTrainer class helps in setting up a training framework in a</span>
+<span class="sd">    supervised setting.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        expt_dir (optional, str): experiment Directory to store details of the experiment,</span>
+<span class="sd">            by default it makes a folder in the current directory to store the details (default: `experiment`).</span>
+<span class="sd">        loss (seq2seq.loss.loss.Loss, optional): loss for training, (default: seq2seq.loss.NLLLoss)</span>
+<span class="sd">        batch_size (int, optional): batch size for experiment, (default: 64)</span>
+<span class="sd">        checkpoint_every (int, optional): number of epochs to checkpoint after, (default: 100)</span>
+<span class="sd">        optimizer (seq2seq.optim.Optimizer, optional): optimizer for training</span>
+<span class="sd">            (default: Optimizer(pytorch.optim.Adam, max_grad_norm=5))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expt_dir</span><span class="o">=</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">NLLLoss</span><span class="p">(),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+                 <span class="n">random_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">checkpoint_every</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">print_every</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">optimizer</span><span class="o">=</span><span class="n">Optimizer</span><span class="p">(</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span> <span class="n">max_grad_norm</span><span class="o">=</span><span class="mi">5</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span> <span class="o">=</span> <span class="s2">&quot;Simple Trainer&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span> <span class="o">=</span> <span class="n">random_seed</span>
+        <span class="k">if</span> <span class="n">random_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_every</span> <span class="o">=</span> <span class="n">checkpoint_every</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_every</span> <span class="o">=</span> <span class="n">print_every</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">expt_dir</span><span class="p">):</span>
+            <span class="n">expt_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">expt_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expt_dir</span> <span class="o">=</span> <span class="n">expt_dir</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expt_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expt_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_vocab_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expt_dir</span><span class="p">,</span> <span class="s1">&#39;input_vocab&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_vocab_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expt_dir</span><span class="p">,</span> <span class="s1">&#39;output_vocab&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_train_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_variable</span><span class="p">,</span> <span class="n">target_variable</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">teacher_forcing_ratio</span><span class="p">):</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span>
+        <span class="c1"># Forward propagation</span>
+        <span class="n">decoder_outputs</span><span class="p">,</span> <span class="n">decoder_hidden</span><span class="p">,</span> <span class="n">other</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_variable</span><span class="p">,</span> <span class="n">target_variable</span><span class="p">,</span>
+                                                       <span class="n">teacher_forcing_ratio</span><span class="o">=</span><span class="n">teacher_forcing_ratio</span><span class="p">)</span>
+        <span class="c1"># Get loss</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)):</span>
+            <span class="c1"># Batch wise loss</span>
+            <span class="n">batch_target</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">batch</span><span class="p">]</span>
+            <span class="n">batch_len</span> <span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="n">batch</span><span class="p">]</span>
+            <span class="c1"># Crop output and target to batch length</span>
+            <span class="n">batch_output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">output</span><span class="p">[</span><span class="n">batch</span><span class="p">]</span> <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">decoder_outputs</span><span class="p">[:</span><span class="n">batch_len</span><span class="p">]])</span>
+            <span class="n">batch_target</span> <span class="o">=</span> <span class="n">batch_target</span><span class="p">[:</span><span class="n">batch_len</span><span class="p">]</span>
+            <span class="c1"># Evaluate loss</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">eval_batch</span><span class="p">(</span><span class="n">batch_output</span><span class="p">,</span> <span class="n">batch_target</span><span class="p">)</span>
+        <span class="c1"># Backward propagation</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">loss</span><span class="o">.</span><span class="n">get_loss</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_train_epoches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">n_epochs</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">resume</span><span class="p">,</span> <span class="n">dev_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">teacher_forcing_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">print_loss_total</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Reset every print_every</span>
+        <span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">num_batches</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">total_steps</span> <span class="o">=</span> <span class="n">steps_per_epoch</span> <span class="o">*</span> <span class="n">n_epochs</span>
+
+        <span class="c1"># If training is set to resume</span>
+        <span class="k">if</span> <span class="n">resume</span><span class="p">:</span>
+            <span class="n">latest_checkpoint_path</span> <span class="o">=</span> <span class="n">Checkpoint</span><span class="o">.</span><span class="n">get_latest_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expt_dir</span><span class="p">)</span>
+            <span class="n">resume_checkpoint</span> <span class="o">=</span> <span class="n">Checkpoint</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">latest_checkpoint_path</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">resume_checkpoint</span><span class="o">.</span><span class="n">model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">resume_checkpoint</span><span class="o">.</span><span class="n">optimizer_state_dict</span><span class="p">)</span>
+            <span class="n">start_epoch</span> <span class="o">=</span> <span class="n">resume_checkpoint</span><span class="o">.</span><span class="n">epoch</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">resume_checkpoint</span><span class="o">.</span><span class="n">step</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start_epoch</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_epoch</span><span class="p">,</span> <span class="n">n_epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_seed</span><span class="p">)</span>
+
+            <span class="n">batch_generator</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">make_batches</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+
+            <span class="c1"># consuming seen batches from previous training</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">epoch</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">steps_per_epoch</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+                <span class="nb">next</span><span class="p">(</span><span class="n">batch_generator</span><span class="p">)</span>
+
+            <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batch_generator</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="n">input_variables</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">target_variables</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_batch</span><span class="p">(</span><span class="n">input_variables</span><span class="p">,</span> <span class="n">target_variables</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">teacher_forcing_ratio</span><span class="p">)</span>
+
+                <span class="c1"># Record average loss</span>
+                <span class="n">print_loss_total</span> <span class="o">+=</span> <span class="n">loss</span>
+
+                <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_every</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">print_loss_avg</span> <span class="o">=</span> <span class="n">print_loss_total</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">print_every</span><span class="p">)</span>
+                    <span class="n">print_loss_total</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">log_msg</span> <span class="o">=</span> <span class="s1">&#39;Time elapsed: </span><span class="si">%s</span><span class="s1">, Progress: </span><span class="si">%d%%</span><span class="s1">, Train </span><span class="si">%s</span><span class="s1">: </span><span class="si">%.4f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">pretty_interval</span><span class="p">(</span><span class="n">start</span><span class="p">),</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_steps</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">print_loss_avg</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">log_msg</span><span class="p">)</span>
+
+                <span class="c1"># Checkpoint</span>
+                <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_every</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">step</span> <span class="o">==</span> <span class="n">total_steps</span><span class="p">:</span>
+                    <span class="n">Checkpoint</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                               <span class="n">optimizer_state_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                               <span class="n">epoch</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+                               <span class="n">input_vocab</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">input_vocab</span><span class="p">,</span>
+                               <span class="n">output_vocab</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">output_vocab</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expt_dir</span><span class="p">)</span>
+
+            <span class="n">log_msg</span> <span class="o">=</span> <span class="s2">&quot;Finished epoch </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dev_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dev_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dev_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dev_loss</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+                <span class="n">log_msg</span> <span class="o">+=</span> <span class="s2">&quot;, Dev </span><span class="si">%s</span><span class="s2">: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dev_loss</span><span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">log_msg</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SupervisedTrainer.train"><a class="viewcode-back" href="../../../trainer.html#seq2seq.trainer.supervised_trainer.SupervisedTrainer.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dev_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">teacher_forcing_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Run training for a given model.</span>
+
+<span class="sd">         Args:</span>
+<span class="sd">             model (seq2seq.models): model to run training on, if `resume=True`, it would be</span>
+<span class="sd">                overwritten by the model loaded from the latest checkpoint.</span>
+<span class="sd">             data (seq2seq.dataset.dataset.Dataset): dataset object to train on</span>
+<span class="sd">             num_epochs (int, optional): number of epochs to run (default 5)</span>
+<span class="sd">             resume(bool, optional): resume training with the latest checkpoint, (default False)</span>
+<span class="sd">             dev_data (seq2seq.dataset.dataset.Dataset, optional): dev Dataset (default None)</span>
+<span class="sd">             teacher_forcing_ratio (float, optional): teaching forcing ratio (default 0)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Make Checkpoint Directories</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">input_vocab</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_vocab_file</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">output_vocab</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_vocab_file</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_epoches</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">num_epochs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                            <span class="n">resume</span><span class="o">=</span><span class="n">resume</span><span class="p">,</span> <span class="n">dev_data</span><span class="o">=</span><span class="n">dev_data</span><span class="p">,</span> <span class="n">teacher_forcing_ratio</span><span class="o">=</span><span class="n">teacher_forcing_ratio</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contritors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
