@@ -55,6 +55,28 @@ class TestLoss(unittest.TestCase):
 
         self.assertAlmostEqual(loss_val, pytorch_loss.data[0])
 
+    def test_nllloss_WITH_OUT_SIZE_AVERAGE(self):
+        num_class = 5
+        num_batch = 10
+        batch_size = 5
+
+        outputs = [F.softmax(Variable(torch.randn(batch_size, num_class)))
+                   for _ in range(num_batch)]
+        targets = [Variable(torch.LongTensor([random.randint(0, num_class - 1)
+                                              for _ in range(batch_size)]))
+                   for _ in range(num_batch)]
+
+        loss = NLLLoss(size_average=False)
+        pytorch_loss = 0
+        pytorch_criterion = torch.nn.NLLLoss(size_average=False)
+        for output, target in zip(outputs, targets):
+            loss.eval_batch(output, target)
+            pytorch_loss += pytorch_criterion(output, target)
+
+        loss_val = loss.get_loss()
+
+        self.assertAlmostEqual(loss_val, pytorch_loss.data[0])
+
     def test_perplexity_init(self):
         loss = Perplexity()
         self.assertEqual(loss.name, Perplexity._NAME)

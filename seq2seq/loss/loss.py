@@ -93,6 +93,7 @@ class NLLLoss(Loss):
 
     def __init__(self, weight=None, mask=None, size_average=True):
         self.mask = mask
+        self.size_average = size_average
         if mask is not None:
             if weight is None:
                 raise ValueError("Must provide weight with a mask.")
@@ -103,9 +104,14 @@ class NLLLoss(Loss):
             nn.NLLLoss(weight=weight, size_average=size_average))
 
     def get_loss(self):
-        if type(self.acc_loss) is int:
+        if isinstance(self.acc_loss, int):
             return 0
-        return self.acc_loss.data[0] / self.norm_term
+        # total loss for all batches
+        loss = self.acc_loss.data[0]
+        if self.size_average:
+            # average loss per batch
+            loss /= self.norm_term
+        return loss
 
     def eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
@@ -137,6 +143,7 @@ class Perplexity(NLLLoss):
 
     def get_loss(self):
         nll = super(Perplexity, self).get_loss()
+        nll /= self.norm_term
         if nll > Perplexity._MAX_EXP:
             print("WARNING: Loss exceeded maximum value, capping to e^100")
             return math.exp(Perplexity._MAX_EXP)
