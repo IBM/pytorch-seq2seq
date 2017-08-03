@@ -36,18 +36,15 @@ parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint',
 parser.add_argument('--resume', action='store_true', dest='resume',
                     default=False,
                     help='Indicates if training has to be resumed from the latest checkpoint')
-
-logger = logging.getLogger(__name__)
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
-
+parser.add_argument('--log-level', dest='log_level',
+                    default='debug',
+                    help='Logging level.')
 
 opt = parser.parse_args()
-logger.info(opt)
+
+LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()))
+logging.info(opt)
 
 if opt.load_checkpoint is not None:
     logger.info("loading checkpoint from {}".format(os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)))
