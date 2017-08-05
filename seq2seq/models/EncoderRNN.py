@@ -6,7 +6,7 @@ class EncoderRNN(BaseRNN):
     r"""
     Applies a multi-layer RNN to an input sequence.
     Args:
-        vocab (Vocabulary): an object of Vocabulary class
+        vocab_size (int): size of the vocabulary
         max_len (int): a maximum allowed length for the sequence to be processed
         hidden_size (int): the number of features in the hidden state `h`
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
@@ -28,21 +28,16 @@ class EncoderRNN(BaseRNN):
          >>> output, hidden = encoder(input)
 
     """
-    def __init__(self, vocab, max_len, hidden_size,
+    def __init__(self, vocab_size, max_len, hidden_size,
             input_dropout_p=0, dropout_p=0,
             n_layers=1, rnn_cell='gru'):
-        super(EncoderRNN, self).__init__(vocab, max_len, hidden_size,
+        super(EncoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p, n_layers, rnn_cell)
 
-        self.embedding = nn.Embedding(self.vocab.get_vocab_size(), hidden_size)
+        self.embedding = nn.Embedding(vocab_size, hidden_size)
         self.lengths = None
 
-    def forward(self, *args, **kwargs):
-        batch = args[0]
-        self.lengths = [min(self.max_len, len(seq)) for seq in batch]
-        return super(EncoderRNN, self).forward(batch, **kwargs)
-
-    def forward_rnn(self, input_var):
+    def forward(self, input_var):
         """
         Applies a multi-layer RNN to an input sequence.
 
@@ -55,7 +50,7 @@ class EncoderRNN(BaseRNN):
         """
         embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
-        embedded = nn.utils.rnn.pack_padded_sequence(embedded, self.lengths, batch_first=True)
+        # embedded = nn.utils.rnn.pack_padded_sequence(embedded, self.lengths, batch_first=True)
         output, hidden = self.rnn(embedded)
-        output, _ = nn.utils.rnn.pad_packed_sequence(output, batch_first=True)
+        # output, _ = nn.utils.rnn.pad_packed_sequence(output, batch_first=True)
         return output, hidden

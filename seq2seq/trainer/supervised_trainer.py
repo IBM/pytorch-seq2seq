@@ -3,6 +3,7 @@ import random
 import logging
 
 import torch
+import torchtext
 from torch import optim
 
 from seq2seq.evaluator import Evaluator
@@ -57,12 +58,11 @@ class SupervisedTrainer(object):
                                                        teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
-        targets = other['inputs']
         lengths = other['length']
-        for batch in range(len(targets)):
+        for batch in range(input_variable.size(0)):
             # Batch wise loss
-            batch_target = targets[batch]
-            batch_len = lengths[batch]
+            batch_target = input_variable[batch, 1:]
+            batch_len = min(lengths[batch], input_variable.size(1) - 1)
             # Crop output and target to batch length
             batch_output = torch.stack([output[batch] for output in decoder_outputs[:batch_len]])
             batch_target = batch_target[:batch_len]
@@ -78,7 +78,11 @@ class SupervisedTrainer(object):
     def _train_epoches(self, data, model, n_epochs, batch_size, resume, dev_data=None, teacher_forcing_ratio=0):
         start = time.time()
         print_loss_total = 0  # Reset every print_every
-        steps_per_epoch = data.num_batches(batch_size)
+        device = None if torch.cuda.is_available() else -1
+        batch_iterator = torchtext.data.BucketIterator(
+            dataset=data, batch_size=self.batch_size,
+            device=device, repeat=False)
+        steps_per_epoch = len(batch_iterator)
         total_steps = steps_per_epoch * n_epochs
 
         # If training is set to resume
@@ -96,20 +100,17 @@ class SupervisedTrainer(object):
             self.optimizer.set_parameters(model.parameters())
 
         for epoch in range(start_epoch, n_epochs + 1):
-            data.shuffle(self.random_seed)
-
-            batch_generator = data.make_batches(batch_size)
 
             # consuming seen batches from previous training
             for _ in range((epoch - 1) * steps_per_epoch, step):
                 next(batch_generator)
 
             model.train(True)
-            for batch in batch_generator:
+            for batch in batch_iterator:
                 step += 1
 
-                input_variables = batch[0]
-                target_variables = batch[1]
+                input_variables = batch.src
+                target_variables = batch.trg
 
                 loss = self._train_batch(input_variables, target_variables, model, teacher_forcing_ratio)
 
@@ -155,9 +156,5 @@ class SupervisedTrainer(object):
              teacher_forcing_ratio (float, optional): teaching forcing ratio (default 0)
 
         """
-        # Make Checkpoint Directories
-        data.input_vocab.save(self.input_vocab_file)
-        data.output_vocab.save(self.output_vocab_file)
-
         self._train_epoches(data, model, num_epochs, self.batch_size,
                             resume=resume, dev_data=dev_data, teacher_forcing_ratio=teacher_forcing_ratio)

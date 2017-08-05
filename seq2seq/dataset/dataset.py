@@ -1,4 +1,5 @@
 import random
+
 from seq2seq.dataset import Vocabulary, utils
 
 class Dataset(object):

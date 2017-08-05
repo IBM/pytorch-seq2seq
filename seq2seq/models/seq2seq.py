@@ -41,20 +41,12 @@ class Seq2seq(nn.Module):
         self.decode_function = decode_function
 
     def forward(self, input_variable, target_variable=None,
-                teacher_forcing_ratio=0, volatile=False):
-        if target_variable is None:
-            input_variable = sorted(input_variable, len, reverse=True)
-        else:
-            sorted_input = sorted(zip(input_variable, target_variable),
-                                  key=lambda x: len(x[0]), reverse=True)
-            input_variable = [p[0] for p in sorted_input]
-            target_variable = [p[1] for p in sorted_input]
-        encoder_outputs, encoder_hidden = self.encoder(input_variable, volatile=volatile)
+                teacher_forcing_ratio=0):
+        encoder_outputs, encoder_hidden = self.encoder(input_variable)
         result = self.decoder(inputs=target_variable,
                               encoder_hidden=encoder_hidden,
                               encoder_outputs=encoder_outputs,
                               function=self.decode_function,
-                              teacher_forcing_ratio=teacher_forcing_ratio,
-                              volatile=volatile)
+                              teacher_forcing_ratio=teacher_forcing_ratio)
         return result
 

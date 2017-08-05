@@ -20,7 +20,7 @@ class DecoderRNN(BaseRNN):
     Provides functionality for decoding in a seq2seq framework, with an option for attention.
 
     Args:
-        vocab (Vocabulary): an object of Vocabulary class
+        vocab_size (int): size of the vocabulary
         max_len (int): a maximum allowed length for the sequence to be processed
         hidden_size (int): the number of features in the hidden state `h`
         n_layers (int, optional): number of recurrent layers (default: 1)
@@ -33,7 +33,6 @@ class DecoderRNN(BaseRNN):
         KEY_ATTN_SCORE (str): key used to indicate attention weights in `ret_dict`
         KEY_LENGTH (str): key used to indicate a list representing lengths of output sequences in `ret_dict`
         KEY_SEQUENCE (str): key used to indicate a list of sequences in `ret_dict`
-        KEY_INPUT (str): key used to target outputs in `ret_dict`
 
     Inputs: inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio
         - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which
@@ -55,26 +54,26 @@ class DecoderRNN(BaseRNN):
           state of the decoder.
         - **ret_dict**: dictionary containing additional information as follows {*KEY_LENGTH* : list of integers
           representing lengths of output sequences, *KEY_SEQUENCE* : list of sequences, where each sequence is a list of
-          predicted token IDs, *KEY_INPUT* : target outputs if provided for decoding, *KEY_ATTN_SCORE* : list of
-          sequences, where each list is of attention weights }.
+          predicted token IDs }.
     """
 
     KEY_ATTN_SCORE = 'attention_score'
     KEY_LENGTH = 'length'
     KEY_SEQUENCE = 'sequence'
-    KEY_INPUT = 'inputs'
 
-    def __init__(self, vocab, max_len, hidden_size,
+    def __init__(self, vocab_size, max_len, hidden_size,
             n_layers=1, rnn_cell='gru',
-            input_dropout_p=0, dropout_p=0, use_attention=False):
-        super(DecoderRNN, self).__init__(vocab, max_len, hidden_size,
+            input_dropout_p=0, dropout_p=0, use_attention=False,
+            eos_id=0):
+        super(DecoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p,
                 n_layers, rnn_cell)
 
-        self.output_size = self.vocab.get_vocab_size()
+        self.output_size = vocab_size
         self.dropout_p = dropout_p
         self.max_length = max_len
         self.use_attention = use_attention
+        self.eos_id = eos_id
 
         self.init_input = None
 
@@ -84,12 +83,6 @@ class DecoderRNN(BaseRNN):
             self.attention = Attention(self.hidden_size)
 
         self.out = nn.Linear(self.hidden_size, self.output_size)
-
-    def init_start_input(self, batch_size):
-        # GO input for decoder # Re-initialize when batch size changes
-        if self.init_input is None or self.init_input.size(0) != batch_size:
-            self.init_input = Variable(device.LongTensor([[self.vocab.SOS_token_id]*batch_size])).view(batch_size, -1)
-        return self.init_input
 
     def forward_step(self, input_var, hidden, encoder_outputs, function):
         batch_size = input_var.size(0)
@@ -107,7 +100,7 @@ class DecoderRNN(BaseRNN):
         predicted_softmax = function(self.out(output.view(-1, self.hidden_size))).view(batch_size, output_size, -1)
         return predicted_softmax, hidden, attn
 
-    def forward_rnn(self, inputs=None, encoder_hidden=None, function=F.log_softmax,
+    def forward(self, inputs=None, encoder_hidden=None, function=F.log_softmax,
                     encoder_outputs=None, teacher_forcing_ratio=0):
         ret_dict = dict()
         if self.use_attention:
@@ -128,7 +121,11 @@ class DecoderRNN(BaseRNN):
                 elif self.rnn_cell is nn.GRU:
                     batch_size = encoder_hidden.size(1)
 
-        decoder_input = self.init_start_input(batch_size)
+        decoder_input = inputs[:, 0].unsqueeze(1)
+        if inputs.size(1) == 1:
+            inputs = None
+        else:
+            inputs = inputs[:,1:]
         decoder_hidden = encoder_hidden
 
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
@@ -144,7 +141,7 @@ class DecoderRNN(BaseRNN):
             symbols = decoder_outputs[-1].topk(1)[1]
             sequence_symbols.append(symbols)
 
-            eos_batches = symbols.data.eq(self.vocab.EOS_token_id)
+            eos_batches = symbols.data.eq(self.eos_id)
             if eos_batches.dim() > 0:
                 eos_batches = eos_batches.cpu().view(-1).numpy()
                 update_idx = ((lengths > di) & eos_batches) != 0
@@ -172,6 +169,5 @@ class DecoderRNN(BaseRNN):
 
         ret_dict[DecoderRNN.KEY_SEQUENCE] = sequence_symbols
         ret_dict[DecoderRNN.KEY_LENGTH] = lengths.tolist()
-        ret_dict[DecoderRNN.KEY_INPUT] = inputs
 
         return decoder_outputs, decoder_hidden, ret_dict

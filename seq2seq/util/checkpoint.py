@@ -76,10 +76,11 @@ class Checkpoint(object):
                    os.path.join(path, self.TRAINER_STATE_NAME))
         torch.save(self.model, os.path.join(path, self.MODEL_NAME))
 
-        if not os.path.isfile(os.path.join(path, self.INPUT_VOCAB_FILE)):
-            self.input_vocab.save(os.path.join(path, self.INPUT_VOCAB_FILE))
-        if not os.path.isfile(os.path.join(path, self.OUTPUT_VOCAB_FILE)):
-            self.output_vocab.save(os.path.join(path, self.OUTPUT_VOCAB_FILE))
+        # TODO: serialize vocab from torchtext
+        # if not os.path.isfile(os.path.join(path, self.INPUT_VOCAB_FILE)):
+            # self.input_vocab.save(os.path.join(path, self.INPUT_VOCAB_FILE))
+        # if not os.path.isfile(os.path.join(path, self.OUTPUT_VOCAB_FILE)):
+            # self.output_vocab.save(os.path.join(path, self.OUTPUT_VOCAB_FILE))
 
         return path
 

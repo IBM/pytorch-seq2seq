@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import torch
+import torchtext
 
 from seq2seq.loss import NLLLoss
 
@@ -29,19 +30,23 @@ class Evaluator(object):
         loss = self.loss
         loss.reset()
 
-        for batch in data.make_batches(self.batch_size):
-            input_variables = batch[0]
-            target_variables = batch[1]
+        device = None if torch.cuda.is_available() else -1
+        batch_iterator = torchtext.data.BucketIterator(
+            dataset=data, batch_size=self.batch_size,
+            device=device, train=False)
 
-            decoder_outputs, decoder_hidden, other = model(input_variables, target_variables, volatile=True)
+        for batch in batch_iterator:
+            input_variables = batch.src
+            target_variables = batch.trg
+
+            decoder_outputs, decoder_hidden, other = model(input_variables, target_variables)
 
             # Evaluation
-            targets = other['inputs']
             lengths = other['length']
-            for b in range(len(targets)):
+            for b in range(input_variables.size(0)):
                 # Batch wise loss
-                batch_target = targets[b]
-                batch_len = lengths[b]
+                batch_target = input_variables[b, 1:]
+                batch_len = min(lengths[b], input_variables.size(1) - 1)
                 # Crop output and target to batch length
                 batch_output = torch.stack([output[b] for output in decoder_outputs[:batch_len]])
                 batch_target = batch_target[:batch_len]
