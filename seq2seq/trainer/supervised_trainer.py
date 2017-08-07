@@ -55,7 +55,7 @@ class SupervisedTrainer(object):
         loss = self.loss
         # Forward propagation
         decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable,
-
+                                                       teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
         lengths = other['length']
