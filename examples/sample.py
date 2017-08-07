@@ -55,7 +55,9 @@ if opt.load_checkpoint is not None:
     input_vocab = checkpoint.input_vocab
     output_vocab = checkpoint.output_vocab
 else:
-    src = torchtext.data.Field(preprocessing=lambda seq: seq + ['<eos>'], batch_first=True)
+    # Prepare dataset
+    src = torchtext.data.Field(preprocessing=lambda seq: seq, batch_first=True,
+                               include_lengths=True)
     trg = torchtext.data.Field(preprocessing=lambda seq: ['<sos>'] + seq + ['<eos>'], batch_first=True)
     max_len = 50
     def len_filter(example):
@@ -72,15 +74,6 @@ else:
     )
     src.build_vocab(train, max_size=50000)
     trg.build_vocab(train, max_size=50000)
-
-    # Prepare dataset
-    # dataset = Dataset.from_file(opt.train_path, src_max_len=50, tgt_max_len=50)
-    # input_vocab = dataset.input_vocab
-    # output_vocab = dataset.output_vocab
-
-    # dev_set = Dataset.from_file(opt.dev_path, src_max_len=50, tgt_max_len=50,
-                    # src_vocab=input_vocab,
-                    # tgt_vocab=output_vocab)
 
     # # Prepare loss
     weight = torch.ones(len(trg.vocab))
@@ -106,13 +99,13 @@ else:
 
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
-                        checkpoint_every=50,
-                        print_every=4, expt_dir=opt.expt_dir)
-    t.train(seq2seq, train, num_epochs=1, dev_data=dev, resume=opt.resume)
+                        checkpoint_every=500,
+                        print_every=100, expt_dir=opt.expt_dir)
+    t.train(seq2seq, train, num_epochs=4, dev_data=dev, resume=opt.resume)
 
 predictor = Predictor(seq2seq, src.vocab, trg.vocab)
 
 while True:
     seq_str = raw_input("Type in a source sequence:")
-    seq = seq_str.split()
+    seq = seq_str.strip().split()
     print(predictor.predict(seq))

@@ -51,18 +51,18 @@ class SupervisedTrainer(object):
 
         self.logger = logging.getLogger(__name__)
 
-    def _train_batch(self, input_variable, target_variable, model, teacher_forcing_ratio):
+    def _train_batch(self, input_variable, input_lengths, target_variable, model, teacher_forcing_ratio):
         loss = self.loss
         # Forward propagation
-        decoder_outputs, decoder_hidden, other = model(input_variable, target_variable,
-                                                       teacher_forcing_ratio=teacher_forcing_ratio)
+        decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable,
+
         # Get loss
         loss.reset()
         lengths = other['length']
-        for batch in range(input_variable.size(0)):
+        for batch in range(target_variable.size(0)):
             # Batch wise loss
-            batch_target = input_variable[batch, 1:]
-            batch_len = min(lengths[batch], input_variable.size(1) - 1)
+            batch_target = target_variable[batch, 1:]
+            batch_len = min(lengths[batch], target_variable.size(1) - 1)
             # Crop output and target to batch length
             batch_output = torch.stack([output[batch] for output in decoder_outputs[:batch_len]])
             batch_target = batch_target[:batch_len]
@@ -81,6 +81,7 @@ class SupervisedTrainer(object):
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
+            sort_key=lambda x: -len(x.src),
             device=device, repeat=False)
         steps_per_epoch = len(batch_iterator)
         total_steps = steps_per_epoch * n_epochs
@@ -103,16 +104,17 @@ class SupervisedTrainer(object):
 
             # consuming seen batches from previous training
             for _ in range((epoch - 1) * steps_per_epoch, step):
-                next(batch_generator)
+                logging.info("Advance from %d to %d steps." % ((epoch - 1) * steps_per_epoch, step))
+                for _ in batch_iterator: pass
 
             model.train(True)
             for batch in batch_iterator:
                 step += 1
 
-                input_variables = batch.src
+                input_variables, input_lengths = batch.src
                 target_variables = batch.trg
 
-                loss = self._train_batch(input_variables, target_variables, model, teacher_forcing_ratio)
+                loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
 
                 # Record average loss
                 print_loss_total += loss

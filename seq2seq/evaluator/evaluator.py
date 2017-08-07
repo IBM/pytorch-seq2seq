@@ -33,20 +33,21 @@ class Evaluator(object):
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
+            sort_key=lambda batch: -len(batch.src),
             device=device, train=False)
 
         for batch in batch_iterator:
-            input_variables = batch.src
+            input_variables, input_lengths  = batch.src
             target_variables = batch.trg
 
-            decoder_outputs, decoder_hidden, other = model(input_variables, target_variables)
+            decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths.tolist(), target_variables)
 
             # Evaluation
             lengths = other['length']
-            for b in range(input_variables.size(0)):
+            for b in range(target_variables.size(0)):
                 # Batch wise loss
-                batch_target = input_variables[b, 1:]
-                batch_len = min(lengths[b], input_variables.size(1) - 1)
+                batch_target = target_variables[b, 1:]
+                batch_len = min(lengths[b], target_variables.size(1) - 1)
                 # Crop output and target to batch length
                 batch_output = torch.stack([output[b] for output in decoder_outputs[:batch_len]])
                 batch_target = batch_target[:batch_len]

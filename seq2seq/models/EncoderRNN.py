@@ -35,9 +35,8 @@ class EncoderRNN(BaseRNN):
                 input_dropout_p, dropout_p, n_layers, rnn_cell)
 
         self.embedding = nn.Embedding(vocab_size, hidden_size)
-        self.lengths = None
 
-    def forward(self, input_var):
+    def forward(self, input_var, input_lengths):
         """
         Applies a multi-layer RNN to an input sequence.
 
@@ -50,7 +49,7 @@ class EncoderRNN(BaseRNN):
         """
         embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
-        # embedded = nn.utils.rnn.pack_padded_sequence(embedded, self.lengths, batch_first=True)
+        embedded = nn.utils.rnn.pack_padded_sequence(embedded, input_lengths, batch_first=True)
         output, hidden = self.rnn(embedded)
-        # output, _ = nn.utils.rnn.pad_packed_sequence(output, batch_first=True)
+        output, _ = nn.utils.rnn.pad_packed_sequence(output, batch_first=True)
         return output, hidden
