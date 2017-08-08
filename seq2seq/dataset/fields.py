@@ -3,6 +3,7 @@ import logging
 import torchtext
 
 class SourceField(torchtext.data.Field):
+    """ Wrapper class of torchtext.data.Field that forces batch_first and include_lengths to be True. """
 
     def __init__(self, **kwargs):
         logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ class SourceField(torchtext.data.Field):
         super(SourceField, self).__init__(**kwargs)
 
 class TargetField(torchtext.data.Field):
+    """ Wrapper class of torchtext.data.Field that forces batch_first to be True and prepend <sos> and append <eos> to sequences in preprocessing step. """
 
     def __init__(self, **kwargs):
         logger = logging.getLogger(__name__)
@@ -27,6 +29,7 @@ class TargetField(torchtext.data.Field):
         if kwargs.get('preprocessing') is None:
             kwargs['preprocessing'] = lambda seq: ['<sos>'] + seq + ['<eos>']
         else:
-            kwargs['preprocessing'] = lambda seq: ['<sos>'] + kwargs['preprocessing'](seq) + ['<eos>']
+            func = kwargs['preprocessing']
+            kwargs['preprocessing'] = lambda seq: ['<sos>'] + func(seq) + ['<eos>']
 
         super(TargetField, self).__init__(**kwargs)
