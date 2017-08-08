@@ -1,3 +1,4 @@
 numpy
+dill
 tqdm
 -e git+git@github.com:pytorch/text.git#egg=torchtext

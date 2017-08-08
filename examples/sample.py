@@ -74,6 +74,8 @@ else:
     )
     src.build_vocab(train, max_size=50000)
     trg.build_vocab(train, max_size=50000)
+    input_vocab = src.vocab
+    output_vocab = trg.vocab
 
     # # Prepare loss
     weight = torch.ones(len(trg.vocab))
@@ -99,11 +101,11 @@ else:
 
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
-                        checkpoint_every=500,
+                        checkpoint_every=100,
                         print_every=100, expt_dir=opt.expt_dir)
     t.train(seq2seq, train, num_epochs=4, dev_data=dev, resume=opt.resume)
 
-predictor = Predictor(seq2seq, src.vocab, trg.vocab)
+predictor = Predictor(seq2seq, input_vocab, output_vocab)
 
 while True:
     seq_str = raw_input("Type in a source sequence:")

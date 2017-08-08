@@ -46,8 +46,6 @@ class SupervisedTrainer(object):
         if not os.path.exists(self.expt_dir):
             os.makedirs(self.expt_dir)
         self.batch_size = batch_size
-        self.input_vocab_file = os.path.join(self.expt_dir, 'input_vocab')
-        self.output_vocab_file = os.path.join(self.expt_dir, 'output_vocab')
 
         self.logger = logging.getLogger(__name__)
 
@@ -104,8 +102,7 @@ class SupervisedTrainer(object):
 
             # consuming seen batches from previous training
             for _ in range((epoch - 1) * steps_per_epoch, step):
-                logging.info("Advance from %d to %d steps." % ((epoch - 1) * steps_per_epoch, step))
-                for _ in batch_iterator: pass
+                for _ in batch_iterator: break
 
             model.train(True)
             for batch in batch_iterator:
@@ -134,8 +131,8 @@ class SupervisedTrainer(object):
                     Checkpoint(model=model,
                                optimizer_state_dict=self.optimizer.state_dict(),
                                epoch=epoch, step=step,
-                               input_vocab=data.input_vocab,
-                               output_vocab=data.output_vocab).save(self.expt_dir)
+                               input_vocab=data.fields['src'].vocab,
+                               output_vocab=data.fields['trg'].vocab).save(self.expt_dir)
 
             log_msg = "Finished epoch {0}".format(epoch)
             if dev_data is not None:
