@@ -8,7 +8,7 @@ import torchtext
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
 from seq2seq.loss import Perplexity
-from seq2seq.dataset import Dataset
+from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
 
@@ -56,9 +56,8 @@ if opt.load_checkpoint is not None:
     output_vocab = checkpoint.output_vocab
 else:
     # Prepare dataset
-    src = torchtext.data.Field(preprocessing=lambda seq: seq, batch_first=True,
-                               include_lengths=True)
-    trg = torchtext.data.Field(preprocessing=lambda seq: ['<sos>'] + seq + ['<eos>'], batch_first=True)
+    src = SourceField()
+    trg = TargetField()
     max_len = 50
     def len_filter(example):
         return len(example.src) <= max_len and len(example.trg) <= max_len
