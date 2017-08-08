@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import torchtext
@@ -33,3 +34,16 @@ class TestField(unittest.TestCase):
 
         processed = field.preprocessing([None])
         self.assertEqual(processed, ['<sos>', None, None, '<eos>'])
+
+    def test_targetfield_specials(self):
+        data_path = os.path.join(os.getcwd(), 'data/eng-fra.txt')
+        field = TargetField()
+        train = torchtext.data.TabularDataset(
+            path=data_path, format='tsv',
+            fields=[('src', torchtext.data.Field()), ('trg', field)]
+        )
+        self.assertTrue(field.sos_id is None)
+        self.assertTrue(field.eos_id is None)
+        field.build_vocab(train)
+        self.assertFalse(field.sos_id is None)
+        self.assertFalse(field.eos_id is None)

@@ -62,9 +62,9 @@ class DecoderRNN(BaseRNN):
     KEY_SEQUENCE = 'sequence'
 
     def __init__(self, vocab_size, max_len, hidden_size,
+            sos_id, eos_id,
             n_layers=1, rnn_cell='gru',
-            input_dropout_p=0, dropout_p=0, use_attention=False,
-            eos_id=0):
+            input_dropout_p=0, dropout_p=0, use_attention=False):
         super(DecoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p,
                 n_layers, rnn_cell)
@@ -74,6 +74,7 @@ class DecoderRNN(BaseRNN):
         self.max_length = max_len
         self.use_attention = use_attention
         self.eos_id = eos_id
+        self.sos_id = sos_id
 
         self.init_input = None
 
@@ -121,11 +122,12 @@ class DecoderRNN(BaseRNN):
                 elif self.rnn_cell is nn.GRU:
                     batch_size = encoder_hidden.size(1)
 
-        decoder_input = inputs[:, 0].unsqueeze(1)
-        if inputs.size(1) == 1:
-            inputs = None
+        if inputs is None:
+            decoder_input = Variable(torch.LongTensor([self.sos_id]),
+                                    volatile=True).view(batch_size, -1)
         else:
-            inputs = inputs[:,1:]
+            decoder_input = inputs[:, 0].unsqueeze(1)
+            inputs = None if inputs.size(1) == 1 else inputs[:, 1:]
         decoder_hidden = encoder_hidden
 
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
