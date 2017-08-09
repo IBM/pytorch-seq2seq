@@ -1,6 +1,5 @@
 import unittest
 from seq2seq.dataset.vocabulary import Vocabulary
-import cPickle as pickle
 import os
 from collections import Counter
 

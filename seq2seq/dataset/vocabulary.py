@@ -1,6 +1,3 @@
-import cPickle as pickle
-
-
 class Vocabulary(object):
     """
     A Vocabulary stores a set of words belonging to a particular language. Words in the source vocabulary are mapped
@@ -176,6 +173,7 @@ class Vocabulary(object):
         vocab = Vocabulary(len(tokens))
         for token in tokens:
             vocab.add_token(token.strip())
+        vocab.trim()
         return vocab
 
     def __eq__(self, other):
