@@ -176,6 +176,7 @@ class Vocabulary(object):
         vocab = Vocabulary(len(tokens))
         for token in tokens:
             vocab.add_token(token.strip())
+        vocab.trim()
         return vocab
 
     def __eq__(self, other):
