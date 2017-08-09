@@ -3,7 +3,6 @@ import unittest
 
 import torch
 from torch.autograd import Variable
-
 from seq2seq.models import EncoderRNN
 
 class TestEncoderRNN(unittest.TestCase):

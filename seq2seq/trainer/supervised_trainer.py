@@ -1,6 +1,7 @@
+import logging
 import os
 import random
-import logging
+import time
 
 import torch
 import torchtext
@@ -9,7 +10,7 @@ from torch import optim
 from seq2seq.evaluator import Evaluator
 from seq2seq.loss import NLLLoss
 from seq2seq.optim import Optimizer
-from seq2seq.util.custom_time import *
+from seq2seq.util.custom_time import pretty_interval
 from seq2seq.util.checkpoint import Checkpoint
 
 class SupervisedTrainer(object):
