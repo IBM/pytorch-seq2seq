@@ -36,7 +36,8 @@ class TestField(unittest.TestCase):
         self.assertEqual(processed, ['<sos>', None, None, '<eos>'])
 
     def test_targetfield_specials(self):
-        data_path = os.path.join(os.getcwd(), 'data/eng-fra.txt')
+        test_path = os.path.dirname(os.path.realpath(__file__))
+        data_path = os.path.join(test_path, 'data/eng-fra.txt')
         field = TargetField()
         train = torchtext.data.TabularDataset(
             path=data_path, format='tsv',
