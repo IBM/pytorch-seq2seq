@@ -70,7 +70,6 @@ class DecoderRNN(BaseRNN):
                 n_layers, rnn_cell)
 
         self.output_size = vocab_size
-        self.dropout_p = dropout_p
         self.max_length = max_len
         self.use_attention = use_attention
         self.eos_id = eos_id
@@ -79,7 +78,6 @@ class DecoderRNN(BaseRNN):
         self.init_input = None
 
         self.embedding = nn.Embedding(self.output_size, self.hidden_size)
-        self.dropout = nn.Dropout(self.dropout_p)
         if use_attention:
             self.attention = Attention(self.hidden_size)
 
@@ -92,7 +90,6 @@ class DecoderRNN(BaseRNN):
         embedded = self.input_dropout(embedded)
 
         output, hidden = self.rnn(embedded, hidden)
-        output = self.dropout(output)
 
         attn = None
         if self.use_attention:
