@@ -31,7 +31,7 @@ class Predictor(object):
 
         tgt_id_seq = []
         for i in range(length):
-            idx = softmax_list[i].max(1)[1].data[0][0]
+            idx = softmax_list[i].max(1)[1].data[0]
             tgt_id_seq.append(idx)
 
         tgt_seq = self.tgt_vocab.sequence_from_indices(tgt_id_seq)
