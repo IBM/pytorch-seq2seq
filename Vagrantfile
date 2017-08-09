@@ -69,7 +69,6 @@ Vagrant.configure("2") do |config|
      apt-get -y install git-all python-dev python-pip
      pip install --upgrade pip
      pip install nose mock coverage numpy flake8 
-     pip install http://download.pytorch.org/whl/cu80/torch-0.1.12.post2-cp27-none-linux_x86_64.whl
-
+     pip -q install http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp27-cp27mu-manylinux1_x86_64.whl
    SHELL
 end

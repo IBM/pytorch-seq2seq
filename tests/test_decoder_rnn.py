@@ -1,6 +1,8 @@
 import os
 import unittest
 
+import torch
+
 from seq2seq.dataset import Dataset
 from seq2seq.models import DecoderRNN
 
@@ -19,7 +21,7 @@ class TestDecoderRNN(unittest.TestCase):
         batch = [[1,2,3], [1,2], [1]]
         output1, _, _ = rnn(batch)
         output2, _, _ = rnn(batch)
-        self.assertEqual(output1, output2)
+        self.assertTrue(torch.equal(output1[0].data, output2[0].data))
 
     def test_input_dropout_WITH_NON_ZERO_PROB(self):
         rnn = DecoderRNN(self.dataset.output_vocab, 50, 16, input_dropout_p=0.5)
@@ -30,7 +32,7 @@ class TestDecoderRNN(unittest.TestCase):
         for _ in range(50):
             output1, _, _ = rnn()
             output2, _, _ = rnn()
-            if output1[0] != output2[0]:
+            if not torch.equal(output1[0].data, output2[0].data):
                 equal = False
                 break
         self.assertFalse(equal)
@@ -42,7 +44,7 @@ class TestDecoderRNN(unittest.TestCase):
         batch = [[1,2,3], [1,2], [1]]
         output1, _, _ = rnn(batch)
         output2, _, _ = rnn(batch)
-        self.assertEqual(output1, output2)
+        self.assertTrue(torch.equal(output1[0].data, output2[0].data))
 
     def test_dropout_WITH_NON_ZERO_PROB(self):
         rnn = DecoderRNN(self.dataset.output_vocab, 50, 16, dropout_p=0.5)
@@ -54,7 +56,7 @@ class TestDecoderRNN(unittest.TestCase):
         for _ in range(50):
             output1, _, _ = rnn(batch)
             output2, _, _ = rnn(batch)
-            if output1[0] != output2[0]:
+            if not torch.equal(output1[0].data, output2[0].data):
                 equal = False
                 break
         self.assertFalse(equal)
