@@ -15,10 +15,10 @@ class EncoderRNN(BaseRNN):
         rnn_cell (str, optional): type of RNN cell (default: gru)
         variable_lengths (bool, optional): if use variable length RNN (default: False)
 
-    Inputs: inputs, volatile
+    Inputs: inputs, input_lengths
         - **inputs**: list of sequences, whose length is the batch size and within which each sequence is a list of token IDs.
-        - **volatile** (bool, optional): boolean flag specifying whether to preserve gradients, when you are sure you
-          will not be even calling .backward().
+        - **input_lengths** (list of int, optional): A list that contains the lengths of sequences
+            in the mini-batch, it must be provided when using variable length RNN (default: `None`)
     Outputs: output, hidden
         - **output** (batch, seq_len, hidden_size): tensor containing the encoded features of the input sequence
         - **hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the features in the hidden state `h`
