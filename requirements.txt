@@ -1,4 +1,4 @@
 numpy
 dill
 tqdm
--e git+git@github.com:pytorch/text.git#egg=torchtext
+-e git+https://github.com/pytorch/text.git#egg=torchtext
