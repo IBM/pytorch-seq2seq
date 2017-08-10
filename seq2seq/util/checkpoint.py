@@ -94,9 +94,9 @@ class Checkpoint(object):
         print("Loading checkpoints from {}".format(path))
         resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME))
         model = torch.load(os.path.join(path, cls.MODEL_NAME))
-        with open(os.path.join(path, cls.INPUT_VOCAB_FILE)) as fin:
+        with open(os.path.join(path, cls.INPUT_VOCAB_FILE), 'rb') as fin:
             input_vocab = dill.load(fin)
-        with open(os.path.join(path, cls.OUTPUT_VOCAB_FILE)) as fin:
+        with open(os.path.join(path, cls.OUTPUT_VOCAB_FILE), 'rb') as fin:
             output_vocab = dill.load(fin)
         return Checkpoint(model=model, input_vocab=input_vocab,
                           output_vocab=output_vocab,

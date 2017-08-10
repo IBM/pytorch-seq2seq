@@ -42,7 +42,7 @@ class TestCheckpoint(unittest.TestCase):
 
         mock_model = mock.Mock()
         mock_vocab = mock.Mock()
-        mock_open.return_value = mock.MagicMock(spec=file)
+        mock_open.return_value = mock.MagicMock()
 
         chk_point = Checkpoint(model=mock_model, optimizer_state_dict=opt_state_dict,
                                epoch=epoch, step=step,
@@ -69,7 +69,7 @@ class TestCheckpoint(unittest.TestCase):
         dummy_vocabulary = mock.Mock()
         mock_optimizer_state_dict = mock.Mock()
         torch_dict = {"optimizer": mock_optimizer_state_dict, "epoch": 5, "step": 10}
-        mock_open.return_value = mock.MagicMock(spec=file)
+        mock_open.return_value = mock.MagicMock()
         mock_torch.load.return_value = torch_dict
         mock_dill.load.return_value = dummy_vocabulary
 

@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from baseRNN import BaseRNN
+from .baseRNN import BaseRNN
 
 class EncoderRNN(BaseRNN):
     r"""

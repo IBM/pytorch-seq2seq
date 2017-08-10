@@ -1,1 +1,1 @@
-from fields import SourceField, TargetField
+from .fields import SourceField, TargetField
