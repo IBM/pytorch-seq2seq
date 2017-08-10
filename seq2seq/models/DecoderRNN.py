@@ -24,6 +24,8 @@ class DecoderRNN(BaseRNN):
         vocab_size (int): size of the vocabulary
         max_len (int): a maximum allowed length for the sequence to be processed
         hidden_size (int): the number of features in the hidden state `h`
+        sos_id (int): index of the start of sentence symbol
+        eos_id (int): index of the end of sentence symbol
         n_layers (int, optional): number of recurrent layers (default: 1)
         rnn_cell (str, optional): type of RNN cell (default: gru)
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
@@ -36,10 +38,10 @@ class DecoderRNN(BaseRNN):
         KEY_SEQUENCE (str): key used to indicate a list of sequences in `ret_dict`
 
     Inputs: inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio
-        - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which
-          each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default is `None`)
-        - **encoder_hidden** (batch, seq_len, hidden_size): tensor containing the features in the hidden state `h` of
-          encoder. Used as the initial hidden state of the decoder.
+        - **inputs** (batch, seq_len, input_size): list of sequences, whose length is the batch size and within which
+          each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default `None`)
+        - **encoder_hidden** (num_layers * num_directions, batch_size, hidden_size): tensor containing the features in the
+          hidden state `h` of encoder. Used as the initial hidden state of the decoder. (default `None`)
         - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
           Used for attention mechanism (default is `None`).
         - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state
@@ -49,8 +51,8 @@ class DecoderRNN(BaseRNN):
           teacher forcing would be used (default is 0).
 
     Outputs: decoder_outputs, decoder_hidden, ret_dict
-        - **decoder_outputs** (batch): batch-length list of tensors with size (max_length, hidden_size) containing the
-          outputs of the decoder.
+        - **decoder_outputs** (seq_len, batch, vocab_size): list of tensors with size (batch_size, vocab_size) containing
+          the outputs of the decoding function.
         - **decoder_hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden
           state of the decoder.
         - **ret_dict**: dictionary containing additional information as follows {*KEY_LENGTH* : list of integers

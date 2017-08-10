@@ -87,7 +87,8 @@ else:
     if not opt.resume:
         # Initialize model
         hidden_size=128
-        encoder = EncoderRNN(len(src.vocab), max_len, hidden_size)
+        encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
+                             variable_lengths=True)
         decoder = DecoderRNN(len(trg.vocab), max_len, hidden_size,
                              dropout_p=0.2, use_attention=True,
                              eos_id=trg.eos_id, sos_id=trg.sos_id)
