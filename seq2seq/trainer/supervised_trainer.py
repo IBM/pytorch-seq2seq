@@ -10,7 +10,6 @@ from torch import optim
 from seq2seq.evaluator import Evaluator
 from seq2seq.loss import NLLLoss
 from seq2seq.optim import Optimizer
-from seq2seq.util.custom_time import pretty_interval
 from seq2seq.util.checkpoint import Checkpoint
 
 class SupervisedTrainer(object):
@@ -120,8 +119,7 @@ class SupervisedTrainer(object):
                 if step % self.print_every == 0:
                     print_loss_avg = print_loss_total / (self.print_every)
                     print_loss_total = 0
-                    log_msg = 'Time elapsed: %s, Progress: %d%%, Train %s: %.4f' % (
-                        pretty_interval(start),
+                    log_msg = 'Progress: %d%%, Train %s: %.4f' % (
                         float(step) / total_steps * 100,
                         self.loss.name,
                         print_loss_avg)
