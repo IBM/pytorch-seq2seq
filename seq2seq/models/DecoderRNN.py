@@ -157,7 +157,7 @@ class DecoderRNN(BaseRNN):
             decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                      function=function)
 
-            for di in range(self.max_length):
+            for di in range(inputs.size(1)):
                 step_output = decoder_output[:, di, :]
                 step_attn = attn[:, di, :]
                 decode(di, step_output, step_attn)
