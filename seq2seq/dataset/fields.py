@@ -8,9 +8,11 @@ class SourceField(torchtext.data.Field):
     def __init__(self, **kwargs):
         logger = logging.getLogger(__name__)
 
-        if kwargs.get('batch_first') == False:
+        if kwargs.get('batch_first') is False:
             logger.warning("Option batch_first has to be set to use pytorch-seq2seq.  Changed to True.")
         kwargs['batch_first'] = True
+        if kwargs.get('batch_first') is False:
+            logger.warning("Option include_lengths has to be set to use pytorch-seq2seq.  Changed to True.")
         kwargs['include_lengths'] = True
 
         super(SourceField, self).__init__(**kwargs)
