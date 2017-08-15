@@ -76,7 +76,7 @@ else:
     input_vocab = src.vocab
     output_vocab = trg.vocab
 
-    # # Prepare loss
+    # Prepare loss
     weight = torch.ones(len(trg.vocab))
     pad = trg.vocab.stoi[trg.pad_token]
     loss = Perplexity(weight, pad)
