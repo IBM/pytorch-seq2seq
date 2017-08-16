@@ -7,6 +7,7 @@ import torch
 import torchtext
 from torch import optim
 
+import seq2seq
 from seq2seq.evaluator import Evaluator
 from seq2seq.loss import NLLLoss
 from seq2seq.optim import Optimizer
@@ -108,8 +109,8 @@ class SupervisedTrainer(object):
             for batch in batch_iterator:
                 step += 1
 
-                input_variables, input_lengths = batch.src
-                target_variables = batch.trg
+                input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
+                target_variables = getattr(batch, seq2seq.tgt_field_name)
 
                 loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
 
@@ -130,8 +131,8 @@ class SupervisedTrainer(object):
                     Checkpoint(model=model,
                                optimizer_state_dict=self.optimizer.state_dict(),
                                epoch=epoch, step=step,
-                               input_vocab=data.fields['src'].vocab,
-                               output_vocab=data.fields['trg'].vocab).save(self.expt_dir)
+                               input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                               output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir)
 
             log_msg = "Finished epoch {0}".format(epoch)
             if dev_data is not None:

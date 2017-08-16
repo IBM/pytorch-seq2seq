@@ -5,6 +5,7 @@ import logging
 import torch
 import torchtext
 
+import seq2seq
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
 from seq2seq.loss import Perplexity
@@ -57,28 +58,34 @@ if opt.load_checkpoint is not None:
 else:
     # Prepare dataset
     src = SourceField()
-    trg = TargetField()
+    tgt = TargetField()
     max_len = 50
     def len_filter(example):
-        return len(example.src) <= max_len and len(example.trg) <= max_len
+        return len(example.src) <= max_len and len(example.tgt) <= max_len
     train = torchtext.data.TabularDataset(
         path=opt.train_path, format='tsv',
-        fields=[('src', src), ('trg', trg)],
+        fields=[('src', src), ('tgt', tgt)],
         filter_pred=len_filter
     )
     dev = torchtext.data.TabularDataset(
         path=opt.dev_path, format='tsv',
-        fields=[('src', src), ('trg', trg)],
+        fields=[('src', src), ('tgt', tgt)],
         filter_pred=len_filter
     )
     src.build_vocab(train, max_size=50000)
-    trg.build_vocab(train, max_size=50000)
+    tgt.build_vocab(train, max_size=50000)
     input_vocab = src.vocab
-    output_vocab = trg.vocab
+    output_vocab = tgt.vocab
 
-    # # Prepare loss
-    weight = torch.ones(len(trg.vocab))
-    pad = trg.vocab.stoi[trg.pad_token]
+    # NOTE: If the source field name and the target field name
+    # are different from 'src' and 'tgt' respectively, they have
+    # to be set explicitly before any training or inference
+    # seq2seq.src_field_name = 'src'
+    # seq2seq.tgt_field_name = 'tgt'
+
+    # Prepare loss
+    weight = torch.ones(len(tgt.vocab))
+    pad = tgt.vocab.stoi[tgt.pad_token]
     loss = Perplexity(weight, pad)
     if torch.cuda.is_available():
         loss.cuda()
@@ -89,9 +96,9 @@ else:
         hidden_size=128
         encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
                              variable_lengths=True)
-        decoder = DecoderRNN(len(trg.vocab), max_len, hidden_size,
+        decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size,
                              dropout_p=0.2, use_attention=True,
-                             eos_id=trg.eos_id, sos_id=trg.sos_id)
+                             eos_id=tgt.eos_id, sos_id=tgt.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
             seq2seq.cuda()

@@ -17,7 +17,7 @@ class EncoderRNN(BaseRNN):
 
     Inputs: inputs, input_lengths
         - **inputs**: list of sequences, whose length is the batch size and within which each sequence is a list of token IDs.
-        - **input_lengths** (list of int, optional): A list that contains the lengths of sequences
+        - **input_lengths** (list of int, optional): list that contains the lengths of sequences
             in the mini-batch, it must be provided when using variable length RNN (default: `None`)
     Outputs: output, hidden
         - **output** (batch, seq_len, hidden_size): tensor containing the encoded features of the input sequence

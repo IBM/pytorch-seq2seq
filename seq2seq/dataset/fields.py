@@ -8,9 +8,11 @@ class SourceField(torchtext.data.Field):
     def __init__(self, **kwargs):
         logger = logging.getLogger(__name__)
 
-        if kwargs.get('batch_first') == False:
+        if kwargs.get('batch_first') is False:
             logger.warning("Option batch_first has to be set to use pytorch-seq2seq.  Changed to True.")
         kwargs['batch_first'] = True
+        if kwargs.get('batch_first') is False:
+            logger.warning("Option include_lengths has to be set to use pytorch-seq2seq.  Changed to True.")
         kwargs['include_lengths'] = True
 
         super(SourceField, self).__init__(**kwargs)
@@ -18,8 +20,8 @@ class SourceField(torchtext.data.Field):
 class TargetField(torchtext.data.Field):
     """ Wrapper class of torchtext.data.Field that forces batch_first to be True and prepend <sos> and append <eos> to sequences in preprocessing step.
     Attributes:
-        sos_id: Index of the start of sentence symbol
-        eos_id: Index of the end of sentence symbol
+        sos_id: index of the start of sentence symbol
+        eos_id: index of the end of sentence symbol
     """
 
     SYM_SOS = '<sos>'
