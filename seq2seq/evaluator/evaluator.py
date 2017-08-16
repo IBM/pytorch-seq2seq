@@ -3,6 +3,7 @@ from __future__ import print_function
 import torch
 import torchtext
 
+import seq2seq
 from seq2seq.loss import NLLLoss
 
 class Evaluator(object):
@@ -33,12 +34,12 @@ class Evaluator(object):
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
-            sort_key=lambda batch: -len(batch.src),
+            sort_key=lambda batch: -len(getattr(batch, seq2seq.src_field_name)),
             device=device, train=False)
 
         for batch in batch_iterator:
-            input_variables, input_lengths  = batch.src
-            target_variables = batch.trg
+            input_variables, input_lengths  = getattr(batch, seq2seq.src_field_name)
+            target_variables = getattr(batch, seq2seq.tgt_field_name)
 
             decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths.tolist(), target_variables)
 

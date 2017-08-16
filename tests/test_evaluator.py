@@ -15,16 +15,16 @@ class TestPredictor(unittest.TestCase):
     def setUp(self):
         test_path = os.path.dirname(os.path.realpath(__file__))
         src = SourceField()
-        trg = TargetField()
+        tgt = TargetField()
         self.dataset = torchtext.data.TabularDataset(
             path=os.path.join(test_path, 'data/eng-fra.txt'), format='tsv',
-            fields=[('src', src), ('trg', trg)],
+            fields=[('src', src), ('tgt', tgt)],
         )
         src.build_vocab(self.dataset)
-        trg.build_vocab(self.dataset)
+        tgt.build_vocab(self.dataset)
 
         encoder = EncoderRNN(len(src.vocab), 10, 10, rnn_cell='lstm')
-        decoder = DecoderRNN(len(trg.vocab), 10, 10, trg.sos_id, trg.eos_id, rnn_cell='lstm')
+        decoder = DecoderRNN(len(tgt.vocab), 10, 10, tgt.sos_id, tgt.eos_id, rnn_cell='lstm')
         self.seq2seq = Seq2seq(encoder, decoder)
 
         for param in self.seq2seq.parameters():
