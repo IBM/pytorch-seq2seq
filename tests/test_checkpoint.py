@@ -33,12 +33,12 @@ class TestCheckpoint(unittest.TestCase):
     def test_save_checkpoint_calls_torch_save(self, mock_torch):
         epoch = 5
         step = 10
-        opt_state_dict = {"key2": "val2"}
-        state_dict = {'epoch': epoch, 'step': step, 'optimizer': opt_state_dict}
+        optim = mock.Mock()
+        state_dict = {'epoch': epoch, 'step': step, 'optimizer': optim}
 
         mock_model = mock.Mock()
 
-        chk_point = Checkpoint(model=mock_model, optimizer_state_dict=opt_state_dict,
+        chk_point = Checkpoint(model=mock_model, optimizer=optim,
                                epoch=epoch, step=step,
                                input_vocab=mock.Mock(), output_vocab=mock.Mock())
         chk_point.save(self._get_experiment_dir())
@@ -55,7 +55,7 @@ class TestCheckpoint(unittest.TestCase):
         epoch = 5
         step = 10
         model_dict = {"key1": "val1"}
-        opt_dict = {"key2": "val2"}
+        optim = mock.Mock()
 
         mock_model = mock.Mock()
         mock_model.state_dict.return_value = model_dict
@@ -63,7 +63,7 @@ class TestCheckpoint(unittest.TestCase):
         input_vocab = mock.Mock()
         output_vocab = mock.Mock()
 
-        chk_point = Checkpoint(model=mock_model, optimizer_state_dict=opt_dict, epoch=epoch, step=step,
+        chk_point = Checkpoint(model=mock_model, optimizer=optim, epoch=epoch, step=step,
                                input_vocab=input_vocab, output_vocab=output_vocab)
         chk_point.save(self._get_experiment_dir())
 
@@ -74,8 +74,8 @@ class TestCheckpoint(unittest.TestCase):
     @mock.patch('seq2seq.util.checkpoint.Vocabulary')
     def test_load(self, mock_vocabulary, mock_torch):
         dummy_vocabulary = mock.Mock()
-        mock_optimizer_state_dict = mock.Mock()
-        torch_dict = {"optimizer": mock_optimizer_state_dict, "epoch": 5, "step": 10}
+        mock_optimizer = mock.Mock()
+        torch_dict = {"optimizer": mock_optimizer, "epoch": 5, "step": 10}
         mock_torch.load.return_value = torch_dict
         mock_vocabulary.load.return_value = dummy_vocabulary
 
@@ -87,8 +87,7 @@ class TestCheckpoint(unittest.TestCase):
             os.path.join("mock_checkpoint_path", Checkpoint.MODEL_NAME))
 
         self.assertEquals(loaded_chk_point.epoch, torch_dict['epoch'])
-        self.assertEquals(loaded_chk_point.optimizer_state_dict,
-                          torch_dict['optimizer'])
+        self.assertEquals(loaded_chk_point.optimizer, torch_dict['optimizer'])
         self.assertEquals(loaded_chk_point.step, torch_dict['step'])
 
     def _get_experiment_dir(self):
