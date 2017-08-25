@@ -3,11 +3,13 @@ import argparse
 import logging
 
 import torch
+import torchtext
 
+import seq2seq
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
 from seq2seq.loss import Perplexity
-from seq2seq.dataset import Dataset
+from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
 
@@ -55,18 +57,36 @@ if opt.load_checkpoint is not None:
     output_vocab = checkpoint.output_vocab
 else:
     # Prepare dataset
-    dataset = Dataset.from_file(opt.train_path, src_max_len=50, tgt_max_len=50)
-    input_vocab = dataset.input_vocab
-    output_vocab = dataset.output_vocab
+    src = SourceField()
+    tgt = TargetField()
+    max_len = 50
+    def len_filter(example):
+        return len(example.src) <= max_len and len(example.tgt) <= max_len
+    train = torchtext.data.TabularDataset(
+        path=opt.train_path, format='tsv',
+        fields=[('src', src), ('tgt', tgt)],
+        filter_pred=len_filter
+    )
+    dev = torchtext.data.TabularDataset(
+        path=opt.dev_path, format='tsv',
+        fields=[('src', src), ('tgt', tgt)],
+        filter_pred=len_filter
+    )
+    src.build_vocab(train, max_size=50000)
+    tgt.build_vocab(train, max_size=50000)
+    input_vocab = src.vocab
+    output_vocab = tgt.vocab
 
-    dev_set = Dataset.from_file(opt.dev_path, src_max_len=50, tgt_max_len=50,
-                    src_vocab=input_vocab,
-                    tgt_vocab=output_vocab)
+    # NOTE: If the source field name and the target field name
+    # are different from 'src' and 'tgt' respectively, they have
+    # to be set explicitly before any training or inference
+    # seq2seq.src_field_name = 'src'
+    # seq2seq.tgt_field_name = 'tgt'
 
     # Prepare loss
-    weight = torch.ones(output_vocab.get_vocab_size())
-    mask = output_vocab.MASK_token_id
-    loss = Perplexity(weight, mask)
+    weight = torch.ones(len(tgt.vocab))
+    pad = tgt.vocab.stoi[tgt.pad_token]
+    loss = Perplexity(weight, pad)
     if torch.cuda.is_available():
         loss.cuda()
 
@@ -74,9 +94,11 @@ else:
     if not opt.resume:
         # Initialize model
         hidden_size=128
-        encoder = EncoderRNN(input_vocab, dataset.src_max_len, hidden_size)
-        decoder = DecoderRNN(output_vocab, dataset.tgt_max_len, hidden_size,
-                            dropout_p=0.2, use_attention=True)
+        encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
+                             variable_lengths=True)
+        decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size,
+                             dropout_p=0.2, use_attention=True,
+                             eos_id=tgt.eos_id, sos_id=tgt.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
             seq2seq.cuda()
@@ -86,13 +108,13 @@ else:
 
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
-                        checkpoint_every=50,
-                        print_every=10, expt_dir=opt.expt_dir)
-    t.train(seq2seq, dataset, num_epochs=4, dev_data=dev_set, resume=opt.resume)
+                        checkpoint_every=100,
+                        print_every=100, expt_dir=opt.expt_dir)
+    t.train(seq2seq, train, num_epochs=4, dev_data=dev, resume=opt.resume)
 
 predictor = Predictor(seq2seq, input_vocab, output_vocab)
 
 while True:
     seq_str = raw_input("Type in a source sequence:")
-    seq = seq_str.split()
+    seq = seq_str.strip().split()
     print(predictor.predict(seq))
