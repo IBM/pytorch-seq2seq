@@ -4,9 +4,7 @@ import time
 import shutil
 
 import torch
-
-from seq2seq.dataset.vocabulary import Vocabulary
-
+import dill
 
 class Checkpoint(object):
     """
@@ -76,10 +74,10 @@ class Checkpoint(object):
                    os.path.join(path, self.TRAINER_STATE_NAME))
         torch.save(self.model, os.path.join(path, self.MODEL_NAME))
 
-        if not os.path.isfile(os.path.join(path, self.INPUT_VOCAB_FILE)):
-            self.input_vocab.save(os.path.join(path, self.INPUT_VOCAB_FILE))
-        if not os.path.isfile(os.path.join(path, self.OUTPUT_VOCAB_FILE)):
-            self.output_vocab.save(os.path.join(path, self.OUTPUT_VOCAB_FILE))
+        with open(os.path.join(path, self.INPUT_VOCAB_FILE), 'wb') as fout:
+            dill.dump(self.input_vocab, fout)
+        with open(os.path.join(path, self.OUTPUT_VOCAB_FILE), 'wb') as fout:
+            dill.dump(self.output_vocab, fout)
 
         return path
 
@@ -95,8 +93,10 @@ class Checkpoint(object):
         print("Loading checkpoints from {}".format(path))
         resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME))
         model = torch.load(os.path.join(path, cls.MODEL_NAME))
-        input_vocab = Vocabulary.load(os.path.join(path, cls.INPUT_VOCAB_FILE))
-        output_vocab = Vocabulary.load(os.path.join(path, cls.OUTPUT_VOCAB_FILE))
+        with open(os.path.join(path, cls.INPUT_VOCAB_FILE), 'rb') as fin:
+            input_vocab = dill.load(fin)
+        with open(os.path.join(path, cls.OUTPUT_VOCAB_FILE), 'rb') as fin:
+            output_vocab = dill.load(fin)
         return Checkpoint(model=model, input_vocab=input_vocab,
                           output_vocab=output_vocab,
                           optimizer=resume_checkpoint['optimizer'],

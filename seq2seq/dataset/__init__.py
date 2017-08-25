@@ -1,2 +1,1 @@
-from vocabulary import Vocabulary
-from dataset import Dataset
+from .fields import SourceField, TargetField
