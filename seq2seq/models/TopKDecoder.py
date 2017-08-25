@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
-from baseRNN import BaseRNN
+from .baseRNN import BaseRNN
 
 
 class TopKDecoder(BaseRNN):
