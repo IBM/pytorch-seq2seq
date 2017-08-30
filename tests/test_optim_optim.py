@@ -22,8 +22,8 @@ class TestOptimizer(unittest.TestCase):
         optimizer = Optimizer(torch.optim.Adam(params, lr=1), max_grad_norm=5)
         scheduler = StepLR(optimizer.optimizer, 1, gamma=0.1)
         optimizer.set_scheduler(scheduler)
-        optimizer.update(0, 10)
-        optimizer.update(1, 10)
+        optimizer.update(10, 0)
+        optimizer.update(10, 1)
         self.assertEquals(optimizer.optimizer.param_groups[0]['lr'], 0.1)
 
     @mock.patch("torch.nn.utils.clip_grad_norm")
@@ -33,4 +33,3 @@ class TestOptimizer(unittest.TestCase):
                           max_grad_norm=5)
         optim.step()
         mock_clip_grad_norm.assert_called_once()
-
