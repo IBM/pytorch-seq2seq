@@ -16,7 +16,7 @@ class Checkpoint(object):
 
     Args:
         model (seq2seq): seq2seq model being trained
-        optimizer_state_dict (dict): stores the state of the optimizer
+        optimizer (Optimizer): stores the state of the optimizer
         epoch (int): current epoch (an epoch is a loop through the full training data)
         step (int): number of examples seen within the current epoch
         input_vocab (Vocabulary): vocabulary for the input language
@@ -36,9 +36,9 @@ class Checkpoint(object):
     INPUT_VOCAB_FILE = 'input_vocab.pt'
     OUTPUT_VOCAB_FILE = 'output_vocab.pt'
 
-    def __init__(self, model, optimizer_state_dict, epoch, step, input_vocab, output_vocab, path=None):
+    def __init__(self, model, optimizer, epoch, step, input_vocab, output_vocab, path=None):
         self.model = model
-        self.optimizer_state_dict = optimizer_state_dict
+        self.optimizer = optimizer
         self.input_vocab = input_vocab
         self.output_vocab = output_vocab
         self.epoch = epoch
@@ -70,8 +70,7 @@ class Checkpoint(object):
         os.makedirs(path)
         torch.save({'epoch': self.epoch,
                     'step': self.step,
-                    'optimizer': self.optimizer_state_dict
-                    },
+                    'optimizer': self.optimizer},
                    os.path.join(path, self.TRAINER_STATE_NAME))
         torch.save(self.model, os.path.join(path, self.MODEL_NAME))
 
@@ -100,7 +99,7 @@ class Checkpoint(object):
             output_vocab = dill.load(fin)
         return Checkpoint(model=model, input_vocab=input_vocab,
                           output_vocab=output_vocab,
-                          optimizer_state_dict=resume_checkpoint['optimizer'],
+                          optimizer=resume_checkpoint['optimizer'],
                           epoch=resume_checkpoint['epoch'],
                           step=resume_checkpoint['step'],
                           path=path)

@@ -37,14 +37,14 @@ class TestCheckpoint(unittest.TestCase):
     def test_save_checkpoint_calls_torch_save(self, mock_open, mock_dill, mock_torch):
         epoch = 5
         step = 10
-        opt_state_dict = {"key2": "val2"}
-        state_dict = {'epoch': epoch, 'step': step, 'optimizer': opt_state_dict}
+        optim = mock.Mock()
+        state_dict = {'epoch': epoch, 'step': step, 'optimizer': optim}
 
         mock_model = mock.Mock()
         mock_vocab = mock.Mock()
         mock_open.return_value = mock.MagicMock()
 
-        chk_point = Checkpoint(model=mock_model, optimizer_state_dict=opt_state_dict,
+        chk_point = Checkpoint(model=mock_model, optimizer=optim,
                                epoch=epoch, step=step,
                                input_vocab=mock_vocab, output_vocab=mock_vocab)
 
@@ -67,8 +67,8 @@ class TestCheckpoint(unittest.TestCase):
     @mock.patch('seq2seq.util.checkpoint.open')
     def test_load(self, mock_open, mock_dill, mock_torch):
         dummy_vocabulary = mock.Mock()
-        mock_optimizer_state_dict = mock.Mock()
-        torch_dict = {"optimizer": mock_optimizer_state_dict, "epoch": 5, "step": 10}
+        mock_optimizer = mock.Mock()
+        torch_dict = {"optimizer": mock_optimizer, "epoch": 5, "step": 10}
         mock_open.return_value = mock.MagicMock()
         mock_torch.load.return_value = torch_dict
         mock_dill.load.return_value = dummy_vocabulary
@@ -81,8 +81,7 @@ class TestCheckpoint(unittest.TestCase):
             os.path.join("mock_checkpoint_path", Checkpoint.MODEL_NAME))
 
         self.assertEquals(loaded_chk_point.epoch, torch_dict['epoch'])
-        self.assertEquals(loaded_chk_point.optimizer_state_dict,
-                          torch_dict['optimizer'])
+        self.assertEquals(loaded_chk_point.optimizer, torch_dict['optimizer'])
         self.assertEquals(loaded_chk_point.step, torch_dict['step'])
         self.assertEquals(loaded_chk_point.input_vocab, dummy_vocabulary)
         self.assertEquals(loaded_chk_point.output_vocab, dummy_vocabulary)

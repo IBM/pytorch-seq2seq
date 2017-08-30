@@ -3,12 +3,14 @@ import argparse
 import logging
 
 import torch
+from torch.optim.lr_scheduler import StepLR
 import torchtext
 
 import seq2seq
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
 from seq2seq.loss import Perplexity
+from seq2seq.optim import Optimizer
 from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
@@ -91,6 +93,7 @@ else:
         loss.cuda()
 
     seq2seq = None
+    optimizer = None
     if not opt.resume:
         # Initialize model
         hidden_size=128
@@ -106,11 +109,22 @@ else:
         for param in seq2seq.parameters():
             param.data.uniform_(-0.08, 0.08)
 
+        # Optimizer and learning rate scheduler can be customized by
+        # explicitly constructing the objects and pass to the trainer.
+        #
+        # optimizer = Optimizer(torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
+        # scheduler = StepLR(optimizer.optimizer, 1)
+        # optimizer.set_scheduler(scheduler)
+
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
-                        checkpoint_every=100,
-                        print_every=100, expt_dir=opt.expt_dir)
-    t.train(seq2seq, train, num_epochs=4, dev_data=dev, resume=opt.resume)
+                          checkpoint_every=50,
+                          print_every=10, expt_dir=opt.expt_dir)
+
+    t.train(seq2seq, train,
+            num_epochs=4, dev_data=dev,
+            optimizer=optimizer,
+            resume=opt.resume)
 
 predictor = Predictor(seq2seq, input_vocab, output_vocab)
 
