@@ -72,7 +72,7 @@ class SupervisedTrainer(object):
 
         return loss.get_loss()
 
-    def _train_epoches(self, data, model, n_epochs, start_epoch, step,
+    def _train_epoches(self, data, model, n_epochs, start_epoch, start_step,
                        dev_data=None, teacher_forcing_ratio=0):
         log = self.logger
 
@@ -88,6 +88,7 @@ class SupervisedTrainer(object):
         steps_per_epoch = len(batch_iterator)
         total_steps = steps_per_epoch * n_epochs
 
+        step = start_step
         for epoch in range(start_epoch, n_epochs + 1):
             log.debug("Epoch: %d, Step: %d" % (epoch, step))
 
@@ -110,7 +111,7 @@ class SupervisedTrainer(object):
                 epoch_loss_total += loss
 
                 if step % self.print_every == 0:
-                    print_loss_avg = print_loss_total / self.print_every
+                    print_loss_avg = print_loss_total / min(self.print_every, step - start_step)
                     print_loss_total = 0
                     log_msg = 'Progress: %d%%, Train %s: %.4f' % (
                         step / total_steps * 100,
@@ -126,7 +127,7 @@ class SupervisedTrainer(object):
                                input_vocab=data.fields[seq2seq.src_field_name].vocab,
                                output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir)
 
-            epoch_loss_avg = epoch_loss_total / steps_per_epoch
+            epoch_loss_avg = epoch_loss_total / min(steps_per_epoch, step - start_step)
             epoch_loss_total = 0
             log_msg = "Finished epoch %d: Train %s: %.4f" % (epoch, self.loss.name, epoch_loss_avg)
             if dev_data is not None:
