@@ -38,7 +38,7 @@ class TestCheckpoint(unittest.TestCase):
         epoch = 5
         step = 10
         optim = mock.Mock()
-        state_dict = {'epoch': epoch, 'step': step, 'optimizer': optim}
+        state_dict = {'epoch': epoch, 'step': step, 'optimizer': optim, 'optim_state_dict': optim.optimizer.state_dict()}
 
         mock_model = mock.Mock()
         mock_vocab = mock.Mock()
@@ -68,7 +68,7 @@ class TestCheckpoint(unittest.TestCase):
     def test_load(self, mock_open, mock_dill, mock_torch):
         dummy_vocabulary = mock.Mock()
         mock_optimizer = mock.Mock()
-        torch_dict = {"optimizer": mock_optimizer, "epoch": 5, "step": 10}
+        torch_dict = {"optimizer": mock_optimizer, "epoch": 5, "step": 10, 'optim_state_dict': mock_optimizer}
         mock_open.return_value = mock.MagicMock()
         mock_torch.load.return_value = torch_dict
         mock_dill.load.return_value = dummy_vocabulary
