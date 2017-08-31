@@ -3,28 +3,25 @@ import unittest
 
 import torch
 
-from seq2seq.dataset import Dataset
 from seq2seq.models import DecoderRNN
 
 class TestDecoderRNN(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        self.test_wd = os.getcwd()
-        self.dataset = Dataset.from_file(path=os.path.join(self.test_wd,'tests/data/eng-fra.txt'),
-                               src_max_len=50, tgt_max_len=50, src_max_vocab=50000, tgt_max_vocab=50000)
+        self.vocab_size = 100
 
     def test_input_dropout_WITH_PROB_ZERO(self):
-        rnn = DecoderRNN(self.dataset.output_vocab, 50, 16, input_dropout_p=0)
+        rnn = DecoderRNN(self.vocab_size, 50, 16, 0, 1, input_dropout_p=0)
         for param in rnn.parameters():
             param.data.uniform_(-1, 1)
-        batch = [[1,2,3], [1,2], [1]]
-        output1, _, _ = rnn(batch)
-        output2, _, _ = rnn(batch)
-        self.assertTrue(torch.equal(output1[0].data, output2[0].data))
+        output1, _, _ = rnn()
+        output2, _, _ = rnn()
+        for prob1, prob2 in zip(output1, output2):
+            self.assertTrue(torch.equal(prob1.data, prob2.data))
 
     def test_input_dropout_WITH_NON_ZERO_PROB(self):
-        rnn = DecoderRNN(self.dataset.output_vocab, 50, 16, input_dropout_p=0.5)
+        rnn = DecoderRNN(self.vocab_size, 50, 16, 0, 1, input_dropout_p=0.5)
         for param in rnn.parameters():
             param.data.uniform_(-1, 1)
 
@@ -38,24 +35,23 @@ class TestDecoderRNN(unittest.TestCase):
         self.assertFalse(equal)
 
     def test_dropout_WITH_PROB_ZERO(self):
-        rnn = DecoderRNN(self.dataset.output_vocab, 50, 16, dropout_p=0)
+        rnn = DecoderRNN(self.vocab_size, 50, 16, 0, 1, dropout_p=0)
         for param in rnn.parameters():
             param.data.uniform_(-1, 1)
-        batch = [[1,2,3], [1,2], [1]]
-        output1, _, _ = rnn(batch)
-        output2, _, _ = rnn(batch)
-        self.assertTrue(torch.equal(output1[0].data, output2[0].data))
+        output1, _, _ = rnn()
+        output2, _, _ = rnn()
+        for prob1, prob2 in zip(output1, output2):
+            self.assertTrue(torch.equal(prob1.data, prob2.data))
 
     def test_dropout_WITH_NON_ZERO_PROB(self):
-        rnn = DecoderRNN(self.dataset.output_vocab, 50, 16, dropout_p=0.5)
+        rnn = DecoderRNN(self.vocab_size, 50, 16, 0, 1, n_layers=2, dropout_p=0.5)
         for param in rnn.parameters():
             param.data.uniform_(-1, 1)
-        batch = [[1,2,3], [1,2], [1]]
 
         equal = True
         for _ in range(50):
-            output1, _, _ = rnn(batch)
-            output2, _, _ = rnn(batch)
+            output1, _, _ = rnn()
+            output2, _, _ = rnn()
             if not torch.equal(output1[0].data, output2[0].data):
                 equal = False
                 break

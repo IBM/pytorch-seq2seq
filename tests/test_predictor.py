@@ -1,33 +1,33 @@
 import os
 import unittest
 
-import torch
+import torchtext
 
 from seq2seq.evaluator import Predictor
-from seq2seq.dataset import Dataset
+from seq2seq.dataset import SourceField, TargetField
 from seq2seq.models import Seq2seq, EncoderRNN, DecoderRNN
 
 class TestPredictor(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        self.test_wd = os.getcwd()
-        self.dataset = Dataset.from_file(path=os.path.join(self.test_wd,'tests/data/eng-fra.txt'),
-                               src_max_len=50, tgt_max_len=50, src_max_vocab=50000, tgt_max_vocab=50000)
-        self.encoder = EncoderRNN(self.dataset.input_vocab,max_len=10, hidden_size=10, rnn_cell='lstm')
-        self.decoder = DecoderRNN(self.dataset.output_vocab, max_len=10, hidden_size=10, rnn_cell='lstm')
-        self.seq2seq = Seq2seq(self.encoder,self.decoder)
-        if torch.cuda.is_available():
-            self.seq2seq.cuda()
-        self.mock_seq2seq = Seq2seq(self.encoder, self.decoder)
+        test_path = os.path.dirname(os.path.realpath(__file__))
+        src = SourceField()
+        trg = TargetField()
+        dataset = torchtext.data.TabularDataset(
+            path=os.path.join(test_path, 'data/eng-fra.txt'), format='tsv',
+            fields=[('src', src), ('trg', trg)],
+        )
+        src.build_vocab(dataset)
+        trg.build_vocab(dataset)
 
-        for param in self.seq2seq.parameters():
-            param.data.uniform_(-0.08, 0.08)
+        encoder = EncoderRNN(len(src.vocab), 10, 10, rnn_cell='lstm')
+        decoder = DecoderRNN(len(trg.vocab), 10, 10, trg.sos_id, trg.eos_id, rnn_cell='lstm')
+        seq2seq = Seq2seq(encoder, decoder)
+        self.predictor = Predictor(seq2seq, src.vocab, trg.vocab)
 
     def test_predict(self):
-        predictor = Predictor(self.seq2seq,
-                self.dataset.input_vocab, self.dataset.output_vocab)
         src_seq = ["I", "am", "fat"]
-        tgt_seq = predictor.predict(src_seq)
+        tgt_seq = self.predictor.predict(src_seq)
         for tok in tgt_seq:
-            self.assertTrue(tok in self.dataset.output_vocab._token2index)
+            self.assertTrue(tok in self.predictor.tgt_vocab.stoi)
