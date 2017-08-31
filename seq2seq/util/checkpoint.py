@@ -70,8 +70,7 @@ class Checkpoint(object):
         os.makedirs(path)
         torch.save({'epoch': self.epoch,
                     'step': self.step,
-                    'optimizer': self.optimizer,
-                    'optim_state_dict': self.optimizer.optimizer.state_dict()
+                    'optimizer': self.optimizer
                    },
                    os.path.join(path, self.TRAINER_STATE_NAME))
         torch.save(self.model, os.path.join(path, self.MODEL_NAME))
@@ -100,7 +99,6 @@ class Checkpoint(object):
         with open(os.path.join(path, cls.OUTPUT_VOCAB_FILE), 'rb') as fin:
             output_vocab = dill.load(fin)
         optimizer = resume_checkpoint['optimizer']
-        optimizer.optimizer.load_state_dict(resume_checkpoint['optim_state_dict'])
         return Checkpoint(model=model, input_vocab=input_vocab,
                           output_vocab=output_vocab,
                           optimizer=optimizer,

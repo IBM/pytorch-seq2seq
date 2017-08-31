@@ -164,6 +164,13 @@ class SupervisedTrainer(object):
             resume_checkpoint = Checkpoint.load(latest_checkpoint_path)
             model = resume_checkpoint.model
             self.optimizer = resume_checkpoint.optimizer
+
+            # A walk around to set optimizing parameters properly
+            resume_optim = self.optimizer.optimizer
+            defaults = resume_optim.param_groups[0]
+            defaults.pop('params', None)
+            self.optimizer.optimizer = resume_optim.__class__(model.parameters(), **defaults)
+
             start_epoch = resume_checkpoint.epoch
             step = resume_checkpoint.step
         else:
