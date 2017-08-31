@@ -72,9 +72,10 @@ class SupervisedTrainer(object):
 
         return loss.get_loss()
 
-    def _train_epoches(self, data, model, n_epochs, batch_size, start_epoch, step,
+    def _train_epoches(self, data, model, n_epochs, start_epoch, step,
                        dev_data=None, teacher_forcing_ratio=0):
-        start = time.time()
+        log = self.logger
+
         print_loss_total = 0  # Reset every print_every
         epoch_loss_total = 0  # Reset every epoch
 
@@ -83,18 +84,20 @@ class SupervisedTrainer(object):
             dataset=data, batch_size=self.batch_size,
             sort_key=lambda x: -len(x.src),
             device=device, repeat=False)
-        
+
         steps_per_epoch = len(batch_iterator)
         total_steps = steps_per_epoch * n_epochs
 
         for epoch in range(start_epoch, n_epochs + 1):
+            log.debug("Epoch: %d, Step: %d" % (epoch, step))
 
+            batch_generator = batch_iterator.__iter__()
             # consuming seen batches from previous training
             for _ in range((epoch - 1) * steps_per_epoch, step):
-                for _ in batch_iterator: break
+                next(batch_generator)
 
             model.train(True)
-            for batch in batch_iterator:
+            for batch in batch_generator:
                 step += 1
 
                 input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
@@ -113,7 +116,7 @@ class SupervisedTrainer(object):
                         step / total_steps * 100,
                         self.loss.name,
                         print_loss_avg)
-                    self.logger.info(log_msg)
+                    log.info(log_msg)
 
                 # Checkpoint
                 if step % self.checkpoint_every == 0 or step == total_steps:
@@ -134,28 +137,26 @@ class SupervisedTrainer(object):
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)
 
-            self.logger.info(log_msg)
+            log.info(log_msg)
 
     def train(self, model, data, num_epochs=5,
               resume=False, dev_data=None,
               optimizer=None, teacher_forcing_ratio=0):
         """ Run training for a given model.
 
-         Args:
-             model (seq2seq.models): model to run training on, if `resume=True`, it would be
-                overwritten by the model loaded from the latest checkpoint.
-             data (seq2seq.dataset.dataset.Dataset): dataset object to train on
-             num_epochs (int, optional): number of epochs to run (default 5)
-             resume(bool, optional): resume training with the latest checkpoint, (default False)
-             dev_data (seq2seq.dataset.dataset.Dataset, optional): dev Dataset (default None)
-             optimizer (seq2seq.optim.Optimizer, optional): optimizer for training
-                (default: Optimizer(pytorch.optim.Adam, max_grad_norm=5))
-             teacher_forcing_ratio (float, optional): teaching forcing ratio (default 0)
+        Args:
+            model (seq2seq.models): model to run training on, if `resume=True`, it would be
+               overwritten by the model loaded from the latest checkpoint.
+            data (seq2seq.dataset.dataset.Dataset): dataset object to train on
+            num_epochs (int, optional): number of epochs to run (default 5)
+            resume(bool, optional): resume training with the latest checkpoint, (default False)
+            dev_data (seq2seq.dataset.dataset.Dataset, optional): dev Dataset (default None)
+            optimizer (seq2seq.optim.Optimizer, optional): optimizer for training
+               (default: Optimizer(pytorch.optim.Adam, max_grad_norm=5))
+            teacher_forcing_ratio (float, optional): teaching forcing ratio (default 0)
+        Returns:
+            model (seq2seq.models): trained model.
         """
-        # Make Checkpoint Directories
-        data.input_vocab.save(self.input_vocab_file)
-        data.output_vocab.save(self.output_vocab_file)
-
         # If training is set to resume
         if resume:
             latest_checkpoint_path = Checkpoint.get_latest_checkpoint(self.expt_dir)
@@ -173,6 +174,7 @@ class SupervisedTrainer(object):
 
         self.logger.info("Optimizer: %s, Scheduler: %s" % (self.optimizer.optimizer, self.optimizer.scheduler))
 
-        self._train_epoches(data, model, num_epochs, self.batch_size,
+        self._train_epoches(data, model, num_epochs,
                             start_epoch, step, dev_data=dev_data,
                             teacher_forcing_ratio=teacher_forcing_ratio)
+        return model

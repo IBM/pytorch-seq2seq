@@ -41,7 +41,7 @@ parser.add_argument('--resume', action='store_true', dest='resume',
                     default=False,
                     help='Indicates if training has to be resumed from the latest checkpoint')
 parser.add_argument('--log-level', dest='log_level',
-                    default='debug',
+                    default='info',
                     help='Logging level.')
 
 opt = parser.parse_args()
@@ -121,7 +121,7 @@ else:
                           checkpoint_every=50,
                           print_every=10, expt_dir=opt.expt_dir)
 
-    t.train(seq2seq, train,
+    seq2seq = t.train(seq2seq, train,
             num_epochs=4, dev_data=dev,
             optimizer=optimizer,
             resume=opt.resume)
