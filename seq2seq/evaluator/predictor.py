@@ -12,10 +12,14 @@ class Predictor(object):
             src_vocab (seq2seq.dataset.vocabulary.Vocabulary): source sequence vocabulary
             tgt_vocab (seq2seq.dataset.vocabulary.Vocabulary): target sequence vocabulary
         """
-        self.model = model
+        if torch.cuda.is_available():
+            self.model = model.cuda()
+        else:
+            self.model = model.cpu()
         self.model.eval()
         self.src_vocab = src_vocab
         self.tgt_vocab = tgt_vocab
+
 
     def predict(self, src_seq):
         """ Make prediction given `src_seq` as input.
