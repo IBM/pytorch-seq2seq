@@ -46,7 +46,6 @@ class TestSupervisedTrainer(unittest.TestCase):
         trainer.optimizer = mock_optim
         n_epoches = 1
         start_epoch = 1
-        steps_per_epoch = 7
         step = 7
         trainer._train_epoches(self.dataset, mock_model, n_epoches, start_epoch, step)
 
