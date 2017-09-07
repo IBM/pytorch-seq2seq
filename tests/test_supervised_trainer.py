@@ -36,5 +36,18 @@ class TestSupervisedTrainer(unittest.TestCase):
 
         self.assertEqual(steps_per_epoch - step, mock_func.call_count)
 
+    @mock.patch('seq2seq.trainer.SupervisedTrainer._train_batch', return_value=0)
+    @mock.patch('seq2seq.util.checkpoint.Checkpoint.save')
+    def test_resume_from_multiple_of_epoches(self, mock_checkpoint, mock_func):
+        mock_model = mock.Mock()
+        mock_optim = mock.Mock()
+
+        trainer = SupervisedTrainer(batch_size=16)
+        trainer.optimizer = mock_optim
+        n_epoches = 1
+        start_epoch = 1
+        step = 7
+        trainer._train_epoches(self.dataset, mock_model, n_epoches, start_epoch, step)
+
 if __name__ == '__main__':
     unittest.main()
