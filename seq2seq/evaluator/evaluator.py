@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function, division
 
 import torch
 import torchtext
@@ -28,8 +28,11 @@ class Evaluator(object):
             loss (float): loss of the given model on the given dataset
         """
         model.eval()
+
         loss = self.loss
         loss.reset()
+        match = 0
+        total = 0
 
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
@@ -45,6 +48,7 @@ class Evaluator(object):
 
             # Evaluation
             lengths = other['length']
+            seqlist = other['sequence']
             for b in range(target_variables.size(0)):
                 # Batch wise loss
                 batch_target = target_variables[b, 1:]
@@ -55,4 +59,8 @@ class Evaluator(object):
                 # Evaluate loss
                 loss.eval_batch(batch_output, batch_target)
 
-        return loss.get_loss()
+                # Accuracy
+                total += batch_len
+                match += len(seqlist[b][:batch_len].eq(batch_target).data.nonzero())
+
+        return loss.get_loss(), match / total
