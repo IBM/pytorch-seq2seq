@@ -70,3 +70,38 @@ class Attention(nn.Module):
         output = F.tanh(self.linear_out(combined.view(-1, 2 * hidden_size))).view(batch_size, -1, hidden_size)
 
         return output, attn
+
+class PointerAttention(nn.Module):
+    r"""
+    Applies an pointer attention mechanism on the output features from the decoder.
+    Args:
+        dim(int): The number of expected features in the output
+    Inputs: output, context
+        - **output** (batch, output_len, dimensions): tensor containing the output features from the decoder.
+        - **context** (batch, input_len, dimensions): tensor containing features of the encoded input sequence.
+    Outputs: output, attn
+        - **output** (batch, output_len, input_len): tensor containing the attended output features from the decoder.
+        - **attn** (batch, output_len, input_len): tensor containing attention weights.
+    """
+    def __init__(self, dim):
+        super(PointerAttention, self).__init__()
+        self.dec_linear = nn.Linear(dim, dim, bias=False)
+        self.enc_linear = nn.Linear(dim, dim, bias=False)
+        self.out_linear = nn.Linear(dim, 1, bias=False)
+
+    def forward(self, output, context):
+        batch_size = output.size(0)
+        hidden_size = output.size(2)
+        out_len = output.size(1)
+        in_len = context.size(1)
+
+        # (batch_size, out_len, dim) -> (batch_size * out_len, dim) -> (batch_size * out_len, dim)
+        dec = self.dec_linear(output.view(-1, hidden_size))
+        dec = dec.view(batch_size, out_len, 1, hidden_size).expand(batch_size, out_len, in_len, hidden_size)
+        # (batch_size, in_len, dim) - > (batch_size * in_len, dim) -> (batch_size * in_len, dim)
+        enc = self.enc_linear(context.view(-1, hidden_size))
+        enc = enc.view(batch_size, 1, in_len, hidden_size).expand(batch_size, out_len, in_len, hidden_size)
+        # (batch_size, out_len, in_len, dim) -> (batch_size, out_len, in_len)
+        attn = self.out_linear((F.tanh(enc + dec).view(-1, hidden_size))).view(batch_size, out_len, in_len)
+
+        return attn, attn

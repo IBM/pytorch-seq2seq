@@ -100,7 +100,7 @@ else:
         encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
                              variable_lengths=True)
         decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size,
-                             dropout_p=0.2, use_attention=True,
+                             dropout_p=0.2, attention='global',
                              eos_id=tgt.eos_id, sos_id=tgt.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
