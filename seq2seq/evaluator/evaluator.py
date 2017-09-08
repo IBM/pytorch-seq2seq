@@ -44,15 +44,7 @@ class Evaluator(object):
             decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths.tolist(), target_variables)
 
             # Evaluation
-            lengths = other['length']
-            for b in range(target_variables.size(0)):
-                # Batch wise loss
-                batch_target = target_variables[b, 1:]
-                batch_len = min(lengths[b], target_variables.size(1) - 1)
-                # Crop output and target to batch length
-                batch_output = torch.stack([output[b] for output in decoder_outputs[:batch_len]])
-                batch_target = batch_target[:batch_len]
-                # Evaluate loss
-                loss.eval_batch(batch_output, batch_target)
+            for step, step_output in enumerate(decoder_outputs):
+                loss.eval_batch(step_output.view(target_variables.size(0), -1), target_variables[:, step + 1])
 
         return loss.get_loss()

@@ -122,9 +122,10 @@ else:
                           print_every=10, expt_dir=opt.expt_dir)
 
     seq2seq = t.train(seq2seq, train,
-            num_epochs=4, dev_data=dev,
-            optimizer=optimizer,
-            resume=opt.resume)
+                      num_epochs=6, dev_data=dev,
+                      optimizer=optimizer,
+                      teacher_forcing_ratio=0,
+                      resume=opt.resume)
 
 predictor = Predictor(seq2seq, input_vocab, output_vocab)
 
