@@ -56,7 +56,8 @@ class SupervisedTrainer(object):
         # Get loss
         loss.reset()
         for step, step_output in enumerate(decoder_outputs):
-            loss.eval_batch(step_output.contiguous().view(target_variable.size(0), -1), target_variable[:, step + 1])
+            batch_size = target_variable.size(0)
+            loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
         # Backward propagation
         model.zero_grad()
         loss.backward()
