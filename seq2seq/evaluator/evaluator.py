@@ -39,6 +39,8 @@ class Evaluator(object):
             dataset=data, batch_size=self.batch_size,
             sort_key=lambda batch: -len(getattr(batch, seq2seq.src_field_name)),
             device=device, train=False)
+        tgt_vocab = data.fields[seq2seq.tgt_field_name].vocab
+        pad = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].pad_token]
 
         for batch in batch_iterator:
             input_variables, input_lengths  = getattr(batch, seq2seq.src_field_name)
@@ -47,20 +49,14 @@ class Evaluator(object):
             decoder_outputs, decoder_hidden, other = model(input_variables, input_lengths.tolist(), target_variables)
 
             # Evaluation
-            lengths = other['length']
             seqlist = other['sequence']
-            for b in range(target_variables.size(0)):
-                # Batch wise loss
-                batch_target = target_variables[b, 1:]
-                batch_len = min(lengths[b], target_variables.size(1) - 1)
-                # Crop output and target to batch length
-                batch_output = torch.stack([output[b] for output in decoder_outputs[:batch_len]])
-                batch_target = batch_target[:batch_len]
-                # Evaluate loss
-                loss.eval_batch(batch_output, batch_target)
+            for step, step_output in enumerate(decoder_outputs):
+                target = target_variables[:, step + 1]
+                loss.eval_batch(step_output.view(target_variables.size(0), -1), target)
 
-                # Accuracy
-                total += batch_len
-                match += len(seqlist[b][:batch_len].eq(batch_target).data.nonzero())
+                non_padding = target.ne(pad)
+                correct = seqlist[step].view(-1).eq(target).masked_select(non_padding).sum().data[0]
+                match += correct
+                total += non_padding.sum().data[0]
 
         return loss.get_loss(), match / total

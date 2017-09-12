@@ -55,16 +55,9 @@ class SupervisedTrainer(object):
                                                        teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
-        lengths = other['length']
-        for batch in range(target_variable.size(0)):
-            # Batch wise loss
-            batch_target = target_variable[batch, 1:]
-            batch_len = min(lengths[batch], target_variable.size(1) - 1)
-            # Crop output and target to batch length
-            batch_output = torch.stack([output[batch] for output in decoder_outputs[:batch_len]])
-            batch_target = batch_target[:batch_len]
-            # Evaluate loss
-            loss.eval_batch(batch_output, batch_target)
+        for step, step_output in enumerate(decoder_outputs):
+            batch_size = target_variable.size(0)
+            loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
         # Backward propagation
         model.zero_grad()
         loss.backward()
