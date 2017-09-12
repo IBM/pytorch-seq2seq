@@ -59,4 +59,9 @@ class Evaluator(object):
                 match += correct
                 total += non_padding.sum().data[0]
 
-        return loss.get_loss(), match / total
+        if total == 0:
+            accuracy = float('nan')
+        else:
+            accuracy = match / total
+
+        return loss.get_loss(), accuracy
