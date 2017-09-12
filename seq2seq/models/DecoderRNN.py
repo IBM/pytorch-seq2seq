@@ -123,18 +123,19 @@ class DecoderRNN(BaseRNN):
                     batch_size = encoder_hidden.size(1)
 
         if inputs is None:
-            decoder_input = Variable(torch.LongTensor([self.sos_id]),
+            inputs = Variable(torch.LongTensor([self.sos_id]),
                                     volatile=True).view(batch_size, -1)
+            max_length = self.max_length
         else:
-            decoder_input = inputs[:, 0].unsqueeze(1)
-            inputs = None if inputs.size(1) == 1 else inputs[:, 1:]
+            max_length = inputs.size(1) - 1 # minus the start of sequence symbol
+
         decoder_hidden = encoder_hidden
 
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
         decoder_outputs = []
         sequence_symbols = []
-        lengths = np.array([self.max_length] * batch_size)
+        lengths = np.array([max_length] * batch_size)
 
         def decode(step, step_output, step_attn):
             decoder_outputs.append(step_output)
@@ -153,16 +154,17 @@ class DecoderRNN(BaseRNN):
         # Manual unrolling is used to support random teacher forcing.
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
         if use_teacher_forcing:
-            decoder_input = torch.cat([decoder_input, inputs], dim=1)
+            decoder_input = inputs[:, :-1]
             decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                      function=function)
 
-            for di in range(inputs.size(1)):
+            for di in range(decoder_output.size(1)):
                 step_output = decoder_output[:, di, :]
                 step_attn = attn[:, di, :]
                 decode(di, step_output, step_attn)
         else:
-            for di in range(self.max_length):
+            decoder_input = inputs[:, 0].unsqueeze(1)
+            for di in range(max_length):
                 decoder_output, decoder_hidden, step_attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                          function=function)
                 step_output = decoder_output.squeeze(1)
