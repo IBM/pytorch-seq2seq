@@ -30,5 +30,7 @@ before_script:
 script: 
   # Unit test
   - nosetests --with-coverage --cover-erase --cover-package=seq2seq
+  # Install seq2seq
+  - python setup.py install
   # Integration test
   - scripts/integration_test.sh
