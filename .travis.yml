@@ -32,4 +32,4 @@ script:
   # Unit test
   - nosetests --with-coverage --cover-erase --cover-package=seq2seq
   # Integration test
-  - "[[ $TRAVIS_BRANCH =~ (master|develop) ]] && python setup.py install && scripts/integration_test.sh"
+  - "if [[ $TRAVIS_BRANCH =~ (master|develop) ]]; then python setup.py install && scripts/integration_test.sh; fi"
