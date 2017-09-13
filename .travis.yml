@@ -5,6 +5,7 @@ cache: pip
 python:
   - "2.7"
   - "3.6"
+
 # command to install dependencies
 install:
   - pip install -U pip
@@ -30,7 +31,5 @@ before_script:
 script: 
   # Unit test
   - nosetests --with-coverage --cover-erase --cover-package=seq2seq
-  # Install seq2seq
-  - python setup.py install
   # Integration test
-  - scripts/integration_test.sh
+  - "[[ $TRAVIS_BRANCH =~ (master|develop) ]] && python setup.py install && scripts/integration_test.sh"
