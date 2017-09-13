@@ -12,10 +12,14 @@ class Predictor(object):
             src_vocab (seq2seq.dataset.vocabulary.Vocabulary): source sequence vocabulary
             tgt_vocab (seq2seq.dataset.vocabulary.Vocabulary): target sequence vocabulary
         """
-        self.model = model
+        if torch.cuda.is_available():
+            self.model = model.cuda()
+        else:
+            self.model = model.cpu()
         self.model.eval()
         self.src_vocab = src_vocab
         self.tgt_vocab = tgt_vocab
+
 
     def predict(self, src_seq):
         """ Make prediction given `src_seq` as input.
@@ -32,10 +36,7 @@ class Predictor(object):
         if torch.cuda.is_available():
             src_id_seq = src_id_seq.cuda()
 
-        decoder_kick = Variable(torch.LongTensor([self.tgt_vocab.stoi['<sos>']]),
-                                volatile=True).view(1, -1)
-
-        softmax_list, _, other = self.model(src_id_seq, [len(src_seq)], decoder_kick)
+        softmax_list, _, other = self.model(src_id_seq, [len(src_seq)])
         length = other['length'][0]
 
         tgt_id_seq = [other['sequence'][di][0].data[0] for di in range(length)]
