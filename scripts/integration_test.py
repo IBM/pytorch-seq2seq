@@ -100,7 +100,7 @@ else:
                       resume=opt.resume)
 
 evaluator = Evaluator(loss=loss, batch_size=32)
-dev_loss = evaluator.evaluate(seq2seq, dev)
+dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
 assert dev_loss < 1.5
 
 predictor = Predictor(seq2seq, input_vocab, output_vocab)
