@@ -86,9 +86,13 @@ else:
     # seq2seq.tgt_field_name = 'tgt'
 
     # Prepare loss
-    weight = torch.ones(len(tgt.vocab))
-    pad = tgt.vocab.stoi[tgt.pad_token]
-    loss = Perplexity(weight, pad)
+    # weight = torch.ones(len(tgt.vocab))
+    # pad = tgt.vocab.stoi[tgt.pad_token]
+    # loss = Perplexity(weight, pad)
+    # if torch.cuda.is_available():
+        # loss.cuda()
+
+    loss = Perplexity(None, None)
     if torch.cuda.is_available():
         loss.cuda()
 
@@ -100,7 +104,7 @@ else:
         encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
                              variable_lengths=True)
         decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size,
-                             dropout_p=0.2, attention='global',
+                             dropout_p=0.2, attention='pointer',
                              eos_id=tgt.eos_id, sos_id=tgt.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():

@@ -96,10 +96,10 @@ class PointerAttention(nn.Module):
         in_len = context.size(1)
 
         # (batch_size, out_len, dim) -> (batch_size * out_len, dim) -> (batch_size * out_len, dim)
-        dec = self.dec_linear(output.view(-1, hidden_size))
+        dec = self.dec_linear(output.contiguous().view(-1, hidden_size))
         dec = dec.view(batch_size, out_len, 1, hidden_size).expand(batch_size, out_len, in_len, hidden_size)
         # (batch_size, in_len, dim) - > (batch_size * in_len, dim) -> (batch_size * in_len, dim)
-        enc = self.enc_linear(context.view(-1, hidden_size))
+        enc = self.enc_linear(context.contiguous().view(-1, hidden_size))
         enc = enc.view(batch_size, 1, in_len, hidden_size).expand(batch_size, out_len, in_len, hidden_size)
         # (batch_size, out_len, in_len, dim) -> (batch_size, out_len, in_len)
         attn = self.out_linear((F.tanh(enc + dec).view(-1, hidden_size))).view(batch_size, out_len, in_len)

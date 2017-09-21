@@ -22,7 +22,8 @@ def generate_dataset(root, name, size):
             seq = []
             for _ in range(length):
                 seq.append(str(random.randint(0, 9)))
-            fout.write("\t".join([" ".join(seq), " ".join(reversed(seq))]))
+            # fout.write("\t".join([" ".join(seq), " ".join(reversed(seq))]))
+            fout.write("\t".join([" ".join(seq), " ".join([str(t) for t in reversed(range(len(seq)))])]))
             fout.write('\n')
 
     # generate vocabulary

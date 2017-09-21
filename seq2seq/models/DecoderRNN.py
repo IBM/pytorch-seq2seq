@@ -105,7 +105,8 @@ class DecoderRNN(BaseRNN):
         if self.attention is not None:
             output, attn = self.attention(output, encoder_outputs)
         print(self.out(output).size())
-        predicted_softmax = function(self.out(output.view(-1, self.hidden_size))).view(batch_size, output_size, -1)
+        predicted_softmax = function(self.out(output.view(batch_size * output_size, -1))) \
+            .view(batch_size, output_size, -1)
 
         return predicted_softmax, hidden, attn
 

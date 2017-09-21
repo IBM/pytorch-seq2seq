@@ -135,6 +135,7 @@ class Perplexity(NLLLoss):
         super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=False)
 
     def eval_batch(self, outputs, target):
+        print(outputs.size(), target.size())
         self.acc_loss += self.criterion(outputs, target)
         if self.mask is None:
             self.norm_term += np.prod(target.size())
