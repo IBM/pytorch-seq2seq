@@ -30,7 +30,7 @@ class TestPredictor(unittest.TestCase):
         for param in self.seq2seq.parameters():
             param.data.uniform_(-0.08, 0.08)
 
-    @patch.object(Seq2seq, '__call__', return_value=([], None, dict(inputs=[], length=[10]*64)))
+    @patch.object(Seq2seq, '__call__', return_value=([], None, dict(inputs=[], length=[10]*64, sequence=MagicMock())))
     @patch.object(Seq2seq, 'eval')
     def test_set_eval_mode(self, mock_eval, mock_call):
         """ Make sure that evaluation is done in evaluation mode. """
