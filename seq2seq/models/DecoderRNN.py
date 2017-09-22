@@ -66,11 +66,14 @@ class DecoderRNN(BaseRNN):
 
     def __init__(self, vocab_size, max_len, hidden_size,
             sos_id, eos_id,
-            n_layers=1, rnn_cell='gru',
+            n_layers=1, rnn_cell='gru', bidirectional=False,
             input_dropout_p=0, dropout_p=0, use_attention=False):
         super(DecoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p,
                 n_layers, rnn_cell)
+
+        self.bidirectional_encoder = bidirectional
+        self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p)
 
         self.output_size = vocab_size
         self.max_length = max_len
@@ -129,7 +132,7 @@ class DecoderRNN(BaseRNN):
         else:
             max_length = inputs.size(1) - 1 # minus the start of sequence symbol
 
-        decoder_hidden = encoder_hidden
+        decoder_hidden = self.init_state(encoder_hidden)
 
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
@@ -175,3 +178,18 @@ class DecoderRNN(BaseRNN):
         ret_dict[DecoderRNN.KEY_LENGTH] = lengths.tolist()
 
         return decoder_outputs, decoder_hidden, ret_dict
+
+    def init_state(self, encoder_hidden):
+        if encoder_hidden is None:
+            return None
+        if isinstance(encoder_hidden, tuple):
+            encoder_hidden = tuple([self._cat_directions(h) for h in encoder_hidden])
+        else:
+            encoder_hidden = self._cat_directions(encoder_hidden)
+        return encoder_hidden
+
+    def _cat_directions(self, h):
+        if self.bidirectional_encoder:
+            h = torch.cat([h[0:h.size(1):2], h[1:h.size(1):2]], 2)
+        return h
+
