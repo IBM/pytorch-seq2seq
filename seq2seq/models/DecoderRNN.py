@@ -190,6 +190,6 @@ class DecoderRNN(BaseRNN):
 
     def _cat_directions(self, h):
         if self.bidirectional_encoder:
-            h = torch.cat([h[0:h.size(1):2], h[1:h.size(1):2]], 2)
+            h = torch.cat([h[0:h.size(0):2], h[1:h.size(0):2]], 2)
         return h
 
