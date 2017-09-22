@@ -28,6 +28,7 @@ class DecoderRNN(BaseRNN):
         eos_id (int): index of the end of sentence symbol
         n_layers (int, optional): number of recurrent layers (default: 1)
         rnn_cell (str, optional): type of RNN cell (default: gru)
+        bidirectional (bool, optional): if the preceding encoder is bidirectional (default False)
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
         use_attention(bool, optional): flag indication whether to use attention mechanism or not (default: false)
@@ -132,7 +133,7 @@ class DecoderRNN(BaseRNN):
         else:
             max_length = inputs.size(1) - 1 # minus the start of sequence symbol
 
-        decoder_hidden = self.init_state(encoder_hidden)
+        decoder_hidden = self._init_state(encoder_hidden)
 
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
@@ -179,7 +180,8 @@ class DecoderRNN(BaseRNN):
 
         return decoder_outputs, decoder_hidden, ret_dict
 
-    def init_state(self, encoder_hidden):
+    def _init_state(self, encoder_hidden):
+        """ Initialize the encoder hidden state. """
         if encoder_hidden is None:
             return None
         if isinstance(encoder_hidden, tuple):
@@ -189,6 +191,9 @@ class DecoderRNN(BaseRNN):
         return encoder_hidden
 
     def _cat_directions(self, h):
+        """ If the encoder is bidirectional, do the following transformation.
+            (#directions * #layers, #batch, hidden_size) -> (#layers, #batch, #directions * hidden_size)
+        """
         if self.bidirectional_encoder:
             h = torch.cat([h[0:h.size(0):2], h[1:h.size(0):2]], 2)
         return h
