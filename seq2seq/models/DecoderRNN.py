@@ -28,7 +28,7 @@ class DecoderRNN(BaseRNN):
         eos_id (int): index of the end of sentence symbol
         n_layers (int, optional): number of recurrent layers (default: 1)
         rnn_cell (str, optional): type of RNN cell (default: gru)
-        bidirectional (bool, optional): if the preceding encoder is bidirectional (default False)
+        bidirectional (bool, optional): if the encoder is bidirectional (default False)
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
         use_attention(bool, optional): flag indication whether to use attention mechanism or not (default: false)
