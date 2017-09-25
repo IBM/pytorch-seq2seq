@@ -7,6 +7,12 @@
 
 This is a framework for sequence-to-sequence (seq2seq) models implemented in [PyTorch](http://pytorch.org).  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
 
+# What's New in 0.1.4
+
+* Improved running speed significantly
+* Bidirectional encoder
+* Show token-wise accuracy in evaluation
+
 # Roadmap
 Seq2seq is a fast evolving field with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
 
@@ -16,7 +22,7 @@ Seq2seq is a fast evolving field with new techniques and architectures being pub
 * Support features in the new versions of PyTorch.
 
 # Installation
-This package requires Python 2.7. We recommend creating a new virtual environment for this project (using virtualenv or conda).  
+This package requires Python 2.7 or 3.6. We recommend creating a new virtual environment for this project (using virtualenv or conda).  
 
 ### Prerequisites
 
@@ -62,6 +68,10 @@ Checkpoints are organized by experiments and timestamps as shown in the followin
 	   |  +-- model_checkpoint
 
 The sample script by default saves checkpoints in the `experiment` folder of the root directory.  Look at the usages of the sample code for more options, including resuming and loading from checkpoints.
+
+# Benchmarks
+
+* WMT Machine Translation (Coming soon)
 
 # Troubleshoots and Contributing
 If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/IBM/pytorch-seq2seq/issues/new) on Github.  For live discussions, please go to our [Gitter lobby](https://gitter.im/pytorch-seq2seq/Lobby).
