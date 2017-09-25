@@ -8,6 +8,7 @@ from seq2seq.loss import NLLLoss
 
 class Evaluator(object):
     """ Class to evaluate models with given datasets.
+
     Args:
         loss (seq2seq.loss, optional): loss for evaluator (default: seq2seq.loss.NLLLoss)
         batch_size (int, optional): batch size for evaluator (default: 64)

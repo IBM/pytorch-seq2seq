@@ -4,6 +4,7 @@ import torch.nn.functional as F
 class Seq2seq(nn.Module):
     """ Standard sequence-to-sequence architecture with configurable encoder
     and decoder.
+
     Args:
         encoder (EncoderRNN): object of EncoderRNN
         decoder (DecoderRNN): object of DecoderRNN
