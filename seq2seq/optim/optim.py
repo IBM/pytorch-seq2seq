@@ -22,6 +22,7 @@ class Optimizer(object):
 
     def set_scheduler(self, scheduler):
         """ Set the learning rate scheduler.
+
         Args:
             scheduler (torch.optim.lr_scheduler.*): object of learning rate scheduler,
                e.g. torch.optim.lr_scheduler.StepLR
@@ -37,6 +38,7 @@ class Optimizer(object):
 
     def update(self, loss, epoch):
         """ Update the learning rate if the criteria of the scheduler are met.
+
         Args:
             loss (float): The current loss.  It could be training loss or developing loss
                 depending on the caller.  By default the supervised trainer uses developing

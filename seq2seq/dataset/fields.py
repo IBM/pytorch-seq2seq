@@ -19,6 +19,7 @@ class SourceField(torchtext.data.Field):
 
 class TargetField(torchtext.data.Field):
     """ Wrapper class of torchtext.data.Field that forces batch_first to be True and prepend <sos> and append <eos> to sequences in preprocessing step.
+
     Attributes:
         sos_id: index of the start of sentence symbol
         eos_id: index of the end of sentence symbol
