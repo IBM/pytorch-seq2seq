@@ -55,16 +55,9 @@ class SupervisedTrainer(object):
                                                        teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
-        lengths = other['length']
-        for batch in range(target_variable.size(0)):
-            # Batch wise loss
-            batch_target = target_variable[batch, 1:]
-            batch_len = min(lengths[batch], target_variable.size(1) - 1)
-            # Crop output and target to batch length
-            batch_output = torch.stack([output[batch] for output in decoder_outputs[:batch_len]])
-            batch_target = batch_target[:batch_len]
-            # Evaluate loss
-            loss.eval_batch(batch_output, batch_target)
+        for step, step_output in enumerate(decoder_outputs):
+            batch_size = target_variable.size(0)
+            loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
         # Backward propagation
         model.zero_grad()
         loss.backward()
@@ -89,6 +82,7 @@ class SupervisedTrainer(object):
         total_steps = steps_per_epoch * n_epochs
 
         step = start_step
+        step_elapsed = 0
         for epoch in range(start_epoch, n_epochs + 1):
             log.debug("Epoch: %d, Step: %d" % (epoch, step))
 
@@ -100,6 +94,7 @@ class SupervisedTrainer(object):
             model.train(True)
             for batch in batch_generator:
                 step += 1
+                step_elapsed += 1
 
                 input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
                 target_variables = getattr(batch, seq2seq.tgt_field_name)
@@ -110,8 +105,8 @@ class SupervisedTrainer(object):
                 print_loss_total += loss
                 epoch_loss_total += loss
 
-                if step % self.print_every == 0:
-                    print_loss_avg = print_loss_total / min(self.print_every, step - start_step)
+                if step % self.print_every == 0 and step_elapsed > self.print_every:
+                    print_loss_avg = print_loss_total / self.print_every
                     print_loss_total = 0
                     log_msg = 'Progress: %d%%, Train %s: %.4f' % (
                         step / total_steps * 100,
@@ -127,13 +122,15 @@ class SupervisedTrainer(object):
                                input_vocab=data.fields[seq2seq.src_field_name].vocab,
                                output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir)
 
+            if step_elapsed == 0: continue
+
             epoch_loss_avg = epoch_loss_total / min(steps_per_epoch, step - start_step)
             epoch_loss_total = 0
             log_msg = "Finished epoch %d: Train %s: %.4f" % (epoch, self.loss.name, epoch_loss_avg)
             if dev_data is not None:
-                dev_loss = self.evaluator.evaluate(model, dev_data)
+                dev_loss, accuracy = self.evaluator.evaluate(model, dev_data)
                 self.optimizer.update(dev_loss, epoch)
-                log_msg += ", Dev %s: %.4f" % (self.loss.name, dev_loss)
+                log_msg += ", Dev %s: %.4f, Accuracy: %.4f" % (self.loss.name, dev_loss, accuracy)
                 model.train(mode=True)
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)

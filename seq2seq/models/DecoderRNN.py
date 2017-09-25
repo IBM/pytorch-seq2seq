@@ -28,6 +28,7 @@ class DecoderRNN(BaseRNN):
         eos_id (int): index of the end of sentence symbol
         n_layers (int, optional): number of recurrent layers (default: 1)
         rnn_cell (str, optional): type of RNN cell (default: gru)
+        bidirectional (bool, optional): if the encoder is bidirectional (default False)
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
         use_attention(bool, optional): flag indication whether to use attention mechanism or not (default: false)
@@ -66,11 +67,14 @@ class DecoderRNN(BaseRNN):
 
     def __init__(self, vocab_size, max_len, hidden_size,
             sos_id, eos_id,
-            n_layers=1, rnn_cell='gru',
+            n_layers=1, rnn_cell='gru', bidirectional=False,
             input_dropout_p=0, dropout_p=0, use_attention=False):
         super(DecoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p,
                 n_layers, rnn_cell)
+
+        self.bidirectional_encoder = bidirectional
+        self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p)
 
         self.output_size = vocab_size
         self.max_length = max_len
@@ -123,18 +127,19 @@ class DecoderRNN(BaseRNN):
                     batch_size = encoder_hidden.size(1)
 
         if inputs is None:
-            decoder_input = Variable(torch.LongTensor([self.sos_id]),
+            inputs = Variable(torch.LongTensor([self.sos_id]),
                                     volatile=True).view(batch_size, -1)
+            max_length = self.max_length
         else:
-            decoder_input = inputs[:, 0].unsqueeze(1)
-            inputs = None if inputs.size(1) == 1 else inputs[:, 1:]
-        decoder_hidden = encoder_hidden
+            max_length = inputs.size(1) - 1 # minus the start of sequence symbol
+
+        decoder_hidden = self._init_state(encoder_hidden)
 
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
         decoder_outputs = []
         sequence_symbols = []
-        lengths = np.array([self.max_length] * batch_size)
+        lengths = np.array([max_length] * batch_size)
 
         def decode(step, step_output, step_attn):
             decoder_outputs.append(step_output)
@@ -153,16 +158,17 @@ class DecoderRNN(BaseRNN):
         # Manual unrolling is used to support random teacher forcing.
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
         if use_teacher_forcing:
-            decoder_input = torch.cat([decoder_input, inputs], dim=1)
+            decoder_input = inputs[:, :-1]
             decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                      function=function)
 
-            for di in range(inputs.size(1)):
+            for di in range(decoder_output.size(1)):
                 step_output = decoder_output[:, di, :]
                 step_attn = attn[:, di, :]
                 decode(di, step_output, step_attn)
         else:
-            for di in range(self.max_length):
+            decoder_input = inputs[:, 0].unsqueeze(1)
+            for di in range(max_length):
                 decoder_output, decoder_hidden, step_attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                          function=function)
                 step_output = decoder_output.squeeze(1)
@@ -173,3 +179,22 @@ class DecoderRNN(BaseRNN):
         ret_dict[DecoderRNN.KEY_LENGTH] = lengths.tolist()
 
         return decoder_outputs, decoder_hidden, ret_dict
+
+    def _init_state(self, encoder_hidden):
+        """ Initialize the encoder hidden state. """
+        if encoder_hidden is None:
+            return None
+        if isinstance(encoder_hidden, tuple):
+            encoder_hidden = tuple([self._cat_directions(h) for h in encoder_hidden])
+        else:
+            encoder_hidden = self._cat_directions(encoder_hidden)
+        return encoder_hidden
+
+    def _cat_directions(self, h):
+        """ If the encoder is bidirectional, do the following transformation.
+            (#directions * #layers, #batch, hidden_size) -> (#layers, #batch, #directions * hidden_size)
+        """
+        if self.bidirectional_encoder:
+            h = torch.cat([h[0:h.size(0):2], h[1:h.size(0):2]], 2)
+        return h
+
