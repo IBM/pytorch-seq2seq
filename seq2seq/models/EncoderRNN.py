@@ -13,6 +13,7 @@ class EncoderRNN(BaseRNN):
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
         n_layers (int, optional): number of recurrent layers (default: 1)
+        bidirectional (bool, optional): if True, becomes a bidirectional encodr (defulat False)
         rnn_cell (str, optional): type of RNN cell (default: gru)
         variable_lengths (bool, optional): if use variable length RNN (default: False)
 
@@ -34,12 +35,14 @@ class EncoderRNN(BaseRNN):
 
     def __init__(self, vocab_size, max_len, hidden_size,
             input_dropout_p=0, dropout_p=0,
-            n_layers=1, rnn_cell='gru', variable_lengths=False):
+            n_layers=1, bidirectional=False, rnn_cell='gru', variable_lengths=False):
         super(EncoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p, n_layers, rnn_cell)
 
         self.variable_lengths = variable_lengths
         self.embedding = nn.Embedding(vocab_size, hidden_size)
+        self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers,
+                                 batch_first=True, bidirectional=bidirectional, dropout=dropout_p)
 
     def forward(self, input_var, input_lengths=None):
         """
