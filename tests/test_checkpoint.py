@@ -70,7 +70,7 @@ class TestCheckpoint(unittest.TestCase):
         mock_optimizer = mock.Mock()
         torch_dict = {"optimizer": mock_optimizer, "epoch": 5, "step": 10}
         mock_open.return_value = mock.MagicMock()
-        mock_torch.load.return_value = torch_dict
+        mock_torch.load.side_effect = [torch_dict, mock.MagicMock()]
         mock_dill.load.return_value = dummy_vocabulary
 
         loaded_chk_point = Checkpoint.load("mock_checkpoint_path")
