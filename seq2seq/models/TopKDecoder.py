@@ -3,6 +3,42 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from .baseRNN import BaseRNN
 
+def _inflate(tensor, times, dim):
+        """
+        Given a tensor, 'inflates' it along the given dimension by replicating each slice specified number of times (in-place)
+
+        Args:
+            tensor: A :class:`Tensor` to inflate
+            times: number of repetitions
+            dimension: axis for inflation (default=0)
+
+        Returns:
+            A :class:`Tensor`
+
+        Examples::
+            >> a = torch.LongTensor([[1, 2], [3, 4]])
+            >> a
+            1   2
+            3   4
+            [torch.LongTensor of size 2x2]
+            >> decoder = TopKDecoder(nn.RNN(10, 20, 2), 3)
+            >> b = decoder._inflate(a, 1, dimension=1)
+            >> b
+            1   1   2   2
+            3   3   4   4
+            [torch.LongTensor of size 2x4]
+            >> c = decoder._inflate(a, 1, dimension=0)
+            >> c
+            1   2
+            1   2
+            3   4
+            3   4
+            [torch.LongTensor of size 4x2]
+
+        """
+        repeat_dims = [1] * tensor.dim()
+        repeat_dims[dim] = times
+        return tensor.repeat(*repeat_dims)
 
 class TopKDecoder(torch.nn.Module):
     r"""
@@ -31,11 +67,10 @@ class TopKDecoder(torch.nn.Module):
         - **decoder_hidden** (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden
           state of the decoder.
         - **ret_dict**: dictionary containing additional information as follows {*length* : list of integers
-          representing lengths of output sequences, *topk_length*: list of integers representing lengths of beam search 
-          sequences, *sequence* : list of sequences, where each sequence is a list of predicted token IDs, 
+          representing lengths of output sequences, *topk_length*: list of integers representing lengths of beam search
+          sequences, *sequence* : list of sequences, where each sequence is a list of predicted token IDs,
           *topk_sequence* : list of beam search sequences, each beam is a list of token IDs, *inputs* : target 
           outputs if provided for decoding}.
-
     """
 
     def __init__(self, decoder_rnn, k):
@@ -64,13 +99,13 @@ class TopKDecoder(torch.nn.Module):
             hidden = None
         else:
             if isinstance(encoder_hidden, tuple):
-                hidden = tuple([self._inflate(h, self.k, 1) for h in encoder_hidden])
+                hidden = tuple([_inflate(h, self.k, 1) for h in encoder_hidden])
             else:
-                hidden = self._inflate(encoder_hidden, self.k, 1)
+                hidden = _inflate(encoder_hidden, self.k, 1)
 
         # ... same idea for encoder_outputs and decoder_outputs
         if self.rnn.use_attention:
-            inflated_encoder_outputs = self._inflate(encoder_outputs, self.k, 0)
+            inflated_encoder_outputs = _inflate(encoder_outputs, self.k, 0)
         else:
             inflated_encoder_outputs = None
 
@@ -102,7 +137,7 @@ class TopKDecoder(torch.nn.Module):
                 stored_outputs.append(log_softmax_output)
 
             # To get the full sequence scores for the new candidates, add the local scores for t_i to the predecessor scores for t_(i-1)
-            sequence_scores = self._inflate(sequence_scores, self.V, 1)
+            sequence_scores = _inflate(sequence_scores, self.V, 1)
             sequence_scores += log_softmax_output.squeeze(1)
             scores, candidates = sequence_scores.view(batch_size, -1).topk(self.k, dim=1)
 
@@ -145,7 +180,7 @@ class TopKDecoder(torch.nn.Module):
         metadata['h_t'] = h_t
         metadata['score'] = s
         metadata['topk_length'] = l
-        metadata['topk_sequence'] = p 
+        metadata['topk_sequence'] = p
         metadata['length'] = [seq_len[0] for seq_len in l]
         metadata['sequence'] = [seq[0] for seq in p]
         return decoder_outputs, decoder_hidden, metadata
@@ -192,7 +227,7 @@ class TopKDecoder(torch.nn.Module):
             state_size = nw_hidden[0][0].size()
             h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
         else:
-            h_n = torch.zeros(nw_hidden[0].size()) 
+            h_n = torch.zeros(nw_hidden[0].size())
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
                                                                 # Similar to `h_n`
 
@@ -305,39 +340,4 @@ class TopKDecoder(torch.nn.Module):
             indices = idx[:, 0]
             tensor.index_fill_(dim, indices, masking_score)
 
-    def _inflate(self, tensor, times, dim):
-        """
-        Given a tensor, 'inflates' it along the given dimension by replicating each slice specified number of times (in-place)
-
-        Args:
-            tensor: A :class:`Tensor` to inflate
-            times: number of repetitions
-            dimension: axis for inflation (default=0)
-
-        Returns:
-            A :class:`Tensor`
-
-        Examples::
-            >> a = torch.LongTensor([[1, 2], [3, 4]])
-            >> a
-            1   2
-            3   4
-            [torch.LongTensor of size 2x2]
-            >> decoder = TopKDecoder(nn.RNN(10, 20, 2), 3)
-            >> b = decoder._inflate(a, 1, dimension=1)
-            >> b
-            1   1   2   2
-            3   3   4   4
-            [torch.LongTensor of size 2x4]
-            >> c = decoder._inflate(a, 1, dimension=0)
-            >> c
-            1   2
-            1   2
-            3   4
-            3   4
-            [torch.LongTensor of size 4x2]
-
-        """
-        repeat_dims = [1] * tensor.dim()
-        repeat_dims[dim] = times
-        return tensor.repeat(*repeat_dims)
+    

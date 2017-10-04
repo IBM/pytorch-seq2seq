@@ -28,8 +28,8 @@ class TestDecoderRNN(unittest.TestCase):
                 param.data.uniform_(-1, 1)
             topk_decoder = TopKDecoder(decoder, 1)
 
-            output, hidden, other = decoder()
-            output_topk, hidden_topk, other_topk = topk_decoder()
+            output, _, other = decoder()
+            output_topk, _, other_topk = topk_decoder()
 
             self.assertEqual(len(output), len(output_topk))
 
@@ -69,7 +69,7 @@ class TestDecoderRNN(unittest.TestCase):
             topk_decoder = TopKDecoder(decoder, beam_size)
 
             encoder_hidden = torch.autograd.Variable(torch.randn(1, batch_size, hidden_size))
-            output_topk, hidden_topk, other_topk = topk_decoder(encoder_hidden=encoder_hidden)
+            _, hidden_topk, other_topk = topk_decoder(encoder_hidden=encoder_hidden)
 
             # Queue state:
             #   1. time step
@@ -136,8 +136,8 @@ class TestDecoderRNN(unittest.TestCase):
                 if precision_error:
                     break
                 for k in range(beam_size):
-                    assert topk_lengths[b][k] == len(topk[b][k]) - 1
-                    assert np.isclose(topk_scores[b][k], topk[b][k][-1][3])
+                    self.assertEqual(topk_lengths[b][k], len(topk[b][k]) - 1)
+                    self.assertTrue(np.isclose(topk_scores[b][k], topk[b][k][-1][3]))
                     total_steps = topk_lengths[b][k]
                     for t in range(total_steps):
-                        assert topk_pred_symbols[t][b, k].data[0] == topk[b][k][t+1][1] # topk includes SOS
+                        self.assertEqual(topk_pred_symbols[t][b, k].data[0], topk[b][k][t+1][1]) # topk includes SOS
