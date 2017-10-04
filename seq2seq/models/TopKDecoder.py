@@ -57,13 +57,18 @@ class TopKDecoder(torch.nn.Module):
         self.pos_index = Variable(torch.LongTensor(range(batch_size)) * self.k).view(-1, 1)
 
         # Inflate the initial hidden states to be of size: b*k x h
+        encoder_hidden = self.rnn._init_state(encoder_hidden)
         if encoder_hidden is None:
             hidden = None
         else:
-            hidden = self._inflate(encoder_hidden, self.k)
+            if isinstance(encoder_hidden, tuple):
+                hidden = tuple([self._inflate(h, self.k, 1) for h in encoder_hidden])
+            else:
+                hidden = self._inflate(encoder_hidden, self.k, 1)
+
         # ... same idea for encoder_outputs and decoder_outputs
         if self.rnn.use_attention:
-            inflated_encoder_outputs = self._inflate(encoder_outputs, self.k)
+            inflated_encoder_outputs = self._inflate(encoder_outputs, self.k, 0)
         else:
             inflated_encoder_outputs = None
 
@@ -95,7 +100,7 @@ class TopKDecoder(torch.nn.Module):
                 stored_outputs.append(log_softmax_output)
 
             # To get the full sequence scores for the new candidates, add the local scores for t_i to the predecessor scores for t_(i-1)
-            sequence_scores = self._inflate(sequence_scores, self.V)
+            sequence_scores = self._inflate(sequence_scores, self.V, 1)
             sequence_scores += log_softmax_output.squeeze(1)
             scores, candidates = sequence_scores.view(batch_size, -1).topk(self.k, dim=1)
 
@@ -105,7 +110,10 @@ class TopKDecoder(torch.nn.Module):
 
             # Update fields for next timestep
             predecessors = (candidates / self.V + self.pos_index.expand_as(candidates)).view(batch_size * self.k, 1)
-            hidden = hidden.index_select(1, predecessors.squeeze())
+            if isinstance(hidden, tuple):
+                hidden = tuple([h.index_select(1, predecessors.squeeze()) for h in hidden])
+            else:
+                hidden = hidden.index_select(1, predecessors.squeeze())
 
             # Update sequence scores and erase scores for end-of-sentence symbol so that they aren't expanded
             stored_scores.append(sequence_scores.clone())
@@ -125,14 +133,19 @@ class TopKDecoder(torch.nn.Module):
 
         # Build return objects
         decoder_outputs = [step[:, 0, :] for step in output]
-        decoder_hidden = h_n[:, :, 0, :]
+        if isinstance(h_n, tuple):
+            decoder_hidden = tuple([h[:, :, 0, :] for h in h_n])
+        else:
+            decoder_hidden = h_n[:, :, 0, :]
         metadata = {}
         metadata['inputs'] = inputs
         metadata['output'] = output
         metadata['h_t'] = h_t
         metadata['score'] = s
-        metadata['length'] = l
-        metadata['sequence'] = p
+        metadata['topk_length'] = l
+        metadata['topk_sequence'] = p 
+        metadata['length'] = [seq_len[0] for seq_len in l]
+        metadata['sequence'] = [seq[0] for seq in p]
         return decoder_outputs, decoder_hidden, metadata
 
     def _backtrack(self, nw_output, nw_hidden, predecessors, symbols, scores, b, hidden_size):
@@ -163,14 +176,21 @@ class TopKDecoder(torch.nn.Module):
             p (batch, k, sequence_len): A Tensor containing predicted sequence
         """
 
+        lstm = isinstance(nw_hidden[0], tuple)
+
         # initialize return variables given different types
         output = list()
         h_t = list()
         p = list()
-        h_n = torch.zeros(nw_hidden[0].size())  # Placeholder for last hidden state of top-k sequences.
-                                                # If a (top-k) sequence ends early in decoding, `h_n` contains
-                                                # its hidden state when it sees EOS.  Otherwise, `h_n` contains
-                                                # the last hidden state of decoding.
+        # Placeholder for last hidden state of top-k sequences.
+        # If a (top-k) sequence ends early in decoding, `h_n` contains
+        # its hidden state when it sees EOS.  Otherwise, `h_n` contains
+        # the last hidden state of decoding.
+        if lstm:
+            state_size = nw_hidden[0][0].size()
+            h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
+        else:
+            h_n = torch.zeros(nw_hidden[0].size()) 
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
                                                                 # Similar to `h_n`
 
@@ -190,7 +210,10 @@ class TopKDecoder(torch.nn.Module):
         while t >= 0:
             # Re-order the variables with the back pointer
             current_output = nw_output[t].index_select(0, t_predecessors)
-            current_hidden = nw_hidden[t].index_select(1, t_predecessors)
+            if lstm:
+                current_hidden = tuple([h.index_select(1, t_predecessors) for h in nw_hidden[t]])
+            else:
+                current_hidden = nw_hidden[t].index_select(1, t_predecessors)
             current_symbol = symbols[t].index_select(0, t_predecessors)
             # Re-order the back pointer of the previous step with the back pointer of
             # the current step
@@ -231,8 +254,14 @@ class TopKDecoder(torch.nn.Module):
                     # with the new ended sequence information
                     t_predecessors[res_idx] = predecessors[t][idx[0]]
                     current_output[res_idx, :] = nw_output[t][idx[0], :]
-                    current_hidden[:, res_idx, :] = nw_hidden[t][:, idx[0], :]
-                    h_n[:, res_idx, :] = nw_hidden[t][:, idx[0], :].data
+                    if lstm:
+                        current_hidden[0][:, res_idx, :] = nw_hidden[t][0][:, idx[0], :]
+                        current_hidden[1][:, res_idx, :] = nw_hidden[t][1][:, idx[0], :]
+                        h_n[0][:, res_idx, :] = nw_hidden[t][0][:, idx[0], :].data
+                        h_n[1][:, res_idx, :] = nw_hidden[t][1][:, idx[0], :].data
+                    else:
+                        current_hidden[:, res_idx, :] = nw_hidden[t][:, idx[0], :]
+                        h_n[:, res_idx, :] = nw_hidden[t][:, idx[0], :].data
                     current_symbol[res_idx, :] = symbols[t][idx[0]]
                     s[b_idx, res_k_idx] = scores[t][idx[0]].data[0]
                     l[b_idx][res_k_idx] = t + 1
@@ -256,12 +285,13 @@ class TopKDecoder(torch.nn.Module):
         # It is reversed because the backtracking happens in reverse time order
         output = [step.index_select(0, re_sorted_idx).view(b, self.k, -1) for step in reversed(output)]
         p = [step.index_select(0, re_sorted_idx).view(b, self.k, -1) for step in reversed(p)]
-        h_t = [step.index_select(1, re_sorted_idx).view(-1, b, self.k, hidden_size) for step in reversed(h_t)]
-        h_n = h_n.index_select(1, re_sorted_idx.data).view(-1, b, self.k, hidden_size)
+        if lstm:
+            h_t = [tuple([h.index_select(1, re_sorted_idx).view(-1, b, self.k, hidden_size) for h in step]) for step in reversed(h_t)]
+            h_n = tuple([h.index_select(1, re_sorted_idx.data).view(-1, b, self.k, hidden_size) for h in h_n])
+        else:
+            h_t = [step.index_select(1, re_sorted_idx).view(-1, b, self.k, hidden_size) for step in reversed(h_t)]
+            h_n = h_n.index_select(1, re_sorted_idx.data).view(-1, b, self.k, hidden_size)
         s = s.data
-
-        if self.k == 1:
-            l = [_l[0] for _l in l]
 
         return output, h_t, h_n, s, l, p
 
@@ -273,7 +303,7 @@ class TopKDecoder(torch.nn.Module):
             indices = idx[:, 0]
             tensor.index_fill_(dim, indices, masking_score)
 
-    def _inflate(self, tensor, times):
+    def _inflate(self, tensor, times, dim):
         """
         Given a tensor, 'inflates' it along the given dimension by replicating each slice specified number of times (in-place)
 
@@ -306,15 +336,6 @@ class TopKDecoder(torch.nn.Module):
             [torch.LongTensor of size 4x2]
 
         """
-        tensor_dim = len(tensor.size())
-        if tensor_dim is 3:
-            b = tensor.size(1)
-            return tensor.repeat(1, 1, times).view(tensor.size(0), b * times, -1)
-        elif tensor_dim is 2:
-            return tensor.repeat(1, times)
-        elif tensor_dim is 1:
-            b = tensor.size(0)
-            return tensor.repeat(times).view(b, -1)
-        else:
-            raise ValueError("Tensor can be of 1D, 2D or 3D only. This one is {}D.".format(tensor_dim))
-
+        repeat_dims = [1] * tensor.dim()
+        repeat_dims[dim] = times
+        return tensor.repeat(*repeat_dims)

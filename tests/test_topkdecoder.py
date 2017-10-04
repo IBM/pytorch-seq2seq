@@ -47,7 +47,7 @@ class TestDecoderRNN(unittest.TestCase):
                         self.assertEqual(other_topk['length'][b], t_step + 1)
                         self.assertTrue(np.isclose(seq_scores[b], other_topk['score'][b][0]))
                     if not finished[b]:
-                        symbol_topk = other_topk['sequence'][t_step][b].data[0][0]
+                        symbol_topk = other_topk['topk_sequence'][t_step][b].data[0][0]
                         self.assertEqual(symbol, symbol_topk)
                         self.assertTrue(torch.equal(output[t_step].data, output_topk[t_step].data))
                 if sum(finished) == batch_size:
@@ -125,8 +125,8 @@ class TestDecoderRNN(unittest.TestCase):
                 topk[b] = sorted(topk[b], key=lambda s: s[-1][3], reverse=True)
 
             topk_scores = other_topk['score']
-            topk_lengths = other_topk['length']
-            topk_pred_symbols = other_topk['sequence']
+            topk_lengths = other_topk['topk_length']
+            topk_pred_symbols = other_topk['topk_sequence']
             for b in range(batch_size):
                 precision_error = False
                 for k in range(beam_size - 1):
