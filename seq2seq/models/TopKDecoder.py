@@ -243,7 +243,7 @@ class TopKDecoder(torch.nn.Module):
                     # with b*k as the first dimension, and b, k for
                     # the first two dimensions
                     idx = eos_indices[i]
-                    b_idx = idx[0] / self.k
+                    b_idx = int(idx[0] / self.k)
                     # The indices of the replacing position
                     # according to the replacement strategy noted above
                     res_k_idx = self.k - (batch_eos_found[b_idx] % self.k) - 1
