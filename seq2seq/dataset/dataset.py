@@ -18,6 +18,9 @@ class Seq2SeqDataset(torchtext.data.Dataset):
     def __init__(self, src_path, tgt_path=None,
                  src_field=SourceField(), tgt_field=TargetField(),
                  **kwargs):
+        self.src_field = src_field
+        self.tgt_field = tgt_field
+
         # construct fields
         fields = [(src_field_name, src_field)]
         if tgt_path is not None:
@@ -30,3 +33,7 @@ class Seq2SeqDataset(torchtext.data.Dataset):
         examples = [torchtext.data.Example.fromlist(data, fields) for data in corpus]
 
         super(Seq2SeqDataset, self).__init__(examples, fields, **kwargs)
+
+    def build_vocab(self, src_vocab_size, tgt_vocab_size):
+        self.src_field.build_vocab(self, max_size=src_vocab_size)
+        self.tgt_field.build_vocab(self, max_size=tgt_vocab_size)

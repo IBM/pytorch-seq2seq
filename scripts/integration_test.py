@@ -9,15 +9,19 @@ import seq2seq
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
 from seq2seq.loss import Perplexity
-from seq2seq.dataset import SourceField, TargetField
+from seq2seq.dataset import Seq2SeqDataset
 from seq2seq.evaluator import Predictor, Evaluator
 from seq2seq.util.checkpoint import Checkpoint
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--train_path', action='store', dest='train_path',
-                    help='Path to train data')
-parser.add_argument('--dev_path', action='store', dest='dev_path',
-                    help='Path to dev data')
+parser.add_argument('--train_src', action='store', dest='train_src_path',
+                    help='Path to train source data')
+parser.add_argument('--train_tgt', action='store', dest='train_tgt_path',
+                    help='Path to train target data')
+parser.add_argument('--dev_src', action='store', dest='dev_src_path',
+                    help='Path to dev source data')
+parser.add_argument('--dev_tgt', action='store', dest='dev_tgt_path',
+                    help='Path to dev target data')
 parser.add_argument('--expt_dir', action='store', dest='expt_dir', default='./experiment',
                     help='Path to experiment directory. If load_checkpoint is True, then path to checkpoint directory has to be provided')
 parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint',
@@ -36,25 +40,19 @@ logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.uppe
 logging.info(opt)
 
 # Prepare dataset
-src = SourceField()
-tgt = TargetField()
 max_len = 50
 def len_filter(example):
     return len(example.src) <= max_len and len(example.tgt) <= max_len
-train = torchtext.data.TabularDataset(
-    path=opt.train_path, format='tsv',
-    fields=[('src', src), ('tgt', tgt)],
-    filter_pred=len_filter
-)
-dev = torchtext.data.TabularDataset(
-    path=opt.dev_path, format='tsv',
-    fields=[('src', src), ('tgt', tgt)],
-    filter_pred=len_filter
-)
-src.build_vocab(train, max_size=50000)
-tgt.build_vocab(train, max_size=50000)
-input_vocab = src.vocab
-output_vocab = tgt.vocab
+
+train = Seq2SeqDataset(opt.train_src_path, opt.train_tgt_path,
+                       filter_pred=len_filter)
+src, tgt = train.src_field, train.tgt_field
+dev = Seq2SeqDataset(opt.dev_src_path, opt.dev_tgt_path,
+                     src_field=src,  tgt_field=tgt,
+                     filter_pred=len_filter)
+train.build_vocab(50000, 50000)
+input_vocab = train.src_field.vocab
+output_vocab = train.tgt_field.vocab
 
 # Prepare loss
 weight = torch.ones(len(tgt.vocab))
