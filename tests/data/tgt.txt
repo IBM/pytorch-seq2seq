@@ -1,0 +1,100 @@
+Je suis gras.
+Je suis occupé.
+Je suis calme.
+J'ai froid.
+Je suis bon.
+Je suis ici.
+Je suis paresseux.
+Je suis fainéant.
+Je suis paresseuse.
+Je suis fainéante.
+Je vais bien.
+Je suis malade.
+Je suis sûr.
+Je suis certain.
+Je suis faible.
+Tu es fou.
+Tu es bourré !
+Tu es saoul !
+Tu viens tôt.
+Vous êtes matinal.
+Vous êtes matinale.
+Tu es matinal.
+Tu es matinale.
+Tu es en avance.
+Vous êtes en avance.
+Vous mentez.
+Vous êtes en train de mentir.
+Tu es en train de mentir.
+Tu es malin.
+Vous avez tort.
+Tu as tort.
+Elle est infirmière.
+Elle est maladroite.
+Elle est au régime.
+Elle est en train de s'exprimer.
+Elle n'est pas pauvre.
+Nous sommes une famille.
+Nous sommes frères.
+Nous sommes des hommes occupés.
+Nous sommes ses fils.
+Nous sommes étudiants.
+Nous sommes enseignants.
+Nous sommes enseignantes.
+Nous sommes les meilleurs.
+Nous regardons.
+C'est un gentil garçon.
+Il est acrobate.
+Il est ivre mort.
+Il est dans la lune.
+Il va bien.
+Il est son ami.
+Il est en pyjama.
+Il a des soucis.
+Il a des problèmes.
+Il a des ennuis.
+Ce n'est qu'un enfant.
+C'est mon frère.
+C'est mon professeur.
+Il n'est jamais paresseux.
+Il n'est pas idiot.
+Il est photogénique.
+Il est encore ici.
+Il est très en colère.
+Il est fort en colère.
+Il est très courageux.
+Il est fort courageux.
+Il est très jeune.
+Il est bien apprécié.
+Elles sont russes.
+Ils se disputent.
+Ils sont en train de se disputer.
+Ils sont artistes.
+Elles sont artistes.
+Ils sont médecins.
+Elles sont médecins.
+Ils sont chanteurs.
+Va !
+Cours !
+Courez !
+Ça alors !
+Au feu !
+À l'aide !
+Saute.
+Ça suffit !
+Stop !
+Arrête-toi !
+Attends !
+Attendez !
+Je comprends.
+J'essaye.
+J'ai gagné !
+Je l'ai emporté !
+Oh non !
+Attaque !
+Attaquez !
+Santé !
+À votre santé !
+Merci !
+Lève-toi.
+J'ai pigé !
