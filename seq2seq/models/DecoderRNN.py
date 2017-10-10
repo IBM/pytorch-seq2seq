@@ -100,7 +100,7 @@ class DecoderRNN(BaseRNN):
         if self.use_attention:
             output, attn = self.attention(output, encoder_outputs)
 
-        predicted_softmax = self.decoder(output).view(batch_size, output_size, -1)
+        predicted_softmax = self.decoder(output, attn).view(batch_size, output_size, -1)
         return predicted_softmax, hidden, attn
 
     def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None, teacher_forcing_ratio=0):
@@ -201,7 +201,7 @@ class Decoder(nn.Module):
         self.hidden_size = hidden_size
         self.linear = nn.Linear(hidden_size, output_size)
 
-    def forward(self, hidden):
+    def forward(self, hidden, attn):
         logits = self.linear(hidden.view(-1, self.hidden_size))
         softmax = F.log_softmax(logits)
         return softmax
