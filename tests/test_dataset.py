@@ -50,3 +50,4 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(len(dataset.examples), len(from_file.examples))
         for l, f in zip(dataset.examples, from_file.examples):
             self.assertEqual(l.src, f.src)
+        os.remove('temp')
