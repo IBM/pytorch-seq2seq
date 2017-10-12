@@ -15,7 +15,8 @@ class TestCopyDecoder(unittest.TestCase):
         batch_size = 8
         en_len = 5
         de_len = 6
+        batch = None
         hidden = Variable(torch.randn(batch_size, de_len, hidden_size))
         attn = Variable(torch.randn(batch_size, de_len, en_len))
-        output = decoder(hidden, attn)
+        output, symbols = decoder(batch, hidden, attn)
         self.assertEquals(output.size(), torch.Size((batch_size * de_len, output_size + en_len)))

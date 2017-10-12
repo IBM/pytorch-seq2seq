@@ -51,7 +51,8 @@ class Seq2seq(nn.Module):
             input_lengths = input_lengths.tolist()
 
         encoder_outputs, encoder_hidden = self.encoder(input_variable, input_lengths)
-        result = self.decoder(inputs=target_variable,
+        result = self.decoder(batch,
+                              inputs=target_variable,
                               encoder_hidden=encoder_hidden,
                               encoder_outputs=encoder_outputs,
                               teacher_forcing_ratio=teacher_forcing_ratio)
