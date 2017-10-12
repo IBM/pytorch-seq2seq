@@ -5,6 +5,7 @@ import unittest
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
+import torchtext
 
 from seq2seq.loss.loss import Loss
 from seq2seq.loss import NLLLoss, Perplexity
@@ -13,14 +14,14 @@ class TestLoss(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         num_class = 5
+        cls.num_class = 5
         batch_size = 5
-        num_batch = 10
-        cls.num_batch = num_batch
-        cls.outputs = [F.softmax(Variable(torch.randn(batch_size, num_class)))
-                   for _ in range(num_batch)]
-        cls.targets = [Variable(torch.LongTensor([random.randint(0, num_class - 1)
-                                              for _ in range(batch_size)]))
-                   for _ in range(num_batch)]
+        length = 7
+        cls.outputs = [F.softmax(Variable(torch.randn(batch_size, num_class))) for _ in range(length)]
+        targets = Variable(torch.LongTensor([random.randint(0, num_class - 1)
+                                                 for _ in range(batch_size * (length + 1))]))
+        cls.targets = targets.view(batch_size, length + 1)
+        cls.batch = torchtext.data.Batch.fromvars(None, batch_size, tgt=cls.targets)
 
     def test_loss_init(self):
         name = "name"
@@ -44,25 +45,29 @@ class TestLoss(unittest.TestCase):
         self.assertRaises(ValueError, lambda: NLLLoss(mask=mask))
 
     def test_nllloss(self):
+        num_batch = 10
         loss = NLLLoss()
         pytorch_loss = 0
         pytorch_criterion = torch.nn.NLLLoss()
-        for output, target in zip(self.outputs, self.targets):
-            loss.eval_batch(output, target)
-            pytorch_loss += pytorch_criterion(output, target)
+        for _ in range(num_batch):
+            for step, output in enumerate(self.outputs):
+                pytorch_loss += pytorch_criterion(output, self.targets[:, step + 1])
+            loss.eval_batch(self.outputs, self.batch)
 
         loss_val = loss.get_loss()
-        pytorch_loss /= self.num_batch
+        pytorch_loss /= (num_batch * len(self.outputs))
 
         self.assertAlmostEqual(loss_val, pytorch_loss.data[0])
 
     def test_nllloss_WITH_OUT_SIZE_AVERAGE(self):
+        num_repeat = 10
         loss = NLLLoss(size_average=False)
         pytorch_loss = 0
         pytorch_criterion = torch.nn.NLLLoss(size_average=False)
-        for output, target in zip(self.outputs, self.targets):
-            loss.eval_batch(output, target)
-            pytorch_loss += pytorch_criterion(output, target)
+        for _ in range(num_repeat):
+            for step, output in enumerate(self.outputs):
+                pytorch_loss += pytorch_criterion(output, self.targets[:, step + 1])
+            loss.eval_batch(self.outputs, self.batch)
 
         loss_val = loss.get_loss()
 
@@ -75,9 +80,8 @@ class TestLoss(unittest.TestCase):
     def test_perplexity(self):
         nll = NLLLoss()
         ppl = Perplexity()
-        for output, target in zip(self.outputs, self.targets):
-            nll.eval_batch(output, target)
-            ppl.eval_batch(output, target)
+        nll.eval_batch(self.outputs, self.batch)
+        ppl.eval_batch(self.outputs, self.batch)
 
         nll_loss = nll.get_loss()
         ppl_loss = ppl.get_loss()

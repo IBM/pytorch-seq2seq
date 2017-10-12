@@ -1,5 +1,6 @@
 import torch
 from torch.autograd import Variable
+import torchtext
 
 class Predictor(object):
 
@@ -35,8 +36,11 @@ class Predictor(object):
                               volatile=True).view(1, -1)
         if torch.cuda.is_available():
             src_id_seq = src_id_seq.cuda()
+        batch = torchtext.data.Batch.fromvars(None, 1,
+                                              src=(src_id_seq, [len(src_seq)]),
+                                              tgt=None)
 
-        softmax_list, _, other = self.model(src_id_seq, [len(src_seq)])
+        softmax_list, _, other = self.model(batch)
         length = other['length'][0]
 
         tgt_id_seq = [other['sequence'][di][0].data[0] for di in range(length)]

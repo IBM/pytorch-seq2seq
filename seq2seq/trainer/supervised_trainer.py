@@ -2,7 +2,6 @@ from __future__ import division
 import logging
 import os
 import random
-import time
 
 import torch
 import torchtext
@@ -48,16 +47,13 @@ class SupervisedTrainer(object):
 
         self.logger = logging.getLogger(__name__)
 
-    def _train_batch(self, input_variable, input_lengths, target_variable, model, teacher_forcing_ratio):
+    def _train_batch(self, batch, model, teacher_forcing_ratio):
         loss = self.loss
         # Forward propagation
-        decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable,
-                                                       teacher_forcing_ratio=teacher_forcing_ratio)
+        decoder_outputs, decoder_hidden, other = model(batch, teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
-        for step, step_output in enumerate(decoder_outputs):
-            batch_size = target_variable.size(0)
-            loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
+        loss.eval_batch(decoder_outputs, batch)
         # Backward propagation
         model.zero_grad()
         loss.backward()
@@ -96,10 +92,7 @@ class SupervisedTrainer(object):
                 step += 1
                 step_elapsed += 1
 
-                input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
-                target_variables = getattr(batch, seq2seq.tgt_field_name)
-
-                loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
+                loss = self._train_batch(batch, model, teacher_forcing_ratio)
 
                 # Record average loss
                 print_loss_total += loss
