@@ -51,3 +51,13 @@ class TestDataset(unittest.TestCase):
         for l, f in zip(dataset.examples, from_file.examples):
             self.assertEqual(l.src, f.src)
         os.remove('temp')
+
+    def test_dynamic(self):
+        dataset = Seq2SeqDataset.from_file(self.src_path, self.tgt_path, dynamic=True)
+        self.assertTrue('src_index' in dataset.fields)
+        for i, ex in enumerate(dataset.examples):
+            idx = ex.index
+            self.assertEqual(i, idx)
+            src_vocab = dataset.dynamic_vocab[i]
+            for tok, tok_id in zip(ex.src, ex.src_index):
+                self.assertEqual(src_vocab.stoi[tok], tok_id)

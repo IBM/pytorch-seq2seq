@@ -1,4 +1,5 @@
 import codecs
+from collections import Counter
 
 import torch
 import torchtext
@@ -15,26 +16,45 @@ def _read_corpus(path):
             yield line
 
 class Seq2SeqDataset(torchtext.data.Dataset):
+    """ The idea of dynamic vocabulary is bought from [Opennmt-py](https://github.com/OpenNMT/OpenNMT-py)"""
 
-    def __init__(self, corpus, src_field, tgt_field=None, **kwargs):
+    def __init__(self, examples, src_field, tgt_field=None, dynamic=False, **kwargs):
 
         # construct fields
         self.src_field = src_field
         self.tgt_field = tgt_field
-        fields = [(src_field_name, src_field)]
+        self.fields = [(src_field_name, src_field)]
         if tgt_field is not None:
-            fields.append((tgt_field_name, tgt_field))
+            self.fields.append((tgt_field_name, tgt_field))
+
+        self.dynamic = dynamic
+        self.dynamic_vocab = []
+        if self.dynamic:
+            src_index_field = torchtext.data.Field(use_vocab=False,
+                                            tensor_type=torch.LongTensor,
+                                            sequential=False)
+            self.fields.append(('src_index', src_index_field))
+            examples = self._add_dynamic_vocab(examples)
+
         idx_field = torchtext.data.Field(use_vocab=False,
                                          tensor_type=torch.LongTensor,
                                          sequential=False)
-        fields.append(('index', idx_field))
-
+        self.fields.append(('index', idx_field))
         # construct examples
-        examples = [torchtext.data.Example.fromlist(list(data) + [i], fields)
-                    for i, data in enumerate(corpus)]
+        examples = [torchtext.data.Example.fromlist(list(data) + [i], self.fields)
+                    for i, data in enumerate(examples)]
 
 
-        super(Seq2SeqDataset, self).__init__(examples, fields, **kwargs)
+        super(Seq2SeqDataset, self).__init__(examples, self.fields, **kwargs)
+
+    def _add_dynamic_vocab(self, examples):
+        tokenize = self.fields[0][1].tokenize # Tokenize function of the source field
+        for example in examples:
+            src_seq = example[0]
+            dy_vocab = torchtext.vocab.Vocab(Counter(src_seq))
+            self.dynamic_vocab.append(dy_vocab)
+            src_indices = torch.LongTensor([dy_vocab.stoi[w] for w in tokenize(src_seq)])
+            yield tuple(list(example) + [src_indices])
 
     @staticmethod
     def from_file(src_path, tgt_path=None, share_fields_from=None, **kwargs):
