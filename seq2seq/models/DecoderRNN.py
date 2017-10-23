@@ -166,7 +166,10 @@ class DecoderRNN(BaseRNN):
 
             for di in range(decoder_output.size(1)):
                 step_output = decoder_output[:, di, :]
-                step_attn = attn[:, di, :]
+                if attn:
+                    step_attn = attn[:, di, :]
+                else:
+                    step_attn = None
                 decode(di, step_output, step_attn)
         else:
             decoder_input = inputs[:, 0].unsqueeze(1)
