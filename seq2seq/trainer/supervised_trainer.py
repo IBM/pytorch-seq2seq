@@ -75,7 +75,7 @@ class SupervisedTrainer(object):
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
-            sort_key=lambda x: -len(x.src),
+            sort=True, sort_key=lambda x: len(x.src),
             device=device, repeat=False)
 
         steps_per_epoch = len(batch_iterator)

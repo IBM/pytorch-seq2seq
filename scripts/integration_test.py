@@ -7,7 +7,7 @@ import torchtext
 
 import seq2seq
 from seq2seq.trainer import SupervisedTrainer
-from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
+from seq2seq.models import EncoderRNN, DecoderRNN, TopKDecoder, Seq2seq
 from seq2seq.loss import Perplexity
 from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Predictor, Evaluator
@@ -108,7 +108,9 @@ evaluator = Evaluator(loss=loss, batch_size=32)
 dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
 assert dev_loss < 1.5
 
-predictor = Predictor(seq2seq, input_vocab, output_vocab)
+beam_search = Seq2seq(seq2seq.encoder, TopKDecoder(seq2seq.decoder, 3))
+
+predictor = Predictor(beam_search, input_vocab, output_vocab)
 inp_seq = "1 3 5 7 9"
 seq = predictor.predict(inp_seq.split())
 assert " ".join(seq[:-1]) == inp_seq[::-1]
