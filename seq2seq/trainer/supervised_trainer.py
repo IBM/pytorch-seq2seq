@@ -47,10 +47,12 @@ class SupervisedTrainer(object):
 
         self.logger = logging.getLogger(__name__)
 
-    def _train_batch(self, batch, model, teacher_forcing_ratio):
+    def _train_batch(self, batch, model, teacher_forcing_ratio, dataset):
         loss = self.loss
         # Forward propagation
-        decoder_outputs, decoder_hidden, other = model(batch, teacher_forcing_ratio=teacher_forcing_ratio)
+        decoder_outputs, decoder_hidden, other = model(batch,
+                                                       dataset=dataset,
+                                                       teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
         loss.eval_batch(decoder_outputs, batch)
@@ -92,7 +94,7 @@ class SupervisedTrainer(object):
                 step += 1
                 step_elapsed += 1
 
-                loss = self._train_batch(batch, model, teacher_forcing_ratio)
+                loss = self._train_batch(batch, model, teacher_forcing_ratio, data)
 
                 # Record average loss
                 print_loss_total += loss

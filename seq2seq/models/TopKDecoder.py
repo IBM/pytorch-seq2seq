@@ -82,7 +82,7 @@ class TopKDecoder(torch.nn.Module):
 
     def forward(self, batch, inputs=None,
                 encoder_hidden=None, encoder_outputs=None,
-                teacher_forcing_ratio=0, retain_output_probs=True):
+                dataset=None, teacher_forcing_ratio=0, retain_output_probs=True):
         """
         Forward rnn for MAX_LENGTH steps.  Look at :func:`seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn` for details.
         """
@@ -125,11 +125,13 @@ class TopKDecoder(torch.nn.Module):
         stored_emitted_symbols = list()
         stored_hidden = list()
 
-        for _ in range(0, max_length):
+        for di in range(0, max_length):
 
             # Run the RNN one step forward
-            log_softmax_output, hidden, symbols, _ = self.rnn.forward_step(batch, input_var, hidden,
-                                                                  inflated_encoder_outputs)
+            context, hidden, attn = self.rnn.forward_step(input_var, hidden,
+                                                          inflated_encoder_outputs)
+            softmax_output, _ = self.rnn.decoder(context, attn, batch, dataset)
+            log_softmax_output = softmax_output.log()
 
             # If doing local backprop (e.g. supervised training), retain the output layer
             if retain_output_probs:

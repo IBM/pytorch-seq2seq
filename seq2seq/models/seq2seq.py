@@ -43,7 +43,7 @@ class Seq2seq(nn.Module):
         self.encoder.rnn.flatten_parameters()
         self.decoder.rnn.flatten_parameters()
 
-    def forward(self, batch, teacher_forcing_ratio=0):
+    def forward(self, batch, dataset=None, teacher_forcing_ratio=0):
         input_variable, input_lengths = getattr(batch, src_field_name)
         target_variable = getattr(batch, tgt_field_name)
 
@@ -55,5 +55,6 @@ class Seq2seq(nn.Module):
                               inputs=target_variable,
                               encoder_hidden=encoder_hidden,
                               encoder_outputs=encoder_outputs,
+                              dataset=dataset,
                               teacher_forcing_ratio=teacher_forcing_ratio)
         return result

@@ -49,6 +49,7 @@ class TestDecoderRNN(unittest.TestCase):
                     if not finished[b]:
                         symbol_topk = other_topk['topk_sequence'][t_step][b].data[0][0]
                         self.assertEqual(symbol, symbol_topk)
+                        print(t_step, output[t_step].data, output_topk[t_step].data)
                         self.assertTrue(torch.equal(output[t_step].data, output_topk[t_step].data))
                 if sum(finished) == batch_size:
                     break
@@ -90,7 +91,9 @@ class TestDecoderRNN(unittest.TestCase):
                             batch_finished_seqs[b].append(time_batch_queue[t][b][k])
                             continue
                         inputs = torch.autograd.Variable(torch.LongTensor([[inputs]]))
-                        decoder_outputs, hidden, symbols, _ = decoder.forward_step(None, inputs, hidden, None)
+                        context, hidden, attn = decoder.forward_step(inputs, hidden, None)
+                        decoder_outputs, symbols = decoder.decoder(context, attn, None, None)
+                        decoder_outputs = decoder_outputs.log()
                         topk_score, topk = decoder_outputs[0].data.topk(beam_size)
                         for score, sym in zip(topk_score.tolist()[0], topk.tolist()[0]):
                             new_queue.append((t, sym, hidden, score + seq_score, k))
@@ -127,6 +130,7 @@ class TestDecoderRNN(unittest.TestCase):
             topk_scores = other_topk['score']
             topk_lengths = other_topk['topk_length']
             topk_pred_symbols = other_topk['topk_sequence']
+            print(topk_lengths)
             for b in range(batch_size):
                 precision_error = False
                 for k in range(beam_size - 1):

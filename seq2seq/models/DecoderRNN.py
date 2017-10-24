@@ -88,7 +88,7 @@ class DecoderRNN(BaseRNN):
 
         self.decoder = Decoder(self.hidden_size, self.output_size)
 
-    def forward_step(self, batch, input_var, hidden, encoder_outputs):
+    def forward_step(self, input_var, hidden, encoder_outputs):
         embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
 
@@ -98,13 +98,11 @@ class DecoderRNN(BaseRNN):
         if self.use_attention:
             output, attn = self.attention(output, encoder_outputs)
 
-        predicted_softmax, symbols = self.decoder(batch, output, attn)
-
-        return predicted_softmax, hidden, symbols, attn
+        return output, hidden, attn
 
     def forward(self, batch, inputs=None,
                 encoder_hidden=None, encoder_outputs=None,
-                teacher_forcing_ratio=0):
+                dataset=None, teacher_forcing_ratio=0):
         ret_dict = dict()
         if self.use_attention:
             ret_dict[DecoderRNN.KEY_ATTN_SCORE] = list()
@@ -136,25 +134,26 @@ class DecoderRNN(BaseRNN):
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
         if use_teacher_forcing:
             decoder_input = inputs[:, :-1]
-            decoder_output, decoder_hidden, symbols, attn = self.forward_step(batch,
-                                                                              decoder_input,
-                                                                              decoder_hidden,
-                                                                              encoder_outputs)
+            context, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs)
+            decoder_output, symbols = self.decoder(context, attn, batch, dataset)
+            decoder_output = decoder_output.log()
             for di in range(decoder_output.size(1)):
                 step_output = decoder_output[:, di, :]
                 step_symbols = symbols[:, di]
-                step_attn = attn[:, di, :]
+                if attn is not None:
+                    step_attn = attn[:, di, :]
+                else:
+                    step_attn = None
                 post_decode(step_output, step_symbols, step_attn)
         else:
             decoder_input = inputs[:, 0].unsqueeze(1)
             for di in range(max_length):
-                decoder_output, decoder_hidden, symbols, step_attn = self.forward_step(batch,
-                                                                                       decoder_input,
-                                                                                       decoder_hidden,
-                                                                                       encoder_outputs)
+                context, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs)
+                decoder_output, symbols = self.decoder(context, attn, batch, dataset)
+                decoder_output = decoder_output.log()
                 step_output = decoder_output.squeeze(1)
                 step_symbols = symbols.squeeze(1)
-                post_decode(step_output, step_symbols, step_attn)
+                post_decode(step_output, step_symbols, attn)
                 decoder_input = step_symbols
 
         ret_dict[DecoderRNN.KEY_SEQUENCE] = sequence_symbols
@@ -219,9 +218,9 @@ class Decoder(nn.Module):
         self.output_size = output_size
         self.linear = nn.Linear(hidden_size, output_size)
 
-    def forward(self, batch, hidden, attn):
-        batch_size, de_len = hidden.size(0), hidden.size(1)
-        logits = self.linear(hidden.view(-1, self.hidden_size))
-        softmax = F.log_softmax(logits).view(batch_size, de_len, self.output_size)
+    def forward(self, context, attn, *args):
+        batch_size, de_len = context.size(0), context.size(1)
+        logits = self.linear(context.view(-1, self.hidden_size))
+        softmax = F.softmax(logits).view(batch_size, de_len, self.output_size)
         symbols = softmax.topk(1, dim=2)[1]
         return softmax, symbols

@@ -31,8 +31,9 @@ class Seq2SeqDataset(torchtext.data.Dataset):
         self.dynamic_vocab = []
         if self.dynamic:
             src_index_field = torchtext.data.Field(use_vocab=False,
-                                            tensor_type=torch.LongTensor,
-                                            sequential=False)
+                                                   tensor_type=torch.LongTensor,
+                                                   pad_token=0, sequential=True,
+                                                   batch_first=True)
             self.fields.append(('src_index', src_index_field))
             examples = self._add_dynamic_vocab(examples)
 
@@ -50,10 +51,11 @@ class Seq2SeqDataset(torchtext.data.Dataset):
     def _add_dynamic_vocab(self, examples):
         tokenize = self.fields[0][1].tokenize # Tokenize function of the source field
         for example in examples:
-            src_seq = example[0]
-            dy_vocab = torchtext.vocab.Vocab(Counter(src_seq))
+            src_seq = tokenize(example[0])
+            dy_vocab = torchtext.vocab.Vocab(Counter(src_seq), specials=[])
             self.dynamic_vocab.append(dy_vocab)
-            src_indices = torch.LongTensor([dy_vocab.stoi[w] for w in tokenize(src_seq)])
+            # src_indices = torch.LongTensor([dy_vocab.stoi[w] for w in tokenize(src_seq)])
+            src_indices = [dy_vocab.stoi[w] for w in src_seq]
             yield tuple(list(example) + [src_indices])
 
     @staticmethod
