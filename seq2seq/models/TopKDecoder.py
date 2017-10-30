@@ -1,7 +1,6 @@
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
-from .baseRNN import BaseRNN
 
 def _inflate(tensor, times, dim):
         """
@@ -69,7 +68,7 @@ class TopKDecoder(torch.nn.Module):
         - **ret_dict**: dictionary containing additional information as follows {*length* : list of integers
           representing lengths of output sequences, *topk_length*: list of integers representing lengths of beam search
           sequences, *sequence* : list of sequences, where each sequence is a list of predicted token IDs,
-          *topk_sequence* : list of beam search sequences, each beam is a list of token IDs, *inputs* : target 
+          *topk_sequence* : list of beam search sequences, each beam is a list of token IDs, *inputs* : target
           outputs if provided for decoding}.
     """
 
@@ -340,4 +339,4 @@ class TopKDecoder(torch.nn.Module):
             indices = idx[:, 0]
             tensor.index_fill_(dim, indices, masking_score)
 
-    
+

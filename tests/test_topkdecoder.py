@@ -36,8 +36,8 @@ class TestDecoderRNN(unittest.TestCase):
             finished = [False] * batch_size
             seq_scores = [0] * batch_size
 
-            for t_step in range(len(output)):
-                score, _ = output[t_step].topk(1)
+            for t_step, t_output in enumerate(output):
+                score, _ = t_output.topk(1)
                 symbols = other['sequence'][t_step]
                 for b in range(batch_size):
                     seq_scores[b] += score[b].data[0]
@@ -49,7 +49,7 @@ class TestDecoderRNN(unittest.TestCase):
                     if not finished[b]:
                         symbol_topk = other_topk['topk_sequence'][t_step][b].data[0][0]
                         self.assertEqual(symbol, symbol_topk)
-                        self.assertTrue(torch.equal(output[t_step].data, output_topk[t_step].data))
+                        self.assertTrue(torch.equal(t_output.data, output_topk[t_step].data))
                 if sum(finished) == batch_size:
                     break
 
@@ -69,7 +69,7 @@ class TestDecoderRNN(unittest.TestCase):
             topk_decoder = TopKDecoder(decoder, beam_size)
 
             encoder_hidden = torch.autograd.Variable(torch.randn(1, batch_size, hidden_size))
-            _, hidden_topk, other_topk = topk_decoder(encoder_hidden=encoder_hidden)
+            _, _, other_topk = topk_decoder(encoder_hidden=encoder_hidden)
 
             # Queue state:
             #   1. time step
