@@ -105,36 +105,14 @@ class DecoderRNN(BaseRNN):
         predicted_softmax = function(self.out(output.view(-1, self.hidden_size))).view(batch_size, output_size, -1)
         return predicted_softmax, hidden, attn
 
-    def forward(self, inputs=None, encoder_hidden=None, function=F.log_softmax,
-                    encoder_outputs=None, teacher_forcing_ratio=0):
+    def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None,
+                    function=F.log_softmax, teacher_forcing_ratio=0):
         ret_dict = dict()
         if self.use_attention:
-            if encoder_outputs is None:
-                raise ValueError("Argument encoder_outputs cannot be None when attention is used.")
             ret_dict[DecoderRNN.KEY_ATTN_SCORE] = list()
-        if inputs is None:
-            if teacher_forcing_ratio > 0:
-                raise ValueError("Teacher forcing has to be disabled (set 0) when no inputs is provided.")
-        if inputs is None and encoder_hidden is None:
-            batch_size = 1
-        else:
-            if inputs is not None:
-                batch_size = inputs.size(0)
-            else:
-                if self.rnn_cell is nn.LSTM:
-                    batch_size = encoder_hidden[0].size(1)
-                elif self.rnn_cell is nn.GRU:
-                    batch_size = encoder_hidden.size(1)
 
-        if inputs is None:
-            inputs = Variable(torch.LongTensor([self.sos_id]),
-                                    volatile=True).view(batch_size, -1)
-            if torch.cuda.is_available():
-                inputs = inputs.cuda()
-            max_length = self.max_length
-        else:
-            max_length = inputs.size(1) - 1 # minus the start of sequence symbol
-
+        inputs, batch_size, max_length = self._validate_args(inputs, encoder_hidden, encoder_outputs,
+                                                             function, teacher_forcing_ratio)
         decoder_hidden = self._init_state(encoder_hidden)
 
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
@@ -166,7 +144,10 @@ class DecoderRNN(BaseRNN):
 
             for di in range(decoder_output.size(1)):
                 step_output = decoder_output[:, di, :]
-                step_attn = attn[:, di, :]
+                if attn is not None:
+                    step_attn = attn[:, di, :]
+                else:
+                    step_attn = None
                 decode(di, step_output, step_attn)
         else:
             decoder_input = inputs[:, 0].unsqueeze(1)
@@ -200,3 +181,33 @@ class DecoderRNN(BaseRNN):
             h = torch.cat([h[0:h.size(0):2], h[1:h.size(0):2]], 2)
         return h
 
+    def _validate_args(self, inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio):
+        if self.use_attention:
+            if encoder_outputs is None:
+                raise ValueError("Argument encoder_outputs cannot be None when attention is used.")
+
+        # inference batch size
+        if inputs is None and encoder_hidden is None:
+            batch_size = 1
+        else:
+            if inputs is not None:
+                batch_size = inputs.size(0)
+            else:
+                if self.rnn_cell is nn.LSTM:
+                    batch_size = encoder_hidden[0].size(1)
+                elif self.rnn_cell is nn.GRU:
+                    batch_size = encoder_hidden.size(1)
+
+        # set default input and max decoding length
+        if inputs is None:
+            if teacher_forcing_ratio > 0:
+                raise ValueError("Teacher forcing has to be disabled (set 0) when no inputs is provided.")
+            inputs = Variable(torch.LongTensor([self.sos_id] * batch_size),
+                                    volatile=True).view(batch_size, 1)
+            if torch.cuda.is_available():
+                inputs = inputs.cuda()
+            max_length = self.max_length
+        else:
+            max_length = inputs.size(1) - 1 # minus the start of sequence symbol
+
+        return inputs, batch_size, max_length
