@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Models &mdash; pytorch-seq2seq 0.1.4 documentation</title>
+  <title>Models &mdash; pytorch-seq2seq 0.1.5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.4 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.5 documentation" href="index.html"/>
         <link rel="prev" title="Trainer" href="trainer.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.4
+                0.1.5
               </div>
             
           
@@ -407,14 +407,16 @@ outputs of the decoder.</li>
 <li><strong>decoder_hidden</strong> (num_layers * num_directions, batch, hidden_size): tensor containing the last hidden
 state of the decoder.</li>
 <li><strong>ret_dict</strong>: dictionary containing additional information as follows {<em>length</em> : list of integers
-representing lengths of output sequences, <em>sequence</em> : list of sequences, where each sequence is a list of
-predicted token IDs, <em>inputs</em> : target outputs if provided for decoding}.</li>
+representing lengths of output sequences, <em>topk_length</em>: list of integers representing lengths of beam search
+sequences, <em>sequence</em> : list of sequences, where each sequence is a list of predicted token IDs,
+<em>topk_sequence</em> : list of beam search sequences, each beam is a list of token IDs, <em>inputs</em> : target
+outputs if provided for decoding}.</li>
 </ul>
 </dd>
 </dl>
 <dl class="method">
-<dt id="seq2seq.models.TopKDecoder.TopKDecoder.forward_rnn">
-<code class="descname">forward_rnn</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>function=&lt;function log_softmax&gt;</em>, <em>retain_output_probs=True</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder.forward_rnn" title="Permalink to this definition">¶</a></dt>
+<dt id="seq2seq.models.TopKDecoder.TopKDecoder.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>function=&lt;function log_softmax&gt;</em>, <em>teacher_forcing_ratio=0</em>, <em>retain_output_probs=True</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Forward rnn for MAX_LENGTH steps.  Look at <code class="xref py py-func docutils literal"><span class="pre">seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn()</span></code> for details.</p>
 </dd></dl>
 
@@ -460,8 +462,8 @@ output = \tanh(w * (attn * context) + b * output)
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>linear_out</strong> (<a class="reference external" href="http://pytorch.org/docs/master/nn.html#torch.nn.Linear" title="(in PyTorch vmaster (0.2.0+c580352 ))"><em>torch.nn.Linear</em></a>) – applies a linear transformation to the incoming data: <span class="math">\(y = Ax + b\)</span>.</li>
-<li><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+c580352 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – applies a <span class="math">\(-inf\)</span> to the indices specified in the <cite>Tensor</cite>.</li>
+<li><strong>linear_out</strong> (<a class="reference external" href="http://pytorch.org/docs/master/nn.html#torch.nn.Linear" title="(in PyTorch vmaster (0.2.0+2e42272 ))"><em>torch.nn.Linear</em></a>) – applies a linear transformation to the incoming data: <span class="math">\(y = Ax + b\)</span>.</li>
+<li><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+2e42272 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – applies a <span class="math">\(-inf\)</span> to the indices specified in the <cite>Tensor</cite>.</li>
 </ul>
 </td>
 </tr>
@@ -482,7 +484,7 @@ output = \tanh(w * (attn * context) + b * output)
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+c580352 ))"><em>torch.Tensor</em></a>) – tensor containing indices to be masked</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+2e42272 ))"><em>torch.Tensor</em></a>) – tensor containing indices to be masked</td>
 </tr>
 </tbody>
 </table>
@@ -588,7 +590,7 @@ sequences, where each list is of attention weights }.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.4',
+            VERSION:'0.1.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
