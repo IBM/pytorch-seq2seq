@@ -47,7 +47,7 @@ class Evaluator(object):
             decoder_outputs, decoder_hidden, other = model(batch)
 
             # Evaluation
-            loss.eval_batch(batch, decoder_outputs)
+            loss.eval_batch(decoder_outputs, batch)
 
             seqlist = other['sequence']
             target_variables = getattr(batch, seq2seq.tgt_field_name)
