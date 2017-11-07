@@ -77,7 +77,7 @@ class Loss(object):
         for step, step_output in enumerate(outputs):
             batch_size = target_variable.size(0)
             target = target_variable[:, step + 1]
-            self._eval_batch(step_output.view(batch_size, -1), target)
+            self._eval_batch(step_output.contiguous().view(batch_size, -1), target)
 
     def _eval_batch(self, output, target):
         raise NotImplementedError
