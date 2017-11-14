@@ -167,6 +167,7 @@ class SupervisedTrainer(object):
             resume_optim = self.optimizer.optimizer
             defaults = resume_optim.param_groups[0]
             defaults.pop('params', None)
+            defaults.pop('initial_lr', None)
             self.optimizer.optimizer = resume_optim.__class__(model.parameters(), **defaults)
 
             start_epoch = resume_checkpoint.epoch
