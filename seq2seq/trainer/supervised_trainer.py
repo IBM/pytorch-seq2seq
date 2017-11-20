@@ -75,7 +75,8 @@ class SupervisedTrainer(object):
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
-            sort=True, sort_key=lambda x: len(x.src),
+            sort=False, sort_within_batch=True,
+            sort_key=lambda x: len(x.src),
             device=device, repeat=False)
 
         steps_per_epoch = len(batch_iterator)
@@ -166,6 +167,7 @@ class SupervisedTrainer(object):
             resume_optim = self.optimizer.optimizer
             defaults = resume_optim.param_groups[0]
             defaults.pop('params', None)
+            defaults.pop('initial_lr', None)
             self.optimizer.optimizer = resume_optim.__class__(model.parameters(), **defaults)
 
             start_epoch = resume_checkpoint.epoch
