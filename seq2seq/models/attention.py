@@ -10,7 +10,7 @@ class Attention(nn.Module):
     .. math::
             \begin{array}{ll}
             x = context*output \\
-            attn = exp(x_i - max_i x_i) / sum_j exp(x_j - max_i x_i) \\
+            attn = exp(x_i) / sum_j exp(x_j) \\
             output = \tanh(w * (attn * context) + b * output)
             \end{array}
 
