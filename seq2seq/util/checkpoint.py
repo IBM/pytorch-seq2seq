@@ -91,9 +91,13 @@ class Checkpoint(object):
         Returns:
             checkpoint (Checkpoint): checkpoint object with fields copied from those stored on disk
         """
-        print("Loading checkpoints from {}".format(path))
-        resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME))
-        model = torch.load(os.path.join(path, cls.MODEL_NAME))
+        if torch.cuda.is_available():
+            resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME))
+            model = torch.load(os.path.join(path, cls.MODEL_NAME))
+        else:
+            resume_checkpoint = torch.load(os.path.join(path, cls.TRAINER_STATE_NAME), map_location=lambda storage, loc: storage)
+            model = torch.load(os.path.join(path, cls.MODEL_NAME), map_location=lambda storage, loc: storage)
+
         model.flatten_parameters() # make RNN parameters contiguous
         with open(os.path.join(path, cls.INPUT_VOCAB_FILE), 'rb') as fin:
             input_vocab = dill.load(fin)

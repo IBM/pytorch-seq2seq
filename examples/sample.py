@@ -100,7 +100,7 @@ else:
         bidirectional = True
         encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
                              bidirectional=bidirectional, variable_lengths=True)
-        decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size * 2 if bidirectional else 1,
+        decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size * 2 if bidirectional else hidden_size,
                              dropout_p=0.2, use_attention=True, bidirectional=bidirectional,
                              eos_id=tgt.eos_id, sos_id=tgt.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
