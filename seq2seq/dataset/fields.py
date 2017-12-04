@@ -11,7 +11,7 @@ class SourceField(torchtext.data.Field):
         if kwargs.get('batch_first') is False:
             logger.warning("Option batch_first has to be set to use pytorch-seq2seq.  Changed to True.")
         kwargs['batch_first'] = True
-        if kwargs.get('batch_first') is False:
+        if kwargs.get('include_lengths') is False:
             logger.warning("Option include_lengths has to be set to use pytorch-seq2seq.  Changed to True.")
         kwargs['include_lengths'] = True
 

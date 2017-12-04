@@ -9,7 +9,7 @@ def _inflate(tensor, times, dim):
         Args:
             tensor: A :class:`Tensor` to inflate
             times: number of repetitions
-            dimension: axis for inflation (default=0)
+            dim: axis for inflation (default=0)
 
         Returns:
             A :class:`Tensor`
@@ -20,17 +20,16 @@ def _inflate(tensor, times, dim):
             1   2
             3   4
             [torch.LongTensor of size 2x2]
-            >> decoder = TopKDecoder(nn.RNN(10, 20, 2), 3)
-            >> b = decoder._inflate(a, 1, dimension=1)
+            >> b = ._inflate(a, 2, dim=1)
             >> b
-            1   1   2   2
-            3   3   4   4
+            1   2   1   2
+            3   4   3   4
             [torch.LongTensor of size 2x4]
-            >> c = decoder._inflate(a, 1, dimension=0)
+            >> c = _inflate(a, 2, dim=0)
             >> c
             1   2
-            1   2
             3   4
+            1   2
             3   4
             [torch.LongTensor of size 4x2]
 
