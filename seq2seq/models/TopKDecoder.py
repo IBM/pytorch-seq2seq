@@ -25,7 +25,7 @@ def _inflate(tensor, times, dim):
             1   2   1   2
             3   4   3   4
             [torch.LongTensor of size 2x4]
-            >> c = _inflate(a, 2, dimension=0)
+            >> c = _inflate(a, 2, dim=0)
             >> c
             1   2
             3   4
