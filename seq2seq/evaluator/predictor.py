@@ -21,6 +21,7 @@ class Predictor(object):
         self.src_vocab = src_vocab
         self.tgt_vocab = tgt_vocab
 
+
     def predict(self, src_seq):
         """ Make prediction given `src_seq` as input.
 
