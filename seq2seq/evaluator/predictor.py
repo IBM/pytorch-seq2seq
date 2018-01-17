@@ -61,21 +61,12 @@ class Predictor(object):
             src_id_seq = src_id_seq.cuda()
 
         softmax_list, _, other = self.model(src_id_seq, [len(src_seq)])
-        length = other['length'][0]
 
-        if n is None:
-            tgt_id_seq = [other['sequence'][di][0].data[0] for di in range(length)]
+        result = []
+        for x in range(0, int(n)):
+            length = other['topk_length'][0][x]
+            tgt_id_seq = [other['topk_sequence'][di][0, x, 0].data[0] for di in range(length)]
             tgt_seq = [self.tgt_vocab.itos[tok] for tok in tgt_id_seq]
-            result = tgt_seq
-        else:
-            try:
-                result = []
-                for x in range(0, int(n)):
-                    tgt_id_seq = [other['topk_sequence'][di][x].data[0] for di in range(length)]
-                    tgt_seq = [self.tgt_vocab.itos[tok] for tok in tgt_id_seq]
-                    result.append(tgt_seq)
-
-            except BaseException:
-                raise (Exception("Error. parameter 'n' must be an integer"))
+            result.append(tgt_seq)
 
         return result
