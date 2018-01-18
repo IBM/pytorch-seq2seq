@@ -21,7 +21,7 @@ class Predictor(object):
         self.src_vocab = src_vocab
         self.tgt_vocab = tgt_vocab
 
-    def get_model_features(self, src_seq):
+    def get_decoder_features(self, src_seq):
         src_id_seq = Variable(torch.LongTensor([self.src_vocab.stoi[tok] for tok in src_seq]),
                               volatile=True).view(1, -1)
         if torch.cuda.is_available():
@@ -29,7 +29,7 @@ class Predictor(object):
 
         softmax_list, _, other = self.model(src_id_seq, [len(src_seq)])
 
-        return src_id_seq, softmax_list, _, other
+        return other
 
     def predict(self, src_seq):
         """ Make prediction given `src_seq` as input.
@@ -41,7 +41,7 @@ class Predictor(object):
             tgt_seq (list): list of tokens in target language as predicted
             by the pre-trained model
         """
-        src_id_seq, softmax_list, _, other = self.get_model_features(src_seq)
+        other = self.get_decoder_features(src_seq)
 
         length = other['length'][0]
 
@@ -61,7 +61,7 @@ class Predictor(object):
             tgt_seq (list): list of tokens in target language as predicted
                             by the pre-trained model
         """
-        src_id_seq, softmax_list, _, other = self.get_model_features(src_seq)
+        other = self.get_decoder_features(src_seq)
 
         result = []
         for x in range(0, int(n)):
