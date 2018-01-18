@@ -102,7 +102,7 @@ class DecoderRNN(BaseRNN):
         if self.use_attention:
             output, attn = self.attention(output, encoder_outputs)
 
-        predicted_softmax = function(self.out(output.view(-1, self.hidden_size))).view(batch_size, output_size, -1)
+        predicted_softmax = function(self.out(output.contiguous().view(-1, self.hidden_size))).view(batch_size, output_size, -1)
         return predicted_softmax, hidden, attn
 
     def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None,
