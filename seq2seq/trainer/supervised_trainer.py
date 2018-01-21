@@ -23,7 +23,7 @@ class SupervisedTrainer(object):
             by default it makes a folder in the current directory to store the details (default: `experiment`).
         loss (seq2seq.loss.loss.Loss, optional): loss for training, (default: seq2seq.loss.NLLLoss)
         batch_size (int, optional): batch size for experiment, (default: 64)
-        checkpoint_every (int, optional): number of epochs to checkpoint after, (default: 100)
+        checkpoint_every (int, optional): number of batches to checkpoint after, (default: 100)
     """
     def __init__(self, expt_dir='experiment', loss=NLLLoss(), batch_size=64,
                  random_seed=None,
