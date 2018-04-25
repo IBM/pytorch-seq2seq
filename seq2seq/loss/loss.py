@@ -107,7 +107,7 @@ class NLLLoss(Loss):
         if isinstance(self.acc_loss, int):
             return 0
         # total loss for all batches
-        loss = self.acc_loss.data[0]
+        loss = self.acc_loss.data.item()
         if self.size_average:
             # average loss per batch
             loss /= self.norm_term
@@ -143,7 +143,7 @@ class Perplexity(NLLLoss):
 
     def get_loss(self):
         nll = super(Perplexity, self).get_loss()
-        nll /= self.norm_term
+        nll /= self.norm_term.item()
         if nll > Perplexity._MAX_EXP:
             print("WARNING: Loss exceeded maximum value, capping to e^100")
             return math.exp(Perplexity._MAX_EXP)
