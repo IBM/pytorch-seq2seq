@@ -26,7 +26,7 @@ class TestOptimizer(unittest.TestCase):
         optimizer.update(10, 1)
         self.assertEquals(optimizer.optimizer.param_groups[0]['lr'], 0.1)
 
-    @mock.patch("torch.nn.utils.clip_grad_norm")
+    @mock.patch("torch.nn.utils.clip_grad_norm_")
     def test_step(self, mock_clip_grad_norm):
         params = [torch.nn.Parameter(torch.randn(2,3,4))]
         optim = Optimizer(torch.optim.Adam(params),

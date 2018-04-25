@@ -312,7 +312,7 @@ class TopKDecoder(torch.nn.Module):
         # the order (very unlikely)
         s, re_sorted_idx = s.topk(self.k)
         for b_idx in range(b):
-            l[b_idx] = [l[b_idx][k_idx.data[0]] for k_idx in re_sorted_idx[b_idx,:]]
+            l[b_idx] = [l[b_idx][k_idx.item()] for k_idx in re_sorted_idx[b_idx,:]]
 
         re_sorted_idx = (re_sorted_idx + self.pos_index.expand_as(re_sorted_idx)).view(b * self.k)
 

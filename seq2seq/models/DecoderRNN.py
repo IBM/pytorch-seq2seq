@@ -102,7 +102,7 @@ class DecoderRNN(BaseRNN):
         if self.use_attention:
             output, attn = self.attention(output, encoder_outputs)
 
-        predicted_softmax = function(self.out(output.contiguous().view(-1, self.hidden_size))).view(batch_size, output_size, -1)
+        predicted_softmax = function(self.out(output.contiguous().view(-1, self.hidden_size)), dim=1).view(batch_size, output_size, -1)
         return predicted_softmax, hidden, attn
 
     def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None,
@@ -202,8 +202,7 @@ class DecoderRNN(BaseRNN):
         if inputs is None:
             if teacher_forcing_ratio > 0:
                 raise ValueError("Teacher forcing has to be disabled (set 0) when no inputs is provided.")
-            inputs = Variable(torch.LongTensor([self.sos_id] * batch_size),
-                                    volatile=True).view(batch_size, 1)
+            inputs = torch.LongTensor([self.sos_id] * batch_size).view(batch_size, 1)
             if torch.cuda.is_available():
                 inputs = inputs.cuda()
             max_length = self.max_length
