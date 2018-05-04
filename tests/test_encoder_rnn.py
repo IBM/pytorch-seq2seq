@@ -58,3 +58,12 @@ class TestEncoderRNN(unittest.TestCase):
                 equal = False
                 break
         self.assertFalse(equal)
+
+    def test_pretrained_embedding(self):
+        hidden_size = 16
+        pretrained_embedding = torch.randn(self.vocab_size, hidden_size)
+        rnn = EncoderRNN(self.vocab_size, 50, hidden_size,
+                         embedding=pretrained_embedding,
+                         update_embedding=False)
+        self.assertTrue(torch.equal(pretrained_embedding, rnn.embedding.weight.data))
+        self.assertFalse(rnn.embedding.weight.requires_grad)
