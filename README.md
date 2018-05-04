@@ -7,11 +7,10 @@
 
 This is a framework for sequence-to-sequence (seq2seq) models implemented in [PyTorch](http://pytorch.org).  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
 
-# What's New in 0.1.4
+# What's New in 0.1.6
 
-* Improved running speed significantly
-* Bidirectional encoder
-* Show token-wise accuracy in evaluation
+* Compatible with PyTorch 0.4
+* Added support for pre-trained word embedding
 
 # Roadmap
 Seq2seq is a fast evolving field with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
