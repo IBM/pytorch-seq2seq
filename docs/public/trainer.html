@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Trainer &mdash; pytorch-seq2seq 0.1.5 documentation</title>
+  <title>Trainer &mdash; pytorch-seq2seq 0.1.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.5 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.6 documentation" href="index.html"/>
         <link rel="next" title="Models" href="models.html"/>
         <link rel="prev" title="Optim" href="optim.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.5
+                0.1.6
               </div>
             
           
@@ -183,11 +183,11 @@ supervised setting.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>expt_dir</strong> (<em>optional</em><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – experiment Directory to store details of the experiment,
+<li><strong>expt_dir</strong> (<em>optional</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – experiment Directory to store details of the experiment,
 by default it makes a folder in the current directory to store the details (default: <cite>experiment</cite>).</li>
 <li><strong>loss</strong> (<a class="reference internal" href="loss.html#seq2seq.loss.loss.Loss" title="seq2seq.loss.loss.Loss"><em>seq2seq.loss.loss.Loss</em></a><em>, </em><em>optional</em>) – loss for training, (default: seq2seq.loss.NLLLoss)</li>
-<li><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – batch size for experiment, (default: 64)</li>
-<li><strong>checkpoint_every</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of epochs to checkpoint after, (default: 100)</li>
+<li><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – batch size for experiment, (default: 64)</li>
+<li><strong>checkpoint_every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – number of batches to checkpoint after, (default: 100)</li>
 </ul>
 </td>
 </tr>
@@ -205,12 +205,12 @@ by default it makes a folder in the current directory to store the details (defa
 <li><strong>model</strong> (<em>seq2seq.models</em>) – model to run training on, if <cite>resume=True</cite>, it would be
 overwritten by the model loaded from the latest checkpoint.</li>
 <li><strong>data</strong> (<em>seq2seq.dataset.dataset.Dataset</em>) – dataset object to train on</li>
-<li><strong>num_epochs</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of epochs to run (default 5)</li>
-<li><strong>resume</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a><em>, </em><em>optional</em>) – resume training with the latest checkpoint, (default False)</li>
+<li><strong>num_epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – number of epochs to run (default 5)</li>
+<li><strong>resume</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em>) – resume training with the latest checkpoint, (default False)</li>
 <li><strong>dev_data</strong> (<em>seq2seq.dataset.dataset.Dataset</em><em>, </em><em>optional</em>) – dev Dataset (default None)</li>
 <li><strong>optimizer</strong> (<em>seq2seq.optim.Optimizer</em><em>, </em><em>optional</em>) – optimizer for training
 (default: Optimizer(pytorch.optim.Adam, max_grad_norm=5))</li>
-<li><strong>teacher_forcing_ratio</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – teaching forcing ratio (default 0)</li>
+<li><strong>teacher_forcing_ratio</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a><em>, </em><em>optional</em>) – teaching forcing ratio (default 0)</li>
 </ul>
 </td>
 </tr>
@@ -273,7 +273,7 @@ overwritten by the model loaded from the latest checkpoint.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.5',
+            VERSION:'0.1.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

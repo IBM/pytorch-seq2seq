@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Models &mdash; pytorch-seq2seq 0.1.5 documentation</title>
+  <title>Models &mdash; pytorch-seq2seq 0.1.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.5 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.6 documentation" href="index.html"/>
         <link rel="prev" title="Trainer" href="trainer.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.5
+                0.1.6
               </div>
             
           
@@ -188,13 +188,13 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>vocab_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – size of the vocabulary</li>
-<li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – maximum allowed length for the sequence to be processed</li>
-<li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of features in the hidden state <cite>h</cite></li>
-<li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – dropout probability for the input sequence</li>
-<li><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – dropout probability for the output sequence</li>
-<li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of recurrent layers</li>
-<li><strong>rnn_cell</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – type of RNN cell (Eg. ‘LSTM’ , ‘GRU’)</li>
+<li><strong>vocab_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – size of the vocabulary</li>
+<li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – maximum allowed length for the sequence to be processed</li>
+<li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – number of features in the hidden state <cite>h</cite></li>
+<li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – dropout probability for the input sequence</li>
+<li><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – dropout probability for the output sequence</li>
+<li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – number of recurrent layers</li>
+<li><strong>rnn_cell</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – type of RNN cell (Eg. ‘LSTM’ , ‘GRU’)</li>
 </ul>
 </td>
 </tr>
@@ -227,22 +227,26 @@
 <span id="encoderrnn"></span><h2>EncoderRNN<a class="headerlink" href="#module-seq2seq.models.EncoderRNN" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.models.EncoderRNN.EncoderRNN">
-<em class="property">class </em><code class="descclassname">seq2seq.models.EncoderRNN.</code><code class="descname">EncoderRNN</code><span class="sig-paren">(</span><em>vocab_size</em>, <em>max_len</em>, <em>hidden_size</em>, <em>input_dropout_p=0</em>, <em>dropout_p=0</em>, <em>n_layers=1</em>, <em>bidirectional=False</em>, <em>rnn_cell='gru'</em>, <em>variable_lengths=False</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.EncoderRNN.EncoderRNN" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.models.EncoderRNN.</code><code class="descname">EncoderRNN</code><span class="sig-paren">(</span><em>vocab_size</em>, <em>max_len</em>, <em>hidden_size</em>, <em>input_dropout_p=0</em>, <em>dropout_p=0</em>, <em>n_layers=1</em>, <em>bidirectional=False</em>, <em>rnn_cell='gru'</em>, <em>variable_lengths=False</em>, <em>embedding=None</em>, <em>update_embedding=True</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.EncoderRNN.EncoderRNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies a multi-layer RNN to an input sequence.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>vocab_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – size of the vocabulary</li>
-<li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – a maximum allowed length for the sequence to be processed</li>
-<li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – the number of features in the hidden state <cite>h</cite></li>
-<li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the input sequence (default: 0)</li>
-<li><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the output sequence (default: 0)</li>
-<li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of recurrent layers (default: 1)</li>
-<li><strong>bidirectional</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, becomes a bidirectional encodr (defulat False)</li>
-<li><strong>rnn_cell</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>, </em><em>optional</em>) – type of RNN cell (default: gru)</li>
-<li><strong>variable_lengths</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a><em>, </em><em>optional</em>) – if use variable length RNN (default: False)</li>
+<li><strong>vocab_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – size of the vocabulary</li>
+<li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – a maximum allowed length for the sequence to be processed</li>
+<li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – the number of features in the hidden state <cite>h</cite></li>
+<li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the input sequence (default: 0)</li>
+<li><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the output sequence (default: 0)</li>
+<li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – number of recurrent layers (default: 1)</li>
+<li><strong>bidirectional</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, becomes a bidirectional encodr (defulat False)</li>
+<li><strong>rnn_cell</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>optional</em>) – type of RNN cell (default: gru)</li>
+<li><strong>variable_lengths</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em>) – if use variable length RNN (default: False)</li>
+<li><strong>embedding</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+0829d45 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – Pre-trained embedding.  The size of the tensor has to match
+the size of the embedding parameter: (vocab_size, hidden_size).  The embedding layer would be initialized
+with the tensor if provided (default: None).</li>
+<li><strong>update_embedding</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em>) – If the embedding should be updated during training (default: False).</li>
 </ul>
 </td>
 </tr>
@@ -312,24 +316,24 @@ in the mini-batch</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>vocab_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – size of the vocabulary</li>
-<li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – a maximum allowed length for the sequence to be processed</li>
-<li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – the number of features in the hidden state <cite>h</cite></li>
-<li><strong>sos_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – index of the start of sentence symbol</li>
-<li><strong>eos_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – index of the end of sentence symbol</li>
-<li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of recurrent layers (default: 1)</li>
-<li><strong>rnn_cell</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>, </em><em>optional</em>) – type of RNN cell (default: gru)</li>
-<li><strong>bidirectional</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a><em>, </em><em>optional</em>) – if the encoder is bidirectional (default False)</li>
-<li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the input sequence (default: 0)</li>
-<li><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the output sequence (default: 0)</li>
-<li><strong>use_attention</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a><em>, </em><em>optional</em>) – flag indication whether to use attention mechanism or not (default: false)</li>
+<li><strong>vocab_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – size of the vocabulary</li>
+<li><strong>max_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – a maximum allowed length for the sequence to be processed</li>
+<li><strong>hidden_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – the number of features in the hidden state <cite>h</cite></li>
+<li><strong>sos_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – index of the start of sentence symbol</li>
+<li><strong>eos_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – index of the end of sentence symbol</li>
+<li><strong>n_layers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – number of recurrent layers (default: 1)</li>
+<li><strong>rnn_cell</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>optional</em>) – type of RNN cell (default: gru)</li>
+<li><strong>bidirectional</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em>) – if the encoder is bidirectional (default False)</li>
+<li><strong>input_dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the input sequence (default: 0)</li>
+<li><strong>dropout_p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a><em>, </em><em>optional</em>) – dropout probability for the output sequence (default: 0)</li>
+<li><strong>use_attention</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em>) – flag indication whether to use attention mechanism or not (default: false)</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>KEY_ATTN_SCORE</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – key used to indicate attention weights in <cite>ret_dict</cite></li>
-<li><strong>KEY_LENGTH</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – key used to indicate a list representing lengths of output sequences in <cite>ret_dict</cite></li>
-<li><strong>KEY_SEQUENCE</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – key used to indicate a list of sequences in <cite>ret_dict</cite></li>
+<li><strong>KEY_ATTN_SCORE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – key used to indicate attention weights in <cite>ret_dict</cite></li>
+<li><strong>KEY_LENGTH</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – key used to indicate a list representing lengths of output sequences in <cite>ret_dict</cite></li>
+<li><strong>KEY_SEQUENCE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – key used to indicate a list of sequences in <cite>ret_dict</cite></li>
 </ul>
 </td>
 </tr>
@@ -378,7 +382,7 @@ predicted token IDs }.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>decoder_rnn</strong> (<a class="reference internal" href="#module-seq2seq.models.DecoderRNN" title="seq2seq.models.DecoderRNN"><em>DecoderRNN</em></a>) – An object of DecoderRNN used for decoding.</li>
-<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Size of the beam.</li>
+<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Size of the beam.</li>
 </ul>
 </td>
 </tr>
@@ -389,8 +393,8 @@ predicted token IDs }.</li>
 <dd><ul class="first last simple">
 <li><strong>inputs</strong> (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which
 each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default is <cite>None</cite>)</li>
-<li><strong>encoder_hidden</strong> (batch, seq_len, hidden_size): tensor containing the features in the hidden state <cite>h</cite> of
-encoder. Used as the initial hidden state of the decoder.</li>
+<li><strong>encoder_hidden</strong> (num_layers * num_directions, batch_size, hidden_size): tensor containing the features
+in the hidden state <cite>h</cite> of encoder. Used as the initial hidden state of the decoder.</li>
 <li><strong>encoder_outputs</strong> (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
 Used for attention mechanism (default is <cite>None</cite>).</li>
 <li><strong>function</strong> (torch.nn.Module): A function used to generate symbols from RNN hidden state
@@ -432,14 +436,14 @@ outputs if provided for decoding}.</li>
 <div class="math">
 \[\begin{split}\begin{array}{ll}
 x = context*output \\
-attn = exp(x_i - max_i x_i) / sum_j exp(x_j - max_i x_i) \\
+attn = exp(x_i) / sum_j exp(x_j) \\
 output = \tanh(w * (attn * context) + b * output)
 \end{array}\end{split}\]</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – The number of expected features in the output</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The number of expected features in the output</td>
 </tr>
 </tbody>
 </table>
@@ -462,8 +466,8 @@ output = \tanh(w * (attn * context) + b * output)
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>linear_out</strong> (<a class="reference external" href="http://pytorch.org/docs/master/nn.html#torch.nn.Linear" title="(in PyTorch vmaster (0.2.0+2e42272 ))"><em>torch.nn.Linear</em></a>) – applies a linear transformation to the incoming data: <span class="math">\(y = Ax + b\)</span>.</li>
-<li><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+2e42272 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – applies a <span class="math">\(-inf\)</span> to the indices specified in the <cite>Tensor</cite>.</li>
+<li><strong>linear_out</strong> (<a class="reference external" href="https://pytorch.org/docs/master/nn.html#torch.nn.Linear" title="(in PyTorch vmaster (0.5.0a0+0829d45 ))"><em>torch.nn.Linear</em></a>) – applies a linear transformation to the incoming data: <span class="math">\(y = Ax + b\)</span>.</li>
+<li><strong>mask</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+0829d45 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – applies a <span class="math">\(-inf\)</span> to the indices specified in the <cite>Tensor</cite>.</li>
 </ul>
 </td>
 </tr>
@@ -484,7 +488,7 @@ output = \tanh(w * (attn * context) + b * output)
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<a class="reference external" href="http://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.2.0+2e42272 ))"><em>torch.Tensor</em></a>) – tensor containing indices to be masked</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mask</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+0829d45 ))"><em>torch.Tensor</em></a>) – tensor containing indices to be masked</td>
 </tr>
 </tbody>
 </table>
@@ -514,7 +518,7 @@ and decoder.</p>
 </tbody>
 </table>
 <dl class="docutils">
-<dt>Inputs: input_variable, input_lengths, target_variable, teacher_forcing_ratio, volatile</dt>
+<dt>Inputs: input_variable, input_lengths, target_variable, teacher_forcing_ratio</dt>
 <dd><ul class="first last simple">
 <li><strong>input_variable</strong> (list, option): list of sequences, whose length is the batch size and within which
 each sequence is a list of token IDs. This information is forwarded to the encoder.</li>
@@ -590,7 +594,7 @@ sequences, where each list is of attention weights }.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.5',
+            VERSION:'0.1.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
