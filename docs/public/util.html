@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Util &mdash; pytorch-seq2seq 0.1.5 documentation</title>
+  <title>Util &mdash; pytorch-seq2seq 0.1.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="pytorch-seq2seq 0.1.5 documentation" href="index.html"/>
+    <link rel="top" title="pytorch-seq2seq 0.1.6 documentation" href="index.html"/>
         <link rel="next" title="Evaluator" href="evaluator.html"/>
         <link rel="prev" title="Dataset" href="dataset.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.5
+                0.1.6
               </div>
             
           
@@ -187,19 +187,19 @@ to write parameters to disk.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>model</strong> (<a class="reference internal" href="models.html#module-seq2seq.models.seq2seq" title="seq2seq.models.seq2seq"><em>seq2seq</em></a>) – seq2seq model being trained</li>
 <li><strong>optimizer</strong> (<a class="reference internal" href="optim.html#seq2seq.optim.optim.Optimizer" title="seq2seq.optim.optim.Optimizer"><em>Optimizer</em></a>) – stores the state of the optimizer</li>
-<li><strong>epoch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – current epoch (an epoch is a loop through the full training data)</li>
-<li><strong>step</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of examples seen within the current epoch</li>
+<li><strong>epoch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – current epoch (an epoch is a loop through the full training data)</li>
+<li><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – number of examples seen within the current epoch</li>
 <li><strong>input_vocab</strong> (<em>Vocabulary</em>) – vocabulary for the input language</li>
 <li><strong>output_vocab</strong> (<em>Vocabulary</em>) – vocabulary for the output language</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME" title="seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME"><strong>CHECKPOINT_DIR_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the checkpoint directory</li>
-<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME" title="seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME"><strong>TRAINER_STATE_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the file storing trainer states</li>
-<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.MODEL_NAME" title="seq2seq.util.checkpoint.Checkpoint.MODEL_NAME"><strong>MODEL_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the file storing model</li>
-<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE" title="seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE"><strong>INPUT_VOCAB_FILE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the input vocab file</li>
-<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE" title="seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE"><strong>OUTPUT_VOCAB_FILE</strong></a> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the output vocab file</li>
+<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME" title="seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME"><strong>CHECKPOINT_DIR_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the checkpoint directory</li>
+<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME" title="seq2seq.util.checkpoint.Checkpoint.TRAINER_STATE_NAME"><strong>TRAINER_STATE_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the file storing trainer states</li>
+<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.MODEL_NAME" title="seq2seq.util.checkpoint.Checkpoint.MODEL_NAME"><strong>MODEL_NAME</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the file storing model</li>
+<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE" title="seq2seq.util.checkpoint.Checkpoint.INPUT_VOCAB_FILE"><strong>INPUT_VOCAB_FILE</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the input vocab file</li>
+<li><a class="reference internal" href="#seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE" title="seq2seq.util.checkpoint.Checkpoint.OUTPUT_VOCAB_FILE"><strong>OUTPUT_VOCAB_FILE</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the output vocab file</li>
 </ul>
 </td>
 </tr>
@@ -243,7 +243,7 @@ to write parameters to disk.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">path to the last saved checkpoint’s subdirectory</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -285,7 +285,7 @@ The name of the subdirectory is the current local time in Y_M_D_H_M_S format.
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">path to the saved checkpoint subdirectory</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -340,7 +340,7 @@ The name of the subdirectory is the current local time in Y_M_D_H_M_S format.
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.5',
+            VERSION:'0.1.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
