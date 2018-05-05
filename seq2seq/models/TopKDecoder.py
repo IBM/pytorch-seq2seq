@@ -90,6 +90,8 @@ class TopKDecoder(torch.nn.Module):
                                                                  function, teacher_forcing_ratio)
 
         self.pos_index = Variable(torch.LongTensor(range(batch_size)) * self.k).view(-1, 1)
+        if torch.cuda.is_available():
+            self.pos_index = self.pos_index.cuda()
 
         # Inflate the initial hidden states to be of size: b*k x h
         encoder_hidden = self.rnn._init_state(encoder_hidden)
@@ -113,9 +115,13 @@ class TopKDecoder(torch.nn.Module):
         sequence_scores.fill_(-float('Inf'))
         sequence_scores.index_fill_(0, torch.LongTensor([i * self.k for i in range(0, batch_size)]), 0.0)
         sequence_scores = Variable(sequence_scores)
+        if torch.cuda.is_available():
+            sequence_scores = sequence_scores.cuda()
 
         # Initialize the input vector
         input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS] * batch_size * self.k]), 0, 1))
+        if torch.cuda.is_available():
+            input_var = input_var.cuda()
 
         # Store decisions for backtracking
         stored_outputs = list()
@@ -226,6 +232,8 @@ class TopKDecoder(torch.nn.Module):
             h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
         else:
             h_n = torch.zeros(nw_hidden[0].size())
+            if torch.cuda.is_available():
+                h_n = h_n.cuda()
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
                                                                 # Similar to `h_n`
 
