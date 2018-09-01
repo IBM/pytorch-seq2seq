@@ -5,9 +5,9 @@
 
 **[Documentation](https://ibm.github.io/pytorch-seq2seq/public/index.html)**
 
-pytorch-seq2seq is a simple, efficient and scalable framework implemented in [PyTorch](http://pytorch.org), to get you up and running in no time on sequence-to-sequence (seq2seq) tasks.  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
+**pytorch-seq2seq** is a simple, efficient and scalable framework implemented in [PyTorch](http://pytorch.org), to get you up and running in no time on sequence-to-sequence learning tasks.  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
 
-# What's New in 0.1.6
+# What's New in 0.1.7
 
 * Compatible with PyTorch 0.4.1
 * Added support for pre-trained word embedding
@@ -17,7 +17,7 @@ Sequence to sequence learning is a fast evolving space with new techniques and a
 
 * Evaluation with benchmarks such as WMT machine translation, COCO image captioning, conversational models, etc;
 * Provide more flexible model options and improve the usability of the library;
-* Adding latest architectures such as the CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122), the transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762), the deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304).
+* Adding latest architectures such as the CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122), the transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762) and the deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304).
 * Support features in the new versions of PyTorch.
 
 # Installation
@@ -34,7 +34,7 @@ Currently we only support installation from source code using setuptools.  Check
     pip install -r requirements.txt
     python setup.py install
 
-If you already had a version of PyTorch installed on your system, please verify that it is at least v0.4.1 for compatibility with our latest release.
+If you already had a version of PyTorch installed on your system, please verify that it is at least `v0.4.1` for compatibility with our latest release `v0.1.7`.
 
 # Get Started
 ### Prepare toy dataset
