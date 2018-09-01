@@ -10,11 +10,6 @@ import torch.nn.functional as F
 from .attention import Attention
 from .baseRNN import BaseRNN
 
-if torch.cuda.is_available():
-    import torch.cuda as device
-else:
-    import torch as device
-
 
 class DecoderRNN(BaseRNN):
     r"""
@@ -63,13 +58,11 @@ class DecoderRNN(BaseRNN):
     KEY_LENGTH = 'length'
     KEY_SEQUENCE = 'sequence'
 
-    def __init__(self, vocab_size, max_len, hidden_size,
-            sos_id, eos_id,
-            n_layers=1, rnn_cell='gru', bidirectional=False,
-            input_dropout_p=0, dropout_p=0, use_attention=False):
+    def __init__(self, vocab_size, max_len, hidden_size, sos_id, eos_id, 
+                 n_layers=1, rnn_cell='gru', bidirectional=False,
+                 input_dropout_p=0, dropout_p=0, use_attention=False):
         super(DecoderRNN, self).__init__(vocab_size, max_len, hidden_size,
-                input_dropout_p, dropout_p,
-                n_layers, rnn_cell)
+                input_dropout_p, dropout_p, n_layers, rnn_cell)
 
         self.bidirectional_encoder = bidirectional
         self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p)
@@ -127,7 +120,7 @@ class DecoderRNN(BaseRNN):
             eos_batches = step_symbols.data.eq(self.eos_id)
             if eos_batches.dim() > 0:
                 eos_batches = eos_batches.cpu().view(-1).numpy()
-                update_idx = ((lengths > di) & eos_batches) != 0
+                update_idx = ((lengths > step) & eos_batches) != 0
                 lengths[update_idx] = len(sequence_symbols)
 
         # Manual unrolling is used to support random teacher forcing.
@@ -137,6 +130,7 @@ class DecoderRNN(BaseRNN):
             context, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs)
             decoder_output, symbols = self.decoder(context, attn, batch, dataset)
             decoder_output = decoder_output.log()
+      
             for di in range(decoder_output.size(1)):
                 step_output = decoder_output[:, di, :]
                 step_symbols = symbols[:, di]
@@ -200,8 +194,7 @@ class DecoderRNN(BaseRNN):
         if inputs is None:
             if teacher_forcing_ratio > 0:
                 raise ValueError("Teacher forcing has to be disabled (set 0) when no inputs is provided.")
-            inputs = Variable(torch.LongTensor([self.sos_id] * batch_size),
-                                    volatile=True).view(batch_size, 1)
+            inputs = torch.LongTensor([self.sos_id] * batch_size).view(batch_size, 1)
             if torch.cuda.is_available():
                 inputs = inputs.cuda()
             max_length = self.max_length

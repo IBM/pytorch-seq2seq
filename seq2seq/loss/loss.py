@@ -94,16 +94,16 @@ class NLLLoss(Loss):
     """ Batch averaged negative log-likelihood loss.
 
     Args:
-        weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        weight (torch.Tensor, optional): a manual rescaling weight given to each class, refer to http://pytorch.org/docs/master/nn.html#nllloss
         mask (int, optional): index of masked token, i.e. weight[mask] = 0.
-        size_average (bool, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        reduction (str, optional): reduction to apply to the output, refer to http://pytorch.org/docs/master/nn.html#nllloss
     """
 
     _NAME = "Avg NLLLoss"
 
-    def __init__(self, weight=None, mask=None, size_average=True):
+    def __init__(self, weight=None, mask=None, reduction='elementwise_mean'):
         self.mask = mask
-        self.size_average = size_average
+        self.reduction = reduction
         if mask is not None:
             if weight is None:
                 raise ValueError("Must provide weight with a mask.")
@@ -111,14 +111,14 @@ class NLLLoss(Loss):
 
         super(NLLLoss, self).__init__(
             self._NAME,
-            nn.NLLLoss(weight=weight, size_average=size_average))
+            nn.NLLLoss(weight=weight, reduction=reduction))
 
     def get_loss(self):
         if isinstance(self.acc_loss, int):
             return 0
         # total loss for all batches
-        loss = self.acc_loss.data[0]
-        if self.size_average:
+        loss = self.acc_loss.data.item()
+        if self.reduction == 'elementwise_mean':
             # average loss per batch
             loss /= self.norm_term
         return loss
@@ -142,7 +142,7 @@ class Perplexity(NLLLoss):
     _MAX_EXP = 100
 
     def __init__(self, weight=None, mask=None):
-        super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=False)
+        super(Perplexity, self).__init__(weight=weight, mask=mask, reduction='sum')
 
     def _eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
@@ -153,7 +153,7 @@ class Perplexity(NLLLoss):
 
     def get_loss(self):
         nll = super(Perplexity, self).get_loss()
-        nll /= self.norm_term
+        nll /= self.norm_term.item()
         if nll > Perplexity._MAX_EXP:
             print("WARNING: Loss exceeded maximum value, capping to e^100")
             return math.exp(Perplexity._MAX_EXP)

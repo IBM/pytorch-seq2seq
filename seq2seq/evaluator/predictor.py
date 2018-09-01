@@ -2,6 +2,7 @@ import torch
 from torch.autograd import Variable
 import torchtext
 
+
 class Predictor(object):
 
     def __init__(self, model, src_vocab, tgt_vocab):
@@ -20,7 +21,6 @@ class Predictor(object):
         self.model.eval()
         self.src_vocab = src_vocab
         self.tgt_vocab = tgt_vocab
-
 
     def predict(self, src_seq):
         """ Make prediction given `src_seq` as input.
@@ -41,6 +41,7 @@ class Predictor(object):
                                               tgt=None)
 
         softmax_list, _, other = self.model(batch)
+        
         length = other['length'][0]
 
         tgt_id_seq = [other['sequence'][di][0].data[0] for di in range(length)]

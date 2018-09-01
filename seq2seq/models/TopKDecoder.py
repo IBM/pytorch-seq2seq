@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+CUDA = torch.cuda.is_available()
+
 def _inflate(tensor, times, dim):
         """
         Given a tensor, 'inflates' it along the given dimension by replicating each slice specified number of times (in-place)
@@ -9,7 +11,7 @@ def _inflate(tensor, times, dim):
         Args:
             tensor: A :class:`Tensor` to inflate
             times: number of repetitions
-            dimension: axis for inflation (default=0)
+            dim: axis for inflation (default=0)
 
         Returns:
             A :class:`Tensor`
@@ -20,17 +22,16 @@ def _inflate(tensor, times, dim):
             1   2
             3   4
             [torch.LongTensor of size 2x2]
-            >> decoder = TopKDecoder(nn.RNN(10, 20, 2), 3)
-            >> b = decoder._inflate(a, 1, dimension=1)
+            >> b = ._inflate(a, 2, dim=1)
             >> b
-            1   1   2   2
-            3   3   4   4
+            1   2   1   2
+            3   4   3   4
             [torch.LongTensor of size 2x4]
-            >> c = decoder._inflate(a, 1, dimension=0)
+            >> c = _inflate(a, 2, dim=0)
             >> c
             1   2
-            1   2
             3   4
+            1   2
             3   4
             [torch.LongTensor of size 4x2]
 
@@ -50,8 +51,8 @@ class TopKDecoder(torch.nn.Module):
     Inputs: inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio
         - **inputs** (seq_len, batch, input_size): list of sequences, whose length is the batch size and within which
           each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default is `None`)
-        - **encoder_hidden** (batch, seq_len, hidden_size): tensor containing the features in the hidden state `h` of
-          encoder. Used as the initial hidden state of the decoder.
+        - **encoder_hidden** (num_layers * num_directions, batch_size, hidden_size): tensor containing the features
+          in the hidden state `h` of encoder. Used as the initial hidden state of the decoder.
         - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
           Used for attention mechanism (default is `None`).
         - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is
@@ -79,8 +80,7 @@ class TopKDecoder(torch.nn.Module):
         self.SOS = self.rnn.sos_id
         self.EOS = self.rnn.eos_id
 
-    def forward(self, batch, inputs=None,
-                encoder_hidden=None, encoder_outputs=None,
+    def forward(self, batch, inputs=None, encoder_hidden=None, encoder_outputs=None,
                 dataset=None, teacher_forcing_ratio=0, retain_output_probs=True):
         """
         Forward rnn for MAX_LENGTH steps.  Look at :func:`seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn` for details.
@@ -116,6 +116,12 @@ class TopKDecoder(torch.nn.Module):
 
         # Initialize the input vector
         input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS] * batch_size * self.k]), 0, 1))
+        
+        # Assign all vars to CUDA if available
+        if CUDA:
+            self.pos_index = self.pos_index.cuda()
+            input_var = input_var.cuda()
+            sequence_scores = sequence_scores.cuda()
 
         # Store decisions for backtracking
         stored_outputs = list()
@@ -124,7 +130,7 @@ class TopKDecoder(torch.nn.Module):
         stored_emitted_symbols = list()
         stored_hidden = list()
 
-        for di in range(0, max_length):
+        for _ in range(max_length):
 
             # Run the RNN one step forward
             context, hidden, attn = self.rnn.forward_step(input_var, hidden,
@@ -225,9 +231,14 @@ class TopKDecoder(torch.nn.Module):
         # the last hidden state of decoding.
         if lstm:
             state_size = nw_hidden[0][0].size()
-            h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
+            if CUDA:
+                h_n = tuple([torch.zeros(state_size).cuda(), torch.zeros(state_size).cuda()])
+            else:
+                h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
         else:
             h_n = torch.zeros(nw_hidden[0].size())
+            if CUDA:
+                h_n = h_n.cuda()
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
                                                                 # Similar to `h_n`
 
@@ -314,7 +325,7 @@ class TopKDecoder(torch.nn.Module):
         # the order (very unlikely)
         s, re_sorted_idx = s.topk(self.k)
         for b_idx in range(b):
-            l[b_idx] = [l[b_idx][k_idx.data[0]] for k_idx in re_sorted_idx[b_idx,:]]
+            l[b_idx] = [l[b_idx][k_idx.item()] for k_idx in re_sorted_idx[b_idx,:]]
 
         re_sorted_idx = (re_sorted_idx + self.pos_index.expand_as(re_sorted_idx)).view(b * self.k)
 

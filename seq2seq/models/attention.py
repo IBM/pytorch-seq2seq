@@ -10,7 +10,7 @@ class Attention(nn.Module):
     .. math::
             \begin{array}{ll}
             x = context*output \\
-            attn = exp(x_i - max_i x_i) / sum_j exp(x_j - max_i x_i) \\
+            attn = exp(x_i) / sum_j exp(x_j) \\
             output = \tanh(w * (attn * context) + b * output)
             \end{array}
 
@@ -59,7 +59,7 @@ class Attention(nn.Module):
         attn = torch.bmm(output, context.transpose(1, 2))
         if self.mask is not None:
             attn.data.masked_fill_(self.mask, -float('inf'))
-        attn = F.softmax(attn.view(-1, input_size)).view(batch_size, -1, input_size)
+        attn = F.softmax(attn.view(-1, input_size), dim=1).view(batch_size, -1, input_size)
 
         # (batch, out_len, in_len) * (batch, in_len, dim) -> (batch, out_len, dim)
         mix = torch.bmm(attn, context)
@@ -67,6 +67,6 @@ class Attention(nn.Module):
         # concat -> (batch, out_len, 2*dim)
         combined = torch.cat((mix, output), dim=2)
         # output -> (batch, out_len, dim)
-        output = F.tanh(self.linear_out(combined.view(-1, 2 * hidden_size))).view(batch_size, -1, hidden_size)
+        output = torch.tanh(self.linear_out(combined.view(-1, 2 * hidden_size))).view(batch_size, -1, hidden_size)
 
         return output, attn

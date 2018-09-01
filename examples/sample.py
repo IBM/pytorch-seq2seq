@@ -81,6 +81,7 @@ else:
         max_len = 50
         encoder = EncoderRNN(len(input_vocab), max_len, hidden_size,
                              bidirectional=bidirectional, variable_lengths=True)
+
         decoder = DecoderRNN(len(output_vocab), max_len, hidden_size * 2 if bidirectional else 1,
                              dropout_p=0.2, use_attention=True, bidirectional=bidirectional,
                              eos_id=train.tgt_field.eos_id, sos_id=train.tgt_field.sos_id)

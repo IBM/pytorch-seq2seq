@@ -43,6 +43,7 @@ class Evaluator(object):
         tgt_vocab = data.fields[seq2seq.tgt_field_name].vocab
         pad = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].pad_token]
 
+        # with torch.no_grad():
         for batch in batch_iterator:
             decoder_outputs, decoder_hidden, other = model(batch)
 

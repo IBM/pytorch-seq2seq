@@ -10,8 +10,6 @@ python:
 install:
   - pip install -U pip
   - pip -q install -r requirements.txt
-  - pip -q install "http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp27-cp27mu-manylinux1_x86_64.whl; python_version == '2.7'"
-  - pip -q install "http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp36-cp36m-manylinux1_x86_64.whl; python_version == '3.6'"
 
   # dev dependencies
   - pip install flake8
