@@ -87,7 +87,7 @@ We setup the development environment using [Vagrant](https://www.vagrantup.com/)
 The following tools are needed and installed in the development environment by default:
 * Git
 * Python 2.7
-* Python packages: nose, mock, coverage, flake8
+* Python packages: pytorch, torchtext, nose, mock, coverage, flake8
 
 [Docker](https://www.docker.com/) support for development coming soon.
 
