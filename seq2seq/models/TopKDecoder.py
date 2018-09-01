@@ -237,7 +237,6 @@ class TopKDecoder(torch.nn.Module):
             h_n = torch.zeros(nw_hidden[0].size())
             if CUDA:
                 h_n = h_n.cuda()
-        
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
                                                                 # Similar to `h_n`
 
