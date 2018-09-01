@@ -86,7 +86,7 @@ class NLLLoss(Loss):
     Args:
         weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
         mask (int, optional): index of masked token, i.e. weight[mask] = 0.
-        reduce (str, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        reduction (str, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
     """
 
     _NAME = "Avg NLLLoss"
