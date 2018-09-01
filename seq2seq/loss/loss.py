@@ -1,7 +1,10 @@
 from __future__ import print_function
 import math
+
 import torch.nn as nn
 import numpy as np
+
+from .. import tgt_field_name
 
 class Loss(object):
     """ Base class for encapsulation of the loss functions.
@@ -58,7 +61,7 @@ class Loss(object):
         """
         raise NotImplementedError
 
-    def eval_batch(self, outputs, target):
+    def eval_batch(self, outputs, batch):
         """ Evaluate and accumulate loss given outputs and expected results.
 
         This method is called after each batch with the batch outputs and
@@ -70,6 +73,13 @@ class Loss(object):
             outputs (torch.Tensor): outputs of a batch.
             target (torch.Tensor): expected output of a batch.
         """
+        target_variable = getattr(batch, tgt_field_name)
+        for step, step_output in enumerate(outputs):
+            batch_size = target_variable.size(0)
+            target = target_variable[:, step + 1]
+            self._eval_batch(step_output.contiguous().view(batch_size, -1), target)
+
+    def _eval_batch(self, output, target):
         raise NotImplementedError
 
     def cuda(self):
@@ -113,7 +123,7 @@ class NLLLoss(Loss):
             loss /= self.norm_term
         return loss
 
-    def eval_batch(self, outputs, target):
+    def _eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
         self.norm_term += 1
 
@@ -134,7 +144,7 @@ class Perplexity(NLLLoss):
     def __init__(self, weight=None, mask=None):
         super(Perplexity, self).__init__(weight=weight, mask=mask, reduction='sum')
 
-    def eval_batch(self, outputs, target):
+    def _eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
         if self.mask is None:
             self.norm_term += np.prod(target.size())

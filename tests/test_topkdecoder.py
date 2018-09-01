@@ -28,16 +28,16 @@ class TestDecoderRNN(unittest.TestCase):
                 param.data.uniform_(-1, 1)
             topk_decoder = TopKDecoder(decoder, 1)
 
-            output, _, other = decoder()
-            output_topk, _, other_topk = topk_decoder()
+            output, _, other = decoder(None)
+            output_topk, _, other_topk = topk_decoder(None)
 
             self.assertEqual(len(output), len(output_topk))
 
             finished = [False] * batch_size
             seq_scores = [0] * batch_size
 
-            for t_step, t_output in enumerate(output):
-                score, _ = t_output.topk(1)
+            for t_step in range(len(output)):
+                score, _ = output[t_step].topk(1)
                 symbols = other['sequence'][t_step]
                 for b in range(batch_size):
                     seq_scores[b] += score[b].data[0]
@@ -49,7 +49,7 @@ class TestDecoderRNN(unittest.TestCase):
                     if not finished[b]:
                         symbol_topk = other_topk['topk_sequence'][t_step][b].data[0][0]
                         self.assertEqual(symbol, symbol_topk)
-                        self.assertTrue(torch.equal(t_output.data, output_topk[t_step].data))
+                        self.assertTrue(torch.equal(output[t_step].data, output_topk[t_step].data))
                 if sum(finished) == batch_size:
                     break
 
@@ -69,7 +69,7 @@ class TestDecoderRNN(unittest.TestCase):
             topk_decoder = TopKDecoder(decoder, beam_size)
 
             encoder_hidden = torch.autograd.Variable(torch.randn(1, batch_size, hidden_size))
-            _, _, other_topk = topk_decoder(encoder_hidden=encoder_hidden)
+            _, hidden_topk, other_topk = topk_decoder(None, encoder_hidden=encoder_hidden)
 
             # Queue state:
             #   1. time step
@@ -90,7 +90,9 @@ class TestDecoderRNN(unittest.TestCase):
                             batch_finished_seqs[b].append(time_batch_queue[t][b][k])
                             continue
                         inputs = torch.autograd.Variable(torch.LongTensor([[inputs]]))
-                        decoder_outputs, hidden, _ = decoder.forward_step(inputs, hidden, None, F.log_softmax)
+                        context, hidden, attn = decoder.forward_step(inputs, hidden, None)
+                        decoder_outputs, symbols = decoder.decoder(context, attn, None, None)
+                        decoder_outputs = decoder_outputs.log()
                         topk_score, topk = decoder_outputs[0].data.topk(beam_size)
                         for score, sym in zip(topk_score.tolist()[0], topk.tolist()[0]):
                             new_queue.append((t, sym, hidden, score + seq_score, k))

@@ -55,8 +55,6 @@ class TopKDecoder(torch.nn.Module):
           in the hidden state `h` of encoder. Used as the initial hidden state of the decoder.
         - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
           Used for attention mechanism (default is `None`).
-        - **function** (torch.nn.Module): A function used to generate symbols from RNN hidden state
-          (default is `torch.nn.functional.log_softmax`).
         - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is
           drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,
           teacher forcing would be used (default is 0).
@@ -82,14 +80,14 @@ class TopKDecoder(torch.nn.Module):
         self.SOS = self.rnn.sos_id
         self.EOS = self.rnn.eos_id
 
-    def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None, 
-                function=F.log_softmax, teacher_forcing_ratio=0, retain_output_probs=True):
+    def forward(self, batch, inputs=None, encoder_hidden=None, encoder_outputs=None,
+                dataset=None, teacher_forcing_ratio=0, retain_output_probs=True):
         """
         Forward rnn for MAX_LENGTH steps.  Look at :func:`seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn` for details.
         """
 
         inputs, batch_size, max_length = self.rnn._validate_args(inputs, encoder_hidden, encoder_outputs,
-                                                                 function, teacher_forcing_ratio)
+                                                                 teacher_forcing_ratio)
 
         self.pos_index = Variable(torch.LongTensor(range(batch_size)) * self.k).view(-1, 1)
 
@@ -135,8 +133,10 @@ class TopKDecoder(torch.nn.Module):
         for _ in range(max_length):
 
             # Run the RNN one step forward
-            log_softmax_output, hidden, _ = self.rnn.forward_step(input_var, hidden,
-                                                                  inflated_encoder_outputs, function=function)
+            context, hidden, attn = self.rnn.forward_step(input_var, hidden,
+                                                          inflated_encoder_outputs)
+            softmax_output, _ = self.rnn.decoder(context, attn, batch, dataset)
+            log_softmax_output = softmax_output.log()
 
             # If doing local backprop (e.g. supervised training), retain the output layer
             if retain_output_probs:
