@@ -15,9 +15,10 @@
 # Roadmap
 Sequence to sequence learning is a fast evolving space with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
 
+* Tutorials with examples on how to quickly get started with the library;
 * Evaluation with benchmarks such as WMT machine translation, COCO image captioning, conversational models, etc;
 * Provide more flexible model options and improve the usability of the library;
-* Adding latest architectures such as the CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122), the transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762) and the deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304).
+* Adding latest architectures such as the CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122), the transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762) and the deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304);
 * Support features in the new versions of PyTorch.
 
 # Installation
@@ -85,13 +86,15 @@ We setup the development environment using [Vagrant](https://www.vagrantup.com/)
 
 The following tools are needed and installed in the development environment by default:
 * Git
-* Python 2.7 (upgrading to Python 3.6 in the upcoming release)
+* Python 2.7
 * Python packages: nose, mock, coverage, flake8
+
+[Docker](https://www.docker.com/) support for development coming soon.
 
 ### Test
 The quality and the maintainability of the project is ensured by comprehensive tests.  We encourage writing unit tests and integration tests when contributing new codes.
 
-Locally please run `nose` tests in the package root directory to run unit tests.  We use TravisCI to require that a pull request has to pass all unit tests to be eligible to merge.  See [travis configuration](https://github.com/IBM/pytorch-seq2seq/blob/master/.travis.yml) for more information.
+Locally please run `nosetests` in the package root directory to run unit tests.  We use TravisCI to require that a pull request has to pass all unit tests to be eligible to merge.  See [travis configuration](https://github.com/IBM/pytorch-seq2seq/blob/master/.travis.yml) for more information.
 
 ### Code Style
 We follow [PEP8](https://www.python.org/dev/peps/pep-0008/) for code style.  Especially the style of docstrings is important to generate documentation.
