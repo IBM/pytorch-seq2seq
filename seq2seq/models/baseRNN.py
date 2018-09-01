@@ -1,6 +1,7 @@
 """ A base class for RNN. """
 import torch.nn as nn
 
+import logging
 
 class BaseRNN(nn.Module):
     r"""
@@ -41,7 +42,8 @@ class BaseRNN(nn.Module):
             self.rnn_cell = nn.GRU
         else:
             raise ValueError("Unsupported RNN Cell: {0}".format(rnn_cell))
-
+        if n_layers == 1 and dropout_p > 0:
+            logging.warning("Using dropout with 1 layer")
         self.dropout_p = dropout_p
 
     def forward(self, *args, **kwargs):

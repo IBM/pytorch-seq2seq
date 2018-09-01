@@ -57,9 +57,9 @@ class TestLoss(unittest.TestCase):
         self.assertAlmostEqual(loss_val, pytorch_loss.item())
 
     def test_nllloss_WITH_OUT_SIZE_AVERAGE(self):
-        loss = NLLLoss(size_average=False)
+        loss = NLLLoss(reduction='sum')
         pytorch_loss = 0
-        pytorch_criterion = torch.nn.NLLLoss(size_average=False)
+        pytorch_criterion = torch.nn.NLLLoss(reduction='sum')
         for output, target in zip(self.outputs, self.targets):
             loss.eval_batch(output, target)
             pytorch_loss += pytorch_criterion(output, target)

@@ -86,14 +86,14 @@ class NLLLoss(Loss):
     Args:
         weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
         mask (int, optional): index of masked token, i.e. weight[mask] = 0.
-        size_average (bool, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        reduce (str, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
     """
 
     _NAME = "Avg NLLLoss"
 
-    def __init__(self, weight=None, mask=None, size_average=True):
+    def __init__(self, weight=None, mask=None, reduction='elementwise_mean'):
         self.mask = mask
-        self.size_average = size_average
+        self.reduction = reduction
         if mask is not None:
             if weight is None:
                 raise ValueError("Must provide weight with a mask.")
@@ -101,14 +101,14 @@ class NLLLoss(Loss):
 
         super(NLLLoss, self).__init__(
             self._NAME,
-            nn.NLLLoss(weight=weight, size_average=size_average))
+            nn.NLLLoss(weight=weight, reduction=reduction))
 
     def get_loss(self):
         if isinstance(self.acc_loss, int):
             return 0
         # total loss for all batches
         loss = self.acc_loss.data.item()
-        if self.size_average:
+        if self.reduction == 'elementwise_mean':
             # average loss per batch
             loss /= self.norm_term
         return loss
@@ -132,7 +132,7 @@ class Perplexity(NLLLoss):
     _MAX_EXP = 100
 
     def __init__(self, weight=None, mask=None):
-        super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=False)
+        super(Perplexity, self).__init__(weight=weight, mask=mask, reduction='sum')
 
     def eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
