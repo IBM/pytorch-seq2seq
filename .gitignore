@@ -78,3 +78,10 @@ target/
 .vagrant
 
 vocab_pickle
+
+# VS Code config
+.vscode/*
+
+# local dev folders
+data/*
+experiment/*

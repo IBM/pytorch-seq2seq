@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+CUDA = torch.cuda.is_available()
+
 def _inflate(tensor, times, dim):
         """
         Given a tensor, 'inflates' it along the given dimension by replicating each slice specified number of times (in-place)
@@ -116,6 +118,10 @@ class TopKDecoder(torch.nn.Module):
 
         # Initialize the input vector
         input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS] * batch_size * self.k]), 0, 1))
+        if CUDA:
+            self.pos_index = self.pos_index.cuda()
+            input_var = input_var.cuda()
+            sequence_scores = sequence_scores.cuda()
 
         # Store decisions for backtracking
         stored_outputs = list()
@@ -223,9 +229,14 @@ class TopKDecoder(torch.nn.Module):
         # the last hidden state of decoding.
         if lstm:
             state_size = nw_hidden[0][0].size()
-            h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
+            if CUDA:
+                h_n = tuple([torch.zeros(state_size).cuda(), torch.zeros(state_size).cuda()])
+            else:
+                h_n = tuple([torch.zeros(state_size), torch.zeros(state_size)])
         else:
             h_n = torch.zeros(nw_hidden[0].size())
+            if CUDA:
+                h_n = h_n.cuda()
         l = [[self.rnn.max_length] * self.k for _ in range(b)]  # Placeholder for lengths of top-k sequences
                                                                 # Similar to `h_n`
 

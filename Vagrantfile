@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
   # https://docs.vagrantup.com.
 
   # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
+  # boxes at https://app.vagrantup.com/boxes/search.
   config.vm.box = "ubuntu/trusty64"
 
   # Disable automatic box update checking. If you disable this, then
@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
      vb.gui = false
 
      # Customize the amount of memory on the VM:
-     vb.memory = "2048"
+     vb.memory = "4096"
    end
   #
   # View the documentation for the provider you are using for more

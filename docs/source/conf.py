@@ -64,7 +64,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pytorch-seq2seq'
-copyright = u'2017, pytorch-seq2seq Contritors'
+copyright = u'2018, pytorch-seq2seq Contributors'
 author = u'pytorch-seq2seq Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
