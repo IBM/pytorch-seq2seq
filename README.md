@@ -34,7 +34,7 @@ Currently we only support installation from source code using setuptools.  Check
     pip install -r requirements.txt
     python setup.py install
 
-If you already had a version of PyTorch installed on your system, please verify that the active torch package is at least version 0.1.11.
+If you already had a version of PyTorch installed on your system, please verify that it is at least v0.4.0 for compatibility with our latest release.
 
 # Get Started
 ### Prepare toy dataset
@@ -81,11 +81,11 @@ We appreciate any kind of feedback or contribution.  Feel free to proceed with s
 We are using 4-week release cycles, where during each cycle changes will be pushed to the `develop` branch and finally merge to the `master` branch at the end of each cycle.
 
 ### Development Environment
-We setup the development environment using [Vagrant](https://www.vagrantup.com/).  Run `vagrant up` with our 'Vagrantfile' to get started.
+We setup the development environment using [Vagrant](https://www.vagrantup.com/).  To get started, make sure that you have [VirtualBox](https://www.virtualbox.org/) installed on your system, then run `vagrant up` with our 'Vagrantfile' and once the VM has been provisioned you can `vagrant ssh` into it.
 
 The following tools are needed and installed in the development environment by default:
 * Git
-* Python
+* Python 2.7
 * Python packages: nose, mock, coverage, flake8
 
 ### Test
