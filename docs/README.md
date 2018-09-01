@@ -16,4 +16,6 @@ Once that's out of the way, you can go ahead and build the docs using this comma
 sphinx-build ./source ./build
 ```
 
-Now the docs are ready to be published, so we move the contents of the `build` dir to the `docs` root dir since github does'nt like to look any further than that. That's it, you've officially made our users' life easier.
+*Note*: Make sure you've installed the library on your system using the installation guide [here](https://github.com/IBM/pytorch-seq2seq#installation) before building the docs. You'll need to reinstall the package after making changes in the documentation of the code.
+
+Now the docs are ready to be published, so we can move the contents of the `build` dir to the `docs` root dir since github does'nt like to look any further than that. That's it, you've officially made our users' life easier.

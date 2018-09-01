@@ -84,9 +84,9 @@ class NLLLoss(Loss):
     """ Batch averaged negative log-likelihood loss.
 
     Args:
-        weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        weight (torch.Tensor, optional): a manual rescaling weight given to each class, refer to http://pytorch.org/docs/master/nn.html#nllloss
         mask (int, optional): index of masked token, i.e. weight[mask] = 0.
-        reduction (str, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        reduction (str, optional): reduction to apply to the output, refer to http://pytorch.org/docs/master/nn.html#nllloss
     """
 
     _NAME = "Avg NLLLoss"

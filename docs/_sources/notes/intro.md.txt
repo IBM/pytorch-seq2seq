@@ -4,9 +4,9 @@
 
 # What's New in 0.1.7
 
-* Compatible with PyTorch 0.4.1
-* Added support for pre-trained word embedding
-* Minor Bug fixes
+* Multi-GPU Support 
+* Copy Attention mechanism
+* Fully compatible with the latest PyTorch 0.4.1
 
 # Roadmap
 Sequence to sequence learning is a fast evolving space with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
