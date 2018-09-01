@@ -82,8 +82,8 @@ class TopKDecoder(torch.nn.Module):
         self.SOS = self.rnn.sos_id
         self.EOS = self.rnn.eos_id
 
-    def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None, function=F.log_softmax,
-                    teacher_forcing_ratio=0, retain_output_probs=True):
+    def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None, 
+                function=F.log_softmax, teacher_forcing_ratio=0, retain_output_probs=True):
         """
         Forward rnn for MAX_LENGTH steps.  Look at :func:`seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn` for details.
         """
@@ -118,6 +118,8 @@ class TopKDecoder(torch.nn.Module):
 
         # Initialize the input vector
         input_var = Variable(torch.transpose(torch.LongTensor([[self.SOS] * batch_size * self.k]), 0, 1))
+        
+        # Assign all vars to CUDA if available
         if CUDA:
             self.pos_index = self.pos_index.cuda()
             input_var = input_var.cuda()
@@ -130,7 +132,7 @@ class TopKDecoder(torch.nn.Module):
         stored_emitted_symbols = list()
         stored_hidden = list()
 
-        for _ in range(0, max_length):
+        for _ in range(max_length):
 
             # Run the RNN one step forward
             log_softmax_output, hidden, _ = self.rnn.forward_step(input_var, hidden,

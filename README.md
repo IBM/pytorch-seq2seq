@@ -12,7 +12,7 @@
 
 * Multi-GPU Support 
 * Copy Attention mechanism
-* Fully compatible with the latest PyTorch 0.4.1
+* Fully compatible with PyTorch 0.4.1
 
 # Roadmap
 Sequence to sequence learning is a fast evolving space with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
@@ -78,7 +78,9 @@ The sample script by default saves checkpoints in the `experiment` folder of the
 # Troubleshoots and Contributing
 If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/IBM/pytorch-seq2seq/issues/new) and make sure to use labels, to make everyone's life easier.  For live discussions, please go to our [Gitter lobby](https://gitter.im/pytorch-seq2seq/Lobby).
 
-We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like questions, bug fixes and documentation improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.  
+We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like questions, bug fixes and [documentation](https://github.com/IBM/pytorch-seq2seq/tree/master/docs#pytorch-seq2seq-documentation) improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.
+
+Help us in improving our [documentation](https://github.com/IBM/pytorch-seq2seq/tree/master/docs#pytorch-seq2seq-documentation) and making it easier to use this library.
 
 ### Development Cycle
 We are using 4-week release cycles, where during each cycle changes will be pushed to the `develop` branch and finally merge to the `master` branch at the end of each cycle.
