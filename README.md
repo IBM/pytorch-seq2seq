@@ -13,11 +13,11 @@ pytorch-seq2seq is a simple, efficient and scalable framework implemented in [Py
 * Added support for pre-trained word embedding
 
 # Roadmap
-Seq2seq is a fast evolving field with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
+Sequence to sequence learning is a fast evolving space with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
 
 * Evaluation with benchmarks such as WMT machine translation, COCO image captioning, conversational models, etc;
-* Provide more flexible model options, improving the usability of the library;
-* Adding latest architectures such as the CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122) and the transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762);
+* Provide more flexible model options and improve the usability of the library;
+* Adding latest architectures such as the CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122), the transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762), the deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304).
 * Support features in the new versions of PyTorch.
 
 # Installation
@@ -73,25 +73,25 @@ The sample script by default saves checkpoints in the `experiment` folder of the
 * WMT Machine Translation (Coming soon)
 
 # Troubleshoots and Contributing
-If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/IBM/pytorch-seq2seq/issues/new) on Github.  For live discussions, please go to our [Gitter lobby](https://gitter.im/pytorch-seq2seq/Lobby).
+If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/IBM/pytorch-seq2seq/issues/new) and make sure to use labels, to make everyone's life easier.  For live discussions, please go to our [Gitter lobby](https://gitter.im/pytorch-seq2seq/Lobby).
 
-We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like bug fixes, documentation improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.  
+We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like questions, bug fixes and documentation improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.  
 
 ### Development Cycle
 We are using 4-week release cycles, where during each cycle changes will be pushed to the `develop` branch and finally merge to the `master` branch at the end of each cycle.
 
 ### Development Environment
-We setup the development environment using [Vagrant](https://www.vagrantup.com/).  To get started, make sure that you have [VirtualBox](https://www.virtualbox.org/) installed on your system, then run `vagrant up` with our 'Vagrantfile' and once the VM has been provisioned you can `vagrant ssh` into it.
+We setup the development environment using [Vagrant](https://www.vagrantup.com/).  To get started, make sure that you have [VirtualBox](https://www.virtualbox.org/) installed on your system, then run `vagrant up` with our 'Vagrantfile', once the VM has been provisioned you can `vagrant ssh` into it and start moving things around, albeit in moderation.
 
 The following tools are needed and installed in the development environment by default:
 * Git
-* Python 2.7
+* Python 2.7 (upgrading to Python 3.6 in the upcoming release)
 * Python packages: nose, mock, coverage, flake8
 
 ### Test
 The quality and the maintainability of the project is ensured by comprehensive tests.  We encourage writing unit tests and integration tests when contributing new codes.
 
-Locally please run `nosetests` in the package root directory to run unit tests.  We use TravisCI to require that a pull request has to pass all unit tests to be eligible to merge.  See [travis configuration](https://github.com/IBM/pytorch-seq2seq/blob/master/.travis.yml) for more information.
+Locally please run `nose` tests in the package root directory to run unit tests.  We use TravisCI to require that a pull request has to pass all unit tests to be eligible to merge.  See [travis configuration](https://github.com/IBM/pytorch-seq2seq/blob/master/.travis.yml) for more information.
 
 ### Code Style
 We follow [PEP8](https://www.python.org/dev/peps/pep-0008/) for code style.  Especially the style of docstrings is important to generate documentation.
