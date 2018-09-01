@@ -4,7 +4,7 @@ Welcome to the documentation folder of the pytorch-seq2seq library. We use [sphi
 
 ### Getting Started 
 
-In order to build docs using `sphinx` you need to install a couple of things, make sure you're in the `docs/dev` folder:
+In order to build docs using `sphinx` you need to install a couple of things, make sure you're in the `docs/_dev` folder:
 
 ```
 pip install -r requirements.txt
