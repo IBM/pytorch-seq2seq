@@ -16,7 +16,7 @@ class CopyDecoder(Decoder):
 
     def forward(self, context, attn, batch, dataset):
         de_len = context.size(1)
-        gen_prob = torch.nn.sigmoid(self.gen_linear(context.view(-1, self.hidden_size))).log()
+        gen_prob = torch.nn.Sigmoid(self.gen_linear(context.view(-1, self.hidden_size))).log()
 
         vocab_prob, symbols = super(CopyDecoder, self).forward(context, attn)
         vocab_prob = vocab_prob.view(-1, self.output_size) * gen_prob
