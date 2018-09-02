@@ -140,13 +140,19 @@ class TestDecoderRNN(unittest.TestCase):
                             break
                         for k in range(beam_size):
                             self.assertEqual(topk_lengths[b][k], len(topk[b][k]) - 1)
-                            print(topk_scores)
-                            print()
-                            print(topk_scores[b][k])
-                            print()
-                            print(topk)
-                            print()
-                            print(topk[b][k][-1][3])
+
+                            if not np.isclose(topk_scores[b][k], topk[b][k][-1][3]):
+                                print()
+                                print('topk_scores[{}][{}]'.fomat(b, k))
+                                print(topk_scores[b][k])
+                                print()
+                                print('topk[{}][{}][-1][3]'.format(b, k))
+                                print(topk[b][k][-1][3])
+                                print()
+                                print(topk_scores)
+                                print(topk)
+                                print()
+
                             self.assertTrue(np.isclose(topk_scores[b][k], topk[b][k][-1][3]))
                             total_steps = topk_lengths[b][k]
                             for t in range(total_steps):
