@@ -143,7 +143,7 @@ class TestDecoderRNN(unittest.TestCase):
 
                             if not np.isclose(topk_scores[b][k], topk[b][k][-1][3]):
                                 print()
-                                print('topk_scores[{}][{}]'.fomat(b, k))
+                                print('topk_scores[{}][{}]'.format(b, k))
                                 print(topk_scores[b][k])
                                 print()
                                 print('topk[{}][{}][-1][3]'.format(b, k))
