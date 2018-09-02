@@ -101,7 +101,6 @@ else:
 
         # Optimizer and learning rate scheduler can be customized by
         # explicitly constructing the objects and pass to the trainer.
-        #
         optimizer = Optimizer(torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
         scheduler = StepLR(optimizer.optimizer, 1)
         optimizer.set_scheduler(scheduler)

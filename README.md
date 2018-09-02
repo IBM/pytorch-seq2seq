@@ -29,7 +29,7 @@ This package requires Python 2.7 or 3.6. We recommend creating a new virtual env
 ### Prerequisites
 
 * Numpy: `pip install numpy` (Refer [here](https://github.com/numpy/numpy) for problem installing Numpy).
-* PyTorch: Refer to [PyTorch website](http://pytorch.org/) to install the version w.r.t. your environment.
+* PyTorch: Refer to [PyTorch website](http://pytorch.org/) to install the version suitable for your system.
 
 ### Install from source
 Currently we only support installation from source code using setuptools.  Checkout the source code and run the following commands:
@@ -46,11 +46,14 @@ If you already had a version of PyTorch installed on your system, please verify 
     # The generated data is stored in data/toy_reverse by default
 	scripts/toy.sh
 
-### Train and play
+	# Define the env paths to generated data
 	TRAIN_SRC=data/toy_reverse/train/src.txt
 	TRAIN_TGT=data/toy_reverse/train/tgt.txt
 	DEV_SRC=data/toy_reverse/dev/src.txt
 	DEV_TGT=data/toy_reverse/dev/tgt.txt
+
+### Train and play
+	
 	# Start training
     python examples/sample.py  --train_src $TRAIN_SRC --train_tgt $TRAIN_TGT --dev_src $DEV_SRC --dev_tgt $DEV_TGT
 
