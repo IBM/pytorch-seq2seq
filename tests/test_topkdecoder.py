@@ -139,8 +139,8 @@ class TestDecoderRNN(unittest.TestCase):
                         if precision_error:
                             break
                         for k in range(beam_size):
-                            self.assertEqual(topk_lengths[b][k], len(topk[b][k]) - 1)
+                            self.assertEqual(topk_lengths[b][k], len(topk[b][k]))
                             self.assertTrue(np.isclose(topk_scores[b][k], topk[b][k][-1][3]))
                             total_steps = topk_lengths[b][k]
                             for t in range(total_steps):
-                                self.assertEqual(topk_pred_symbols[t][b, k].data[0], topk[b][k][t+1][1]) # topk includes SOS
+                                self.assertEqual(topk_pred_symbols[t][b, k].data[0], topk[b][k][t + 1][1]) # topk includes SOS
