@@ -2,6 +2,7 @@ import torch
 from torch.autograd import Variable
 import torchtext
 
+from seq2seq.dataset import Seq2SeqDataset
 
 class Predictor(object):
 
@@ -26,19 +27,21 @@ class Predictor(object):
         """ Make prediction given `src_seq` as input.
 
         Args:
-            src_seq (list): list of tokens in source language
+            src_seqs (list): list of input tokens in source language
 
         Returns:
-            tgt_seq (list): list of tokens in target language as predicted
+            tgt_seq (list): list of output tokens in target language as predicted
             by the pre-trained model
         """
         src_id_seq = Variable(torch.LongTensor([self.src_vocab.stoi[tok] for tok in src_seq]),
                               volatile=True).view(1, -1)
         if torch.cuda.is_available():
             src_id_seq = src_id_seq.cuda()
-        batch = torchtext.data.Batch.fromvars(None, 1,
-                                              src=(src_id_seq, [len(src_seq)]),
-                                              tgt=None)
+
+        dataset = Seq2SeqDataset.from_list(' '.join(src_seq))
+        dataset.vocab = self.src_vocab
+        batch = torchtext.data.Batch.fromvars(dataset, 1, 
+                    src=(src_id_seq, [len(src_seq)]), tgt=None)
 
         softmax_list, _, other = self.model(batch)
         
