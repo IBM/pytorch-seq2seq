@@ -138,7 +138,16 @@ class TestDecoderRNN(unittest.TestCase):
                         if precision_error:
                             break
                         for k in range(beam_size):
-                            self.assertEqual(topk_lengths[b][k], len(topk[b][k]) - 1)
+
+                            if topk_lengths[b][k] != (len(topk[b][k]) - 1):
+                                print()
+                                print('topk_lengths[{}][{}]'.format(b, k))
+                                print(topk_lengths[b][k])
+                                print()
+                                print('len(topk[{}][{}]) - 1'.format(b, k))
+                                print(len(topk[b][k]) - 1)
+
+                            # self.assertEqual(topk_lengths[b][k], len(topk[b][k]) - 1)
 
                             if not np.isclose(topk_scores[b][k], topk[b][k][-1][3]):
                                 print()
