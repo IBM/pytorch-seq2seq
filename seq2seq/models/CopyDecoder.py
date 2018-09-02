@@ -3,6 +3,8 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
+import torch.functional as F
+
 from .DecoderRNN import Decoder
 
 # TODO: abstract decoders with a parent module
@@ -16,7 +18,7 @@ class CopyDecoder(Decoder):
 
     def forward(self, context, attn, batch, dataset):
         de_len = context.size(1)
-        gen_prob = torch.nn.Sigmoid(self.gen_linear(context.view(-1, self.hidden_size))).log()
+        gen_prob = F.sigmoid(self.gen_linear(context.view(-1, self.hidden_size))).log()
 
         vocab_prob, symbols = super(CopyDecoder, self).forward(context, attn)
         vocab_prob = vocab_prob.view(-1, self.output_size) * gen_prob
