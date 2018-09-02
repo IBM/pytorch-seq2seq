@@ -47,10 +47,12 @@ If you already had a version of PyTorch installed on your system, please verify 
 	scripts/toy.sh
 
 ### Train and play
-	TRAIN_PATH=data/toy_reverse/train/data.txt
-	DEV_PATH=data/toy_reverse/dev/data.txt
+	TRAIN_SRC=data/toy_reverse/train/src.txt
+	TRAIN_TGT=data/toy_reverse/train/tgt.txt
+	DEV_SRC=data/toy_reverse/dev/src.txt
+	DEV_TGT=data/toy_reverse/dev/tgt.txt
 	# Start training
-    python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH
+    python examples/sample.py  --train_src $TRAIN_SRC --train_tgt $TRAIN_TGT --dev_src $DEV_SRC --dev_tgt $DEV_TGT
 
 It will take about 3 minutes to train on CPU and less than 1 minute with a Tesla K80.  Once training is complete, you will be prompted to enter a new sequence to translate and the model will print out its prediction (use ctrl-C to terminate).  Try the example below!
 
