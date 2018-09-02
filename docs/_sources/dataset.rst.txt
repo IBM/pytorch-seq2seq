@@ -6,6 +6,13 @@ We use torchtext to manage data loading and processing.  For more information ab
 Fields
 -------
 
+.. automodule:: seq2seq.dataset.dataset
+    :members:
+    :undoc-members:
+
+Fields
+-------
+
 .. automodule:: seq2seq.dataset.fields
     :members:
     :undoc-members:

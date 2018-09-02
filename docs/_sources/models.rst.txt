@@ -19,6 +19,12 @@ DecoderRNN
 .. automodule:: seq2seq.models.DecoderRNN
     :members:
 
+CopyDecoder
+-----------
+
+.. automodule:: seq2seq.models.CopyDecoder
+    :members:
+
 TopKDecoder
 -----------
 

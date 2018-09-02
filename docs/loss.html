@@ -213,7 +213,7 @@ sub-classes.</li>
 </table>
 <dl class="method">
 <dt id="seq2seq.loss.loss.Loss.eval_batch">
-<code class="descname">eval_batch</code><span class="sig-paren">(</span><em>outputs</em>, <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Loss.eval_batch" title="Permalink to this definition">¶</a></dt>
+<code class="descname">eval_batch</code><span class="sig-paren">(</span><em>outputs</em>, <em>batch</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Loss.eval_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate and accumulate loss given outputs and expected results.</p>
 <p>This method is called after each batch with the batch outputs and
 the target (expected) results.  The loss and normalization term are
@@ -281,28 +281,6 @@ own logic.</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="seq2seq.loss.loss.NLLLoss.eval_batch">
-<code class="descname">eval_batch</code><span class="sig-paren">(</span><em>outputs</em>, <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.NLLLoss.eval_batch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate and accumulate loss given outputs and expected results.</p>
-<p>This method is called after each batch with the batch outputs and
-the target (expected) results.  The loss and normalization term are
-accumulated in this method.  Override it to define your own accumulation
-method.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outputs</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a>) – outputs of a batch.</li>
-<li><strong>target</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a>) – expected output of a batch.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="seq2seq.loss.loss.NLLLoss.get_loss">
 <code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.NLLLoss.get_loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the loss.</p>
@@ -344,28 +322,6 @@ same, it is the exponential of negative log-likelihood.</p>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="seq2seq.loss.loss.Perplexity.eval_batch">
-<code class="descname">eval_batch</code><span class="sig-paren">(</span><em>outputs</em>, <em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Perplexity.eval_batch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate and accumulate loss given outputs and expected results.</p>
-<p>This method is called after each batch with the batch outputs and
-the target (expected) results.  The loss and normalization term are
-accumulated in this method.  Override it to define your own accumulation
-method.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outputs</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a>) – outputs of a batch.</li>
-<li><strong>target</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a>) – expected output of a batch.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="method">
 <dt id="seq2seq.loss.loss.Perplexity.get_loss">
 <code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.loss.Perplexity.get_loss" title="Permalink to this definition">¶</a></dt>

@@ -221,11 +221,6 @@
 <dt id="seq2seq.evaluator.predictor.Predictor">
 <em class="property">class </em><code class="descclassname">seq2seq.evaluator.predictor.</code><code class="descname">Predictor</code><span class="sig-paren">(</span><em>model</em>, <em>src_vocab</em>, <em>tgt_vocab</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="seq2seq.evaluator.predictor.Predictor.get_decoder_features">
-<code class="descname">get_decoder_features</code><span class="sig-paren">(</span><em>src_seq</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor.get_decoder_features" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="seq2seq.evaluator.predictor.Predictor.predict">
 <code class="descname">predict</code><span class="sig-paren">(</span><em>src_seq</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make prediction given <cite>src_seq</cite> as input.</p>
@@ -233,42 +228,12 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>src_seq</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of tokens in source language</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>src_seq</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of input tokens in source language</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of tokens in target language as predicted
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of output tokens in target language as predicted
 by the pre-trained model</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tgt_seq (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="seq2seq.evaluator.predictor.Predictor.predict_n">
-<code class="descname">predict_n</code><span class="sig-paren">(</span><em>src_seq</em>, <em>n=1</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor.predict_n" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make ‘n’ predictions given <cite>src_seq</cite> as input.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>src_seq</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of tokens in source language</li>
-<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of predicted seqs to return. If None,
-it will return just one seq.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
-<dt>list of tokens in target language as predicted</dt>
-<dd><p class="first last">by the pre-trained model</p>
-</dd>
-</dl>
-</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tgt_seq (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</p>
-</td>
 </tr>
 </tbody>
 </table>

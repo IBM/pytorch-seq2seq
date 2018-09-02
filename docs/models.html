@@ -102,6 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.models.baseRNN">baseRNN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.models.EncoderRNN">EncoderRNN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.models.DecoderRNN">DecoderRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.models.CopyDecoder">CopyDecoder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.models.TopKDecoder">TopKDecoder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.models.attention">attention</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.models.seq2seq">seq2seq</a></li>
@@ -320,6 +321,25 @@ in the mini-batch</li>
 <div class="section" id="module-seq2seq.models.DecoderRNN">
 <span id="decoderrnn"></span><h2>DecoderRNN<a class="headerlink" href="#module-seq2seq.models.DecoderRNN" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="seq2seq.models.DecoderRNN.Decoder">
+<em class="property">class </em><code class="descclassname">seq2seq.models.DecoderRNN.</code><code class="descname">Decoder</code><span class="sig-paren">(</span><em>hidden_size</em>, <em>output_size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.DecoderRNN.Decoder" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="seq2seq.models.DecoderRNN.Decoder.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>context</em>, <em>attn</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.DecoderRNN.Decoder.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="seq2seq.models.DecoderRNN.DecoderRNN">
 <em class="property">class </em><code class="descclassname">seq2seq.models.DecoderRNN.</code><code class="descname">DecoderRNN</code><span class="sig-paren">(</span><em>vocab_size</em>, <em>max_len</em>, <em>hidden_size</em>, <em>sos_id</em>, <em>eos_id</em>, <em>n_layers=1</em>, <em>rnn_cell='gru'</em>, <em>bidirectional=False</em>, <em>input_dropout_p=0</em>, <em>dropout_p=0</em>, <em>use_attention=False</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.DecoderRNN.DecoderRNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides functionality for decoding in a seq2seq framework, with an option for attention.</p>
@@ -352,7 +372,7 @@ in the mini-batch</li>
 </tbody>
 </table>
 <dl class="docutils">
-<dt>Inputs: inputs, encoder_hidden, encoder_outputs, function, teacher_forcing_ratio</dt>
+<dt>Inputs: inputs, encoder_hidden, encoder_outputs, teacher_forcing_ratio</dt>
 <dd><ul class="first last simple">
 <li><strong>inputs</strong> (batch, seq_len, input_size): list of sequences, whose length is the batch size and within which
 each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default <cite>None</cite>)</li>
@@ -360,8 +380,6 @@ each sequence is a list of token IDs.  It is used for teacher forcing when provi
 hidden state <cite>h</cite> of encoder. Used as the initial hidden state of the decoder. (default <cite>None</cite>)</li>
 <li><strong>encoder_outputs</strong> (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
 Used for attention mechanism (default is <cite>None</cite>).</li>
-<li><strong>function</strong> (torch.nn.Module): A function used to generate symbols from RNN hidden state
-(default is <cite>torch.nn.functional.log_softmax</cite>).</li>
 <li><strong>teacher_forcing_ratio</strong> (float): The probability that teacher forcing will be used. A random number is
 drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,
 teacher forcing would be used (default is 0).</li>
@@ -381,7 +399,30 @@ predicted token IDs }.</li>
 </dl>
 <dl class="method">
 <dt id="seq2seq.models.DecoderRNN.DecoderRNN.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>function=&lt;function log_softmax&gt;</em>, <em>teacher_forcing_ratio=0</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.DecoderRNN.DecoderRNN.forward" title="Permalink to this definition">¶</a></dt>
+<code class="descname">forward</code><span class="sig-paren">(</span><em>batch</em>, <em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>dataset=None</em>, <em>teacher_forcing_ratio=0</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.DecoderRNN.DecoderRNN.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-seq2seq.models.CopyDecoder">
+<span id="copydecoder"></span><h2>CopyDecoder<a class="headerlink" href="#module-seq2seq.models.CopyDecoder" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="seq2seq.models.CopyDecoder.CopyDecoder">
+<em class="property">class </em><code class="descclassname">seq2seq.models.CopyDecoder.</code><code class="descname">CopyDecoder</code><span class="sig-paren">(</span><em>hidden_size</em>, <em>output_size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.CopyDecoder.CopyDecoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference: <a class="reference external" href="https://arxiv.org/pdf/1704.04368.pdf">https://arxiv.org/pdf/1704.04368.pdf</a></p>
+<dl class="method">
+<dt id="seq2seq.models.CopyDecoder.CopyDecoder.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>context</em>, <em>attn</em>, <em>batch</em>, <em>dataset</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.CopyDecoder.CopyDecoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -423,8 +464,6 @@ each sequence is a list of token IDs.  It is used for teacher forcing when provi
 in the hidden state <cite>h</cite> of encoder. Used as the initial hidden state of the decoder.</li>
 <li><strong>encoder_outputs</strong> (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
 Used for attention mechanism (default is <cite>None</cite>).</li>
-<li><strong>function</strong> (torch.nn.Module): A function used to generate symbols from RNN hidden state
-(default is <cite>torch.nn.functional.log_softmax</cite>).</li>
 <li><strong>teacher_forcing_ratio</strong> (float): The probability that teacher forcing will be used. A random number is
 drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,
 teacher forcing would be used (default is 0).</li>
@@ -446,7 +485,7 @@ outputs if provided for decoding}.</li>
 </dl>
 <dl class="method">
 <dt id="seq2seq.models.TopKDecoder.TopKDecoder.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>function=&lt;function log_softmax&gt;</em>, <em>teacher_forcing_ratio=0</em>, <em>retain_output_probs=True</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder.forward" title="Permalink to this definition">¶</a></dt>
+<code class="descname">forward</code><span class="sig-paren">(</span><em>batch</em>, <em>inputs=None</em>, <em>encoder_hidden=None</em>, <em>encoder_outputs=None</em>, <em>dataset=None</em>, <em>teacher_forcing_ratio=0</em>, <em>retain_output_probs=True</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.TopKDecoder.TopKDecoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Forward rnn for MAX_LENGTH steps.  Look at <code class="xref py py-func docutils literal notranslate"><span class="pre">seq2seq.models.DecoderRNN.DecoderRNN.forward_rnn()</span></code> for details.</p>
 </dd></dl>
 
@@ -541,7 +580,7 @@ registered hooks while the latter silently ignores them.</p>
 <span id="seq2seq"></span><h2>seq2seq<a class="headerlink" href="#module-seq2seq.models.seq2seq" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="seq2seq.models.seq2seq.Seq2seq">
-<em class="property">class </em><code class="descclassname">seq2seq.models.seq2seq.</code><code class="descname">Seq2seq</code><span class="sig-paren">(</span><em>encoder</em>, <em>decoder</em>, <em>decode_function=&lt;function log_softmax&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">seq2seq.models.seq2seq.</code><code class="descname">Seq2seq</code><span class="sig-paren">(</span><em>encoder</em>, <em>decoder</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Standard sequence-to-sequence architecture with configurable encoder
 and decoder.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -551,7 +590,6 @@ and decoder.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>encoder</strong> (<a class="reference internal" href="#seq2seq.models.EncoderRNN.EncoderRNN" title="seq2seq.models.EncoderRNN.EncoderRNN"><em>EncoderRNN</em></a>) – object of EncoderRNN</li>
 <li><strong>decoder</strong> (<a class="reference internal" href="#seq2seq.models.DecoderRNN.DecoderRNN" title="seq2seq.models.DecoderRNN.DecoderRNN"><em>DecoderRNN</em></a>) – object of DecoderRNN</li>
-<li><strong>decode_function</strong> (<em>func</em><em>, </em><em>optional</em>) – function to generate symbols from output hidden states (default: F.log_softmax)</li>
 </ul>
 </td>
 </tr>
@@ -589,7 +627,7 @@ sequences, where each list is of attention weights }.</li>
 </dl>
 <dl class="method">
 <dt id="seq2seq.models.seq2seq.Seq2seq.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>input_variable</em>, <em>input_lengths=None</em>, <em>target_variable=None</em>, <em>teacher_forcing_ratio=0</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq.forward" title="Permalink to this definition">¶</a></dt>
+<code class="descname">forward</code><span class="sig-paren">(</span><em>batch</em>, <em>dataset=None</em>, <em>teacher_forcing_ratio=0</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.models.seq2seq.Seq2seq.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
