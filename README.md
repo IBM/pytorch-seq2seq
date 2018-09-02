@@ -22,8 +22,8 @@ Sequence to sequence learning is a fast evolving space with new techniques and a
 * Provide more flexible model options and improve the usability of the library;
 * Adding latest architectures such as:
 	- [x] Transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
-	- [] CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122)
-	- [] Deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304)
+	- [ ] CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122)
+	- [ ] Deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304)
 * Support features in the new versions of PyTorch.
 
 # Installation
