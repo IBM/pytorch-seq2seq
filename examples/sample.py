@@ -5,7 +5,6 @@ import logging
 
 import torch
 from torch.optim.lr_scheduler import StepLR
-import torchtext
 
 import seq2seq
 from seq2seq.trainer import SupervisedTrainer

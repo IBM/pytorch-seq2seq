@@ -33,18 +33,19 @@ class Predictor(object):
             tgt_seq (list): list of output tokens in target language as predicted
             by the pre-trained model
         """
-        src_id_seq = Variable(torch.LongTensor([self.src_vocab.stoi[tok] for tok in src_seq]),
-                              volatile=True).view(1, -1)
-        if torch.cuda.is_available():
-            src_id_seq = src_id_seq.cuda()
+        with torch.no_grad():
+            src_id_seq = Variable(torch.LongTensor([self.src_vocab.stoi[tok] 
+                                    for tok in src_seq])).view(1, -1)
+            if torch.cuda.is_available():
+                src_id_seq = src_id_seq.cuda()
 
-        dataset = Seq2SeqDataset.from_list(' '.join(src_seq))
-        dataset.vocab = self.src_vocab
-        batch = torchtext.data.Batch.fromvars(dataset, 1, 
-                    src=(src_id_seq, [len(src_seq)]), tgt=None)
+            dataset = Seq2SeqDataset.from_list(' '.join(src_seq))
+            dataset.vocab = self.src_vocab
+            batch = torchtext.data.Batch.fromvars(dataset, 1, 
+                        src=(src_id_seq, [len(src_seq)]), tgt=None)
 
-        softmax_list, _, other = self.model(batch)
-        
+            softmax_list, _, other = self.model(batch)
+            
         length = other['length'][0]
 
         tgt_id_seq = [other['sequence'][di][0].data[0] for di in range(length)]
