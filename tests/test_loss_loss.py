@@ -20,8 +20,9 @@ class TestLoss(unittest.TestCase):
         length = 7
         cls.outputs = [F.softmax(Variable(torch.randn(batch_size, num_class))) for _ in range(length)]
         targets = [random.randint(0, num_class - 1) for _ in range(batch_size * (length + 1))]
-        sources = [0] * len(targets)
-        dataset = Seq2SeqDataset.from_list(sources, targets)
+        targets_list = [str(x) for x in targets]
+        sources = ['0'] * len(targets)
+        dataset = Seq2SeqDataset.from_list(sources, targets_list)
         dataset.build_vocab(5, 5)
         cls.targets = Variable(torch.LongTensor(targets)).view(batch_size, length + 1)
         cls.batch = torchtext.data.Batch.fromvars(dataset, batch_size, tgt=cls.targets)
