@@ -124,8 +124,8 @@ class TestDecoderRNN(unittest.TestCase):
                             batch_topk.append([s for s in reversed(seq)])
                         topk.append(batch_topk)
 
-                    # for b in range(batch_size):
-                    #     topk[b] = sorted(topk[b], key=lambda s: s[-1][3], reverse=True)
+                    for b in range(batch_size):
+                        topk[b] = sorted(topk[b], key=lambda s: s[-1][3], reverse=True)
 
                     topk_scores = other_topk['score']
                     topk_lengths = other_topk['topk_length']
@@ -139,7 +139,7 @@ class TestDecoderRNN(unittest.TestCase):
                         if precision_error:
                             break
                         for k in range(beam_size):
-                            self.assertEqual(topk_lengths[b][k], len(topk[b][k]))
+                            self.assertEqual(topk_lengths[b][k], len(topk[b][k] - 1))
                             self.assertTrue(np.isclose(topk_scores[b][k], topk[b][k][-1][3]))
                             total_steps = topk_lengths[b][k]
                             for t in range(total_steps):
