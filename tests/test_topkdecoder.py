@@ -56,7 +56,6 @@ class TestDecoderRNN(unittest.TestCase):
     def test_k_greater_than_1(self):
         """ Implement beam search manually and compare results from topk decoder. """
         max_len = 50
-        batch_size = 1
         hidden_size = 8
         sos = 0
         eos = 1
