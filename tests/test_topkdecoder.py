@@ -13,8 +13,8 @@ class TestDecoderRNN(unittest.TestCase):
         self.vocab_size = 3
 
     def test_init(self):
-        decoder = DecoderRNN(self.vocab_size, 50, 16, 0, 1, input_dropout_p=0).to('cpu')
-        TopKDecoder(decoder, 3).to('cpu')
+        decoder = DecoderRNN(self.vocab_size, 50, 16, 0, 1, input_dropout_p=0)
+        TopKDecoder(decoder, 3)
 
     def test_k_1(self):
         """ When k=1, the output of topk decoder should be the same as a normal decoder. """
@@ -64,10 +64,10 @@ class TestDecoderRNN(unittest.TestCase):
         for beam_size in range(2, 15, 3):
             for batch_size in range(1, 50, 10):
                 for _ in range(10):
-                    decoder = DecoderRNN(self.vocab_size, max_len, hidden_size, sos, eos).to('cpu')
+                    decoder = DecoderRNN(self.vocab_size, max_len, hidden_size, sos, eos)
                     for param in decoder.parameters():
                         param.data.uniform_(-1, 1)
-                    topk_decoder = TopKDecoder(decoder, beam_size).to('cpu')
+                    topk_decoder = TopKDecoder(decoder, beam_size)
 
                     encoder_hidden = torch.autograd.Variable(torch.randn(1, batch_size, hidden_size))
                     _, hidden_topk, other_topk = topk_decoder(None, encoder_hidden=encoder_hidden)
@@ -124,8 +124,8 @@ class TestDecoderRNN(unittest.TestCase):
                             batch_topk.append([s for s in reversed(seq)])
                         topk.append(batch_topk)
 
-                    for b in range(batch_size):
-                        topk[b] = sorted(topk[b], key=lambda s: s[-1][3], reverse=True)
+                    # for b in range(batch_size):
+                    #     topk[b] = sorted(topk[b], key=lambda s: s[-1][3], reverse=True)
 
                     topk_scores = other_topk['score']
                     topk_lengths = other_topk['topk_length']
