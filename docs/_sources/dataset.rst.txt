@@ -3,7 +3,7 @@ Dataset
 
 We use torchtext to manage data loading and processing.  For more information about torchtext, please go to: https://github.com/pytorch/text
 
-Fields
+Dataset
 -------
 
 .. automodule:: seq2seq.dataset.dataset

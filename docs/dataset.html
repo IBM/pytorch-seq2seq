@@ -94,8 +94,8 @@
 <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.dataset.dataset">Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.dataset.fields">Fields</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="util.html">Util</a></li>
@@ -171,9 +171,9 @@
   <div class="section" id="dataset">
 <h1>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h1>
 <p>We use torchtext to manage data loading and processing.  For more information about torchtext, please go to: <a class="reference external" href="https://github.com/pytorch/text">https://github.com/pytorch/text</a></p>
-<div class="section" id="module-seq2seq.dataset.dataset">
-<span id="fields"></span><h2>Fields<a class="headerlink" href="#module-seq2seq.dataset.dataset" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<div class="section" id="id1">
+<h2>Dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-seq2seq.dataset.dataset"></span><dl class="class">
 <dt id="seq2seq.dataset.dataset.Seq2SeqDataset">
 <em class="property">class </em><code class="descclassname">seq2seq.dataset.dataset.</code><code class="descname">Seq2SeqDataset</code><span class="sig-paren">(</span><em>examples</em>, <em>src_field</em>, <em>tgt_field=None</em>, <em>dynamic=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Seq2SeqDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>The idea of dynamic vocabulary is bought from [Opennmt-py](<a class="reference external" href="https://github.com/OpenNMT/OpenNMT-py">https://github.com/OpenNMT/OpenNMT-py</a>)</p>
@@ -200,9 +200,9 @@
 <dd></dd></dl>
 
 </div>
-<div class="section" id="id1">
-<h2>Fields<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-seq2seq.dataset.fields"></span><dl class="class">
+<div class="section" id="module-seq2seq.dataset.fields">
+<span id="fields"></span><h2>Fields<a class="headerlink" href="#module-seq2seq.dataset.fields" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
 <dt id="seq2seq.dataset.fields.SourceField">
 <em class="property">class </em><code class="descclassname">seq2seq.dataset.fields.</code><code class="descname">SourceField</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.fields.SourceField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper class of torchtext.data.Field that forces batch_first and include_lengths to be True.</p>
