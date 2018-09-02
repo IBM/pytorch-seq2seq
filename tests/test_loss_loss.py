@@ -9,6 +9,7 @@ import torchtext
 
 from seq2seq.loss.loss import Loss
 from seq2seq.loss import NLLLoss, Perplexity
+from seq2seq.dataset import Seq2SeqDataset
 
 class TestLoss(unittest.TestCase):
     @classmethod
@@ -18,10 +19,12 @@ class TestLoss(unittest.TestCase):
         batch_size = 5
         length = 7
         cls.outputs = [F.softmax(Variable(torch.randn(batch_size, num_class))) for _ in range(length)]
-        targets = Variable(torch.LongTensor([random.randint(0, num_class - 1)
-                                                 for _ in range(batch_size * (length + 1))]))
-        cls.targets = targets.view(batch_size, length + 1)
-        cls.batch = torchtext.data.Batch.fromvars(None, batch_size, tgt=cls.targets)
+        targets = [random.randint(0, num_class - 1) for _ in range(batch_size * (length + 1))]
+        sources = [0] * len(targets)
+        dataset = Seq2SeqDataset.from_list(sources, targets)
+        dataset.build_vocab(5, 5)
+        cls.targets = Variable(torch.LongTensor(targets)).view(batch_size, length + 1)
+        cls.batch = torchtext.data.Batch.fromvars(dataset, batch_size, tgt=cls.targets)
 
     def test_loss_init(self):
         name = "name"

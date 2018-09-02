@@ -27,7 +27,7 @@ class Predictor(object):
         """ Make prediction given `src_seq` as input.
 
         Args:
-            src_seqs (list): list of input tokens in source language
+            src_seq (list): list of input tokens in source language
 
         Returns:
             tgt_seq (list): list of output tokens in target language as predicted
