@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from .DecoderRNN import Decoder
 
@@ -17,7 +16,7 @@ class CopyDecoder(Decoder):
 
     def forward(self, context, attn, batch, dataset):
         de_len = context.size(1)
-        gen_prob = F.sigmoid(self.gen_linear(context.view(-1, self.hidden_size))).log()
+        gen_prob = torch.nn.sigmoid(self.gen_linear(context.view(-1, self.hidden_size))).log()
 
         vocab_prob, symbols = super(CopyDecoder, self).forward(context, attn)
         vocab_prob = vocab_prob.view(-1, self.output_size) * gen_prob
@@ -30,7 +29,7 @@ class CopyDecoder(Decoder):
         tgt_vocab = dataset.fields['tgt'].vocab
         offset = len(tgt_vocab)
         for b in range(batch.batch_size):
-            src_idx = batch.index[b].data[0]
+            src_idx = batch.index[b].item()
             src_vocab = dynamic_vocab[src_idx]
             src_indices = batch.src_index[b].data.tolist()
             for src_tok_id in src_indices:

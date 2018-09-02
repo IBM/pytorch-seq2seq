@@ -18,7 +18,7 @@ class TestLoss(unittest.TestCase):
         cls.num_class = 5
         batch_size = 5
         length = 7
-        cls.outputs = [F.softmax(Variable(torch.randn(batch_size, num_class))) for _ in range(length)]
+        cls.outputs = [F.softmax(Variable(torch.randn(batch_size, num_class)), dim=-1) for _ in range(length)]
         targets = [random.randint(0, num_class - 1) for _ in range(batch_size * (length + 1))]
         targets_list = [str(x) for x in targets]
         sources = ['0'] * len(targets)
