@@ -1,14 +1,12 @@
 Evaluator
 =========
 
-evaluator
----------
+Helper modules for evaluation and prediction.
+
 .. automodule:: seq2seq.evaluator.evaluator
     :members:
     :undoc-members:
 
-predictor
----------
 
 .. automodule:: seq2seq.evaluator.predictor
     :members:

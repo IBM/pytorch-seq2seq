@@ -16,7 +16,7 @@ PyTorch-Seq2seq: A sequence-to-sequence framework for PyTorch
    :maxdepth: 1
    :caption: Package Reference
 
-   dataset
+   data
    util
    evaluator
    loss

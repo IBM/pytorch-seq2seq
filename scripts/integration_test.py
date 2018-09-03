@@ -9,7 +9,7 @@ import seq2seq
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, TopKDecoder, Seq2seq
 from seq2seq.loss import Perplexity
-from seq2seq.dataset import Seq2SeqDataset
+from seq2seq.data import Seq2SeqDataset
 from seq2seq.evaluator import Predictor, Evaluator
 from seq2seq.util.checkpoint import Checkpoint
 

@@ -87,15 +87,14 @@
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#what-s-new-in-0-1-7">What’s New in 0.1.7</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#roadmap">Roadmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#get-started">Get Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#troubleshoots-and-contributing">Troubleshoots and Contributing</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="util.html">Util</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluator.html">Evaluator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="optim.html">Optim</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
@@ -165,8 +164,7 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
- | <a href="#B"><strong>B</strong></a>
+ <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
@@ -184,27 +182,15 @@
  | <a href="#U"><strong>U</strong></a>
  
 </div>
-<h2 id="A">A</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#seq2seq.models.attention.Attention">Attention (class in seq2seq.models.attention)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#seq2seq.models.baseRNN.BaseRNN">BaseRNN (class in seq2seq.models.baseRNN)</a>
+      <li><a href="models.html#seq2seq.models.base_rnn.BaseRNN">BaseRNN (class in seq2seq.models.base_rnn)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dataset.html#seq2seq.dataset.dataset.Seq2SeqDataset.build_vocab">build_vocab() (seq2seq.dataset.dataset.Seq2SeqDataset method)</a>
-
-      <ul>
-        <li><a href="dataset.html#seq2seq.dataset.fields.TargetField.build_vocab">(seq2seq.dataset.fields.TargetField method)</a>
+      <li><a href="data.html#seq2seq.data.fields.TargetField.build_vocab">build_vocab() (seq2seq.data.fields.TargetField method)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -213,11 +199,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="util.html#seq2seq.util.checkpoint.Checkpoint">Checkpoint (class in seq2seq.util.checkpoint)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="util.html#seq2seq.util.checkpoint.Checkpoint.CHECKPOINT_DIR_NAME">CHECKPOINT_DIR_NAME (seq2seq.util.checkpoint.Checkpoint attribute)</a>
 </li>
-      <li><a href="models.html#seq2seq.models.CopyDecoder.CopyDecoder">CopyDecoder (class in seq2seq.models.CopyDecoder)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#seq2seq.models.copy_decoder.CopyDecoder">CopyDecoder (class in seq2seq.models.copy_decoder)</a>
+</li>
+      <li><a href="loss.html#seq2seq.loss.CoverageLoss">CoverageLoss (class in seq2seq.loss)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -225,11 +213,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#seq2seq.models.DecoderRNN.Decoder">Decoder (class in seq2seq.models.DecoderRNN)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#seq2seq.models.DecoderRNN.DecoderRNN">DecoderRNN (class in seq2seq.models.DecoderRNN)</a>
+      <li><a href="models.html#seq2seq.models.decoder_rnn.DecoderRNN">DecoderRNN (class in seq2seq.models.decoder_rnn)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -237,9 +221,9 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#seq2seq.models.EncoderRNN.EncoderRNN">EncoderRNN (class in seq2seq.models.EncoderRNN)</a>
+      <li><a href="models.html#seq2seq.models.encoder_rnn.EncoderRNN">EncoderRNN (class in seq2seq.models.encoder_rnn)</a>
 </li>
-      <li><a href="loss.html#seq2seq.loss.loss.Loss.eval_batch">eval_batch() (seq2seq.loss.loss.Loss method)</a>
+      <li><a href="loss.html#seq2seq.loss.Loss.eval_batch">eval_batch() (seq2seq.loss.Loss method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -253,30 +237,22 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#seq2seq.models.attention.Attention.forward">forward() (seq2seq.models.attention.Attention method)</a>
+      <li><a href="models.html#seq2seq.models.base_rnn.BaseRNN.forward">forward() (seq2seq.models.base_rnn.BaseRNN method)</a>
 
       <ul>
-        <li><a href="models.html#seq2seq.models.CopyDecoder.CopyDecoder.forward">(seq2seq.models.CopyDecoder.CopyDecoder method)</a>
+        <li><a href="models.html#seq2seq.models.copy_decoder.CopyDecoder.forward">(seq2seq.models.copy_decoder.CopyDecoder method)</a>
 </li>
-        <li><a href="models.html#seq2seq.models.DecoderRNN.Decoder.forward">(seq2seq.models.DecoderRNN.Decoder method)</a>
+        <li><a href="models.html#seq2seq.models.decoder_rnn.DecoderRNN.forward">(seq2seq.models.decoder_rnn.DecoderRNN method)</a>
 </li>
-        <li><a href="models.html#seq2seq.models.DecoderRNN.DecoderRNN.forward">(seq2seq.models.DecoderRNN.DecoderRNN method)</a>
+        <li><a href="models.html#seq2seq.models.encoder_rnn.EncoderRNN.forward">(seq2seq.models.encoder_rnn.EncoderRNN method)</a>
 </li>
-        <li><a href="models.html#seq2seq.models.EncoderRNN.EncoderRNN.forward">(seq2seq.models.EncoderRNN.EncoderRNN method)</a>
-</li>
-        <li><a href="models.html#seq2seq.models.TopKDecoder.TopKDecoder.forward">(seq2seq.models.TopKDecoder.TopKDecoder method)</a>
-</li>
-        <li><a href="models.html#seq2seq.models.baseRNN.BaseRNN.forward">(seq2seq.models.baseRNN.BaseRNN method)</a>
+        <li><a href="models.html#seq2seq.models.global_attention.GlobalAttention.forward">(seq2seq.models.global_attention.GlobalAttention method)</a>
 </li>
         <li><a href="models.html#seq2seq.models.seq2seq.Seq2seq.forward">(seq2seq.models.seq2seq.Seq2seq method)</a>
 </li>
+        <li><a href="models.html#seq2seq.models.top_k_decoder.TopKDecoder.forward">(seq2seq.models.top_k_decoder.TopKDecoder method)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dataset.html#seq2seq.dataset.dataset.Seq2SeqDataset.from_file">from_file() (seq2seq.dataset.dataset.Seq2SeqDataset static method)</a>
-</li>
-      <li><a href="dataset.html#seq2seq.dataset.dataset.Seq2SeqDataset.from_list">from_list() (seq2seq.dataset.dataset.Seq2SeqDataset static method)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -285,14 +261,20 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="util.html#seq2seq.util.checkpoint.Checkpoint.get_latest_checkpoint">get_latest_checkpoint() (seq2seq.util.checkpoint.Checkpoint class method)</a>
 </li>
-      <li><a href="loss.html#seq2seq.loss.loss.Loss.get_loss">get_loss() (seq2seq.loss.loss.Loss method)</a>
+      <li><a href="loss.html#seq2seq.loss.CoverageLoss.get_loss">get_loss() (seq2seq.loss.CoverageLoss method)</a>
 
       <ul>
-        <li><a href="loss.html#seq2seq.loss.loss.NLLLoss.get_loss">(seq2seq.loss.loss.NLLLoss method)</a>
+        <li><a href="loss.html#seq2seq.loss.Loss.get_loss">(seq2seq.loss.Loss method)</a>
 </li>
-        <li><a href="loss.html#seq2seq.loss.loss.Perplexity.get_loss">(seq2seq.loss.loss.Perplexity method)</a>
+        <li><a href="loss.html#seq2seq.loss.NLLLoss.get_loss">(seq2seq.loss.NLLLoss method)</a>
+</li>
+        <li><a href="loss.html#seq2seq.loss.Perplexity.get_loss">(seq2seq.loss.Perplexity method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#seq2seq.models.global_attention.GlobalAttention">GlobalAttention (class in seq2seq.models.global_attention)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -311,17 +293,13 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="loss.html#seq2seq.loss.loss.Loss">Loss (class in seq2seq.loss.loss)</a>
+      <li><a href="loss.html#seq2seq.loss.Loss">Loss (class in seq2seq.loss)</a>
 </li>
   </ul></td>
 </tr></table>
 
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dataset.html#seq2seq.dataset.dataset.make_example">make_example() (in module seq2seq.dataset.dataset)</a>
-</li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="util.html#seq2seq.util.checkpoint.Checkpoint.MODEL_NAME">MODEL_NAME (seq2seq.util.checkpoint.Checkpoint attribute)</a>
 </li>
@@ -331,7 +309,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="loss.html#seq2seq.loss.loss.NLLLoss">NLLLoss (class in seq2seq.loss.loss)</a>
+      <li><a href="loss.html#seq2seq.loss.NLLLoss">NLLLoss (class in seq2seq.loss)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -353,7 +331,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="util.html#seq2seq.util.checkpoint.Checkpoint.path">path (seq2seq.util.checkpoint.Checkpoint attribute)</a>
 </li>
-      <li><a href="loss.html#seq2seq.loss.loss.Perplexity">Perplexity (class in seq2seq.loss.loss)</a>
+      <li><a href="loss.html#seq2seq.loss.Perplexity">Perplexity (class in seq2seq.loss)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -367,7 +345,7 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="loss.html#seq2seq.loss.loss.Loss.reset">reset() (seq2seq.loss.loss.Loss method)</a>
+      <li><a href="loss.html#seq2seq.loss.Loss.reset">reset() (seq2seq.loss.Loss method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -379,31 +357,31 @@
 </li>
       <li><a href="models.html#seq2seq.models.seq2seq.Seq2seq">Seq2seq (class in seq2seq.models.seq2seq)</a>
 </li>
-      <li><a href="dataset.html#module-seq2seq.dataset.dataset">seq2seq.dataset.dataset (module)</a>
+      <li><a href="data.html#module-seq2seq.data.dataset">seq2seq.data.dataset (module)</a>
 </li>
-      <li><a href="dataset.html#module-seq2seq.dataset.fields">seq2seq.dataset.fields (module)</a>
+      <li><a href="data.html#module-seq2seq.data.fields">seq2seq.data.fields (module)</a>
 </li>
       <li><a href="evaluator.html#module-seq2seq.evaluator.evaluator">seq2seq.evaluator.evaluator (module)</a>
 </li>
       <li><a href="evaluator.html#module-seq2seq.evaluator.predictor">seq2seq.evaluator.predictor (module)</a>
 </li>
-      <li><a href="loss.html#module-seq2seq.loss.loss">seq2seq.loss.loss (module)</a>
+      <li><a href="loss.html#module-seq2seq.loss">seq2seq.loss (module)</a>
 </li>
-      <li><a href="models.html#module-seq2seq.models.attention">seq2seq.models.attention (module)</a>
+      <li><a href="models.html#module-seq2seq.models.base_rnn">seq2seq.models.base_rnn (module)</a>
 </li>
-      <li><a href="models.html#module-seq2seq.models.baseRNN">seq2seq.models.baseRNN (module)</a>
+      <li><a href="models.html#module-seq2seq.models.copy_decoder">seq2seq.models.copy_decoder (module)</a>
 </li>
-      <li><a href="models.html#module-seq2seq.models.CopyDecoder">seq2seq.models.CopyDecoder (module)</a>
+      <li><a href="models.html#module-seq2seq.models.decoder_rnn">seq2seq.models.decoder_rnn (module)</a>
 </li>
-      <li><a href="models.html#module-seq2seq.models.DecoderRNN">seq2seq.models.DecoderRNN (module)</a>
-</li>
-      <li><a href="models.html#module-seq2seq.models.EncoderRNN">seq2seq.models.EncoderRNN (module)</a>
+      <li><a href="models.html#module-seq2seq.models.encoder_rnn">seq2seq.models.encoder_rnn (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#module-seq2seq.models.global_attention">seq2seq.models.global_attention (module)</a>
+</li>
       <li><a href="models.html#module-seq2seq.models.seq2seq">seq2seq.models.seq2seq (module)</a>
 </li>
-      <li><a href="models.html#module-seq2seq.models.TopKDecoder">seq2seq.models.TopKDecoder (module)</a>
+      <li><a href="models.html#module-seq2seq.models.top_k_decoder">seq2seq.models.top_k_decoder (module)</a>
 </li>
       <li><a href="optim.html#module-seq2seq.optim.optim">seq2seq.optim.optim (module)</a>
 </li>
@@ -411,21 +389,17 @@
 </li>
       <li><a href="util.html#module-seq2seq.util.checkpoint">seq2seq.util.checkpoint (module)</a>
 </li>
-      <li><a href="dataset.html#seq2seq.dataset.dataset.Seq2SeqDataset">Seq2SeqDataset (class in seq2seq.dataset.dataset)</a>
+      <li><a href="data.html#seq2seq.data.dataset.Seq2SeqDataset">Seq2SeqDataset (class in seq2seq.data.dataset)</a>
 </li>
-      <li><a href="models.html#seq2seq.models.attention.Attention.set_mask">set_mask() (seq2seq.models.attention.Attention method)</a>
+      <li><a href="models.html#seq2seq.models.global_attention.GlobalAttention.set_mask">set_mask() (seq2seq.models.global_attention.GlobalAttention method)</a>
 </li>
       <li><a href="optim.html#seq2seq.optim.optim.Optimizer.set_scheduler">set_scheduler() (seq2seq.optim.optim.Optimizer method)</a>
 </li>
-      <li><a href="dataset.html#seq2seq.dataset.fields.SourceField">SourceField (class in seq2seq.dataset.fields)</a>
+      <li><a href="data.html#seq2seq.data.fields.SourceField">SourceField (class in seq2seq.data.fields)</a>
 </li>
       <li><a href="optim.html#seq2seq.optim.optim.Optimizer.step">step() (seq2seq.optim.optim.Optimizer method)</a>
 </li>
       <li><a href="trainer.html#seq2seq.trainer.supervised_trainer.SupervisedTrainer">SupervisedTrainer (class in seq2seq.trainer.supervised_trainer)</a>
-</li>
-      <li><a href="dataset.html#seq2seq.dataset.fields.TargetField.SYM_EOS">SYM_EOS (seq2seq.dataset.fields.TargetField attribute)</a>
-</li>
-      <li><a href="dataset.html#seq2seq.dataset.fields.TargetField.SYM_SOS">SYM_SOS (seq2seq.dataset.fields.TargetField attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -433,9 +407,9 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dataset.html#seq2seq.dataset.fields.TargetField">TargetField (class in seq2seq.dataset.fields)</a>
+      <li><a href="data.html#seq2seq.data.fields.TargetField">TargetField (class in seq2seq.data.fields)</a>
 </li>
-      <li><a href="models.html#seq2seq.models.TopKDecoder.TopKDecoder">TopKDecoder (class in seq2seq.models.TopKDecoder)</a>
+      <li><a href="models.html#seq2seq.models.top_k_decoder.TopKDecoder">TopKDecoder (class in seq2seq.models.top_k_decoder)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

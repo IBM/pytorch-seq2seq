@@ -6,7 +6,7 @@ import unittest
 from mock import MagicMock, patch, call, ANY
 import torchtext
 
-from seq2seq.dataset import SourceField, TargetField
+from seq2seq.data import SourceField, TargetField
 from seq2seq.evaluator import Evaluator
 from seq2seq.models import Seq2seq, EncoderRNN, DecoderRNN
 

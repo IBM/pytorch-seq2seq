@@ -1,1 +1,1 @@
-from .loss import NLLLoss, Perplexity, CoverageLoss
+from .loss import Loss, NLLLoss, Perplexity, CoverageLoss

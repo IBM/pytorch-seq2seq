@@ -4,7 +4,7 @@ import os
 import mock
 import torchtext
 
-from seq2seq.dataset import SourceField, TargetField
+from seq2seq.data import SourceField, TargetField
 from seq2seq.trainer import SupervisedTrainer
 
 class TestSupervisedTrainer(unittest.TestCase):

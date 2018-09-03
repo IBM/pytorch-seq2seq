@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch.nn.functional as F
 
 from .. import src_field_name, tgt_field_name
 

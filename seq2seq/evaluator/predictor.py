@@ -2,7 +2,7 @@ import torch
 from torch.autograd import Variable
 import torchtext
 
-from seq2seq.dataset import Seq2SeqDataset
+from seq2seq.data import Seq2SeqDataset
 
 class Predictor(object):
 

@@ -23,7 +23,7 @@ class DecoderRNN(BaseRNN):
         n_layers (int, optional): number of recurrent layers (default: 1)
         rnn_cell (str, optional): type of RNN cell (default: gru)
         copy (bool, optional): flag indication for whether to user copy and coverage mechanism or not (default: false)
-        bidirectional (bool, optional): if the encoder is bidirectional (default False)
+        bidirectional (bool, optional): if the encoder is bidirectional (default: False)
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
         use_attention(bool, optional): flag indication whether to use attention mechanism or not (default: false)
@@ -37,12 +37,12 @@ class DecoderRNN(BaseRNN):
         - **inputs** (batch, seq_len, input_size): list of sequences, whose length is the batch size and within which
           each sequence is a list of token IDs.  It is used for teacher forcing when provided. (default `None`)
         - **encoder_hidden** (num_layers * num_directions, batch_size, hidden_size): tensor containing the features in the
-          hidden state `h` of encoder. Used as the initial hidden state of the decoder. (default `None`)
+          hidden state `h` of encoder. Used as the initial hidden state of the decoder. (default: `None`)
         - **encoder_outputs** (batch, seq_len, hidden_size): tensor with containing the outputs of the encoder.
-          Used for attention mechanism (default is `None`).
+          Used for attention mechanism (default: `None`).
         - **teacher_forcing_ratio** (float): The probability that teacher forcing will be used. A random number is
           drawn uniformly from 0-1 for every decoding token, and if the sample is smaller than the given value,
-          teacher forcing would be used (default is 0).
+          teacher forcing would be used (default: 0).
 
     Outputs: decoder_outputs, decoder_hidden, ret_dict
         - **decoder_outputs** (seq_len, batch, vocab_size): list of tensors with size (batch_size, vocab_size) containing

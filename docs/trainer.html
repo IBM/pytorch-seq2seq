@@ -88,20 +88,16 @@
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#what-s-new-in-0-1-7">What’s New in 0.1.7</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#roadmap">Roadmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#get-started">Get Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#troubleshoots-and-contributing">Troubleshoots and Contributing</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="util.html">Util</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluator.html">Evaluator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="optim.html">Optim</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Trainer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.trainer.supervised_trainer">supervised_trainer</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
 </ul>
 
@@ -169,9 +165,8 @@
             
   <div class="section" id="trainer">
 <h1>Trainer<a class="headerlink" href="#trainer" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-seq2seq.trainer.supervised_trainer">
-<span id="supervised-trainer"></span><h2>supervised_trainer<a class="headerlink" href="#module-seq2seq.trainer.supervised_trainer" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<p>Trainer functions for training models.</p>
+<span class="target" id="module-seq2seq.trainer.supervised_trainer"></span><dl class="class">
 <dt id="seq2seq.trainer.supervised_trainer.SupervisedTrainer">
 <em class="property">class </em><code class="descclassname">seq2seq.trainer.supervised_trainer.</code><code class="descname">SupervisedTrainer</code><span class="sig-paren">(</span><em>expt_dir='experiment'</em>, <em>loss=&lt;seq2seq.loss.loss.NLLLoss object&gt;</em>, <em>batch_size=64</em>, <em>random_seed=None</em>, <em>checkpoint_every=100</em>, <em>print_every=100</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.trainer.supervised_trainer.SupervisedTrainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The SupervisedTrainer class helps in setting up a training framework in a
@@ -183,7 +178,7 @@ supervised setting.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>expt_dir</strong> (<em>optional</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – experiment Directory to store details of the experiment,
 by default it makes a folder in the current directory to store the details (default: <cite>experiment</cite>).</li>
-<li><strong>loss</strong> (<a class="reference internal" href="loss.html#seq2seq.loss.loss.Loss" title="seq2seq.loss.loss.Loss"><em>seq2seq.loss.loss.Loss</em></a><em>, </em><em>optional</em>) – loss for training, (default: seq2seq.loss.NLLLoss)</li>
+<li><strong>loss</strong> (<em>seq2seq.loss.loss.Loss</em><em>, </em><em>optional</em>) – loss for training, (default: seq2seq.loss.NLLLoss)</li>
 <li><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – batch size for experiment, (default: 64)</li>
 <li><strong>checkpoint_every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – number of batches to checkpoint after, (default: 100)</li>
 </ul>
@@ -224,7 +219,6 @@ overwritten by the model loaded from the latest checkpoint.</li>
 
 </dd></dl>
 
-</div>
 </div>
 
 

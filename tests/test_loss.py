@@ -9,7 +9,7 @@ import torchtext
 
 from seq2seq.loss.loss import Loss
 from seq2seq.loss import NLLLoss, Perplexity, CoverageLoss
-from seq2seq.dataset import Seq2SeqDataset
+from seq2seq.data import Seq2SeqDataset
 
 class TestLoss(unittest.TestCase):
     @classmethod

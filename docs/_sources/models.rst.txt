@@ -1,43 +1,43 @@
 Models
 ======
 
-baseRNN
+BaseRNN
 -------
 
-.. automodule:: seq2seq.models.baseRNN
+.. automodule:: seq2seq.models.base_rnn
     :members:
 
 EncoderRNN
 ----------
 
-.. automodule:: seq2seq.models.EncoderRNN
+.. automodule:: seq2seq.models.encoder_rnn
     :members:
 
 DecoderRNN
 ----------
 
-.. automodule:: seq2seq.models.DecoderRNN
+.. automodule:: seq2seq.models.decoder_rnn
     :members:
 
 CopyDecoder
 -----------
 
-.. automodule:: seq2seq.models.CopyDecoder
+.. automodule:: seq2seq.models.copy_decoder
     :members:
 
 TopKDecoder
 -----------
 
-.. automodule:: seq2seq.models.TopKDecoder
+.. automodule:: seq2seq.models.top_k_decoder
     :members:
 
-attention
----------
+Global Attention
+----------------
 
-.. automodule:: seq2seq.models.attention
+.. automodule:: seq2seq.models.global_attention
     :members:
 
-seq2seq
+Seq2seq
 -------
 
 .. automodule:: seq2seq.models.seq2seq

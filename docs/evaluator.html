@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Loss" href="loss.html" />
+    <link rel="next" title="Loss Functions" href="loss.html" />
     <link rel="prev" title="Util" href="util.html" /> 
 
   
@@ -88,19 +88,14 @@
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#what-s-new-in-0-1-7">What’s New in 0.1.7</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#roadmap">Roadmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#get-started">Get Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/intro.html#troubleshoots-and-contributing">Troubleshoots and Contributing</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="util.html">Util</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Evaluator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">evaluator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.evaluator.predictor">predictor</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="optim.html">Optim</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
@@ -170,8 +165,7 @@
             
   <div class="section" id="evaluator">
 <h1>Evaluator<a class="headerlink" href="#evaluator" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="id1">
-<h2>evaluator<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Helper modules for evaluation and prediction.</p>
 <span class="target" id="module-seq2seq.evaluator.evaluator"></span><dl class="class">
 <dt id="seq2seq.evaluator.evaluator.Evaluator">
 <em class="property">class </em><code class="descclassname">seq2seq.evaluator.evaluator.</code><code class="descname">Evaluator</code><span class="sig-paren">(</span><em>loss=&lt;seq2seq.loss.loss.NLLLoss object&gt;</em>, <em>batch_size=64</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.evaluator.Evaluator" title="Permalink to this definition">¶</a></dt>
@@ -214,10 +208,7 @@
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-seq2seq.evaluator.predictor">
-<span id="predictor"></span><h2>predictor<a class="headerlink" href="#module-seq2seq.evaluator.predictor" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<span class="target" id="module-seq2seq.evaluator.predictor"></span><dl class="class">
 <dt id="seq2seq.evaluator.predictor.Predictor">
 <em class="property">class </em><code class="descclassname">seq2seq.evaluator.predictor.</code><code class="descname">Predictor</code><span class="sig-paren">(</span><em>model</em>, <em>src_vocab</em>, <em>tgt_vocab</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.evaluator.predictor.Predictor" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
@@ -242,7 +233,6 @@ by the pre-trained model</td>
 </dd></dl>
 
 </div>
-</div>
 
 
            </div>
@@ -252,7 +242,7 @@ by the pre-trained model</td>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="loss.html" class="btn btn-neutral float-right" title="Loss" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="loss.html" class="btn btn-neutral float-right" title="Loss Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="util.html" class="btn btn-neutral" title="Util" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

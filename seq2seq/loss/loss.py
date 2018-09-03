@@ -2,6 +2,7 @@ from __future__ import print_function
 import math
 import logging
 
+import torch
 import torch.nn as nn
 import numpy as np
 
@@ -154,7 +155,7 @@ class Perplexity(NLLLoss):
         nll = super(Perplexity, self).get_loss()
         nll /= self.norm_term.item()
         if nll > Perplexity._MAX_EXP:
-            print("WARNING: Loss exceeded maximum value, capping to e^100")
+            logging.warning("Loss exceeded maximum value, capping to e^100")
             return math.exp(Perplexity._MAX_EXP)
         return math.exp(nll)
 
@@ -171,7 +172,7 @@ class CoverageLoss(Perplexity):
     Args:
         weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
         mask (int, optional): index of masked token, i.e. weight[mask] = 0.
-        lambda_c (float, optional): weight assigned to coverage loss when yielding a composite loss function
+        lambda_c (float, optional): weight assigned to coverage loss when yielding a composite loss function (default: 1)
     """
 
     _NAME = "Coverage Loss"
@@ -180,14 +181,14 @@ class CoverageLoss(Perplexity):
         super(CoverageLoss, self).__init__(weight=weight, mask=mask, reduction='sum')
         self.lambda_c = lambda_c
 
-    def _eval_batch(self, outputs, target, attns):
+    def _eval_batch(self, outputs, target, attns, coverage_vec):
         self.acc_loss += self.criterion(outputs, target)
         if self.mask is None:
             self.norm_term += np.prod(target.size())
         else:
             self.norm_term += target.data.ne(self.mask).sum()
         self.attns = attns
-        self.coverage_vec += attns
+        self.coverage_vec = coverage_vec
 
     def get_loss(self):
         perplexity = super(CoverageLoss, self).get_loss()

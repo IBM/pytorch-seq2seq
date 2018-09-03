@@ -1,8 +1,7 @@
 Trainer
 =======
 
-supervised\_trainer
--------------------
+Trainer functions for training models.
 
 .. automodule:: seq2seq.trainer.supervised_trainer
     :members:
