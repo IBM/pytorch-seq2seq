@@ -4,12 +4,11 @@ import numpy as np
 
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
-import torch.nn.functional as F
 
-from .attention import Attention
-from .baseRNN import BaseRNN
-
+from .global_attention import GlobalAttention
+from .base_rnn import BaseRNN
+from .simple_decoder import SimpleDecoder
+from .copy_decoder import CopyDecoder
 
 class DecoderRNN(BaseRNN):
     r"""
@@ -23,6 +22,7 @@ class DecoderRNN(BaseRNN):
         eos_id (int): index of the end of sentence symbol
         n_layers (int, optional): number of recurrent layers (default: 1)
         rnn_cell (str, optional): type of RNN cell (default: gru)
+        copy (bool, optional): flag indication for whether to user copy and coverage mechanism or not (default: false)
         bidirectional (bool, optional): if the encoder is bidirectional (default False)
         input_dropout_p (float, optional): dropout probability for the input sequence (default: 0)
         dropout_p (float, optional): dropout probability for the output sequence (default: 0)
@@ -59,7 +59,7 @@ class DecoderRNN(BaseRNN):
     KEY_SEQUENCE = 'sequence'
 
     def __init__(self, vocab_size, max_len, hidden_size, sos_id, eos_id, 
-                 n_layers=1, rnn_cell='gru', bidirectional=False,
+                 n_layers=1, rnn_cell='gru', copy=False, bidirectional=False,
                  input_dropout_p=0, dropout_p=0, use_attention=False):
         super(DecoderRNN, self).__init__(vocab_size, max_len, hidden_size,
                 input_dropout_p, dropout_p, n_layers, rnn_cell)
@@ -69,6 +69,7 @@ class DecoderRNN(BaseRNN):
 
         self.output_size = vocab_size
         self.max_length = max_len
+        self.copy = copy
         self.use_attention = use_attention
         self.eos_id = eos_id
         self.sos_id = sos_id
@@ -77,9 +78,12 @@ class DecoderRNN(BaseRNN):
 
         self.embedding = nn.Embedding(self.output_size, self.hidden_size)
         if use_attention:
-            self.attention = Attention(self.hidden_size)
+            self.attention = GlobalAttention(self.hidden_size)
 
-        self.decoder = Decoder(self.hidden_size, self.output_size)
+        if use_attention and copy:
+            self.decoder = CopyDecoder(self.hidden_size, self.output_size)
+        else:
+            self.decoder = SimpleDecoder(self.hidden_size, self.output_size)
 
     def forward_step(self, input_var, hidden, encoder_outputs):
         embedded = self.embedding(input_var)
@@ -124,31 +128,41 @@ class DecoderRNN(BaseRNN):
                 lengths[update_idx] = len(sequence_symbols)
 
         # Manual unrolling is used to support random teacher forcing.
-        # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
+        # If teacher_forcing_ratio is True or False instead of a probability, 
+        # the unrolling can be done in graph
         if use_teacher_forcing:
             decoder_input = inputs[:, :-1]
             context, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs)
             decoder_output, symbols = self.decoder(context, attn, batch, dataset)
             decoder_output = decoder_output.log()
-      
-            for di in range(decoder_output.size(1)):
-                step_output = decoder_output[:, di, :]
-                step_symbols = symbols[:, di]
-                if attn is not None:
-                    step_attn = attn[:, di, :]
-                else:
-                    step_attn = None
-                post_decode(step_output, step_symbols, step_attn)
+
+            if self.copy:
+                """ Implement Copy and Coverage Decoding """
+                pass
+            else:
+                for di in range(decoder_output.size(1)):
+                    step_output = decoder_output[:, di, :]
+                    step_symbols = symbols[:, di]
+                    if attn is not None:
+                        step_attn = attn[:, di, :]
+                    else:
+                        step_attn = None
+                    post_decode(step_output, step_symbols, step_attn)
         else:
             decoder_input = inputs[:, 0].unsqueeze(1)
             for di in range(max_length):
                 context, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs)
                 decoder_output, symbols = self.decoder(context, attn, batch, dataset)
                 decoder_output = decoder_output.log()
-                step_output = decoder_output.squeeze(1)
-                step_symbols = symbols.squeeze(1)
-                post_decode(step_output, step_symbols, attn)
-                decoder_input = step_symbols
+
+                if self.copy:
+                    """ Implement Copy and Coverage Decoding """
+                    pass
+                else:
+                    step_output = decoder_output.squeeze(1)
+                    step_symbols = symbols.squeeze(1)
+                    post_decode(step_output, step_symbols, attn)
+                    decoder_input = step_symbols
 
         ret_dict[DecoderRNN.KEY_SEQUENCE] = sequence_symbols
         ret_dict[DecoderRNN.KEY_LENGTH] = lengths.tolist()
@@ -202,18 +216,3 @@ class DecoderRNN(BaseRNN):
             max_length = inputs.size(1) - 1 # minus the start of sequence symbol
 
         return inputs, batch_size, max_length
-
-class Decoder(nn.Module):
-
-    def __init__(self, hidden_size, output_size):
-        super(Decoder, self).__init__()
-        self.hidden_size = hidden_size
-        self.output_size = output_size
-        self.linear = nn.Linear(hidden_size, output_size)
-
-    def forward(self, context, attn, *args):
-        batch_size, de_len = context.size(0), context.size(1)
-        logits = self.linear(context.view(-1, self.hidden_size))
-        softmax = F.softmax(logits, dim=-1).view(batch_size, de_len, self.output_size)
-        symbols = softmax.topk(1, dim=2)[1]
-        return softmax, symbols

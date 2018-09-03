@@ -2,10 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
-class Attention(nn.Module):
+class GlobalAttention(nn.Module):
     r"""
-    Applies an attention mechanism on the output features from the decoder.
+    Applies a global attention mechanism on the output features from the decoder.
 
     .. math::
             \begin{array}{ll}
@@ -31,14 +30,14 @@ class Attention(nn.Module):
 
     Examples::
 
-         >>> attention = seq2seq.models.Attention(256)
+         >>> attention = seq2seq.models.GlobalAttention(256)
          >>> context = Variable(torch.randn(5, 3, 256))
          >>> output = Variable(torch.randn(5, 5, 256))
          >>> output, attn = attention(output, context)
 
     """
     def __init__(self, dim):
-        super(Attention, self).__init__()
+        super(GlobalAttention, self).__init__()
         self.linear_out = nn.Linear(dim*2, dim)
         self.mask = None
 

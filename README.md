@@ -5,13 +5,13 @@
 
 **[Documentation](https://ibm.github.io/pytorch-seq2seq/public/index.html)**
 
-**pytorch-seq2seq** is a simple, efficient and scalable framework implemented in [PyTorch](http://pytorch.org), to get you up and running in no time on sequence-to-sequence learning tasks.  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
+**pytorch-seq2seq** is a simple, efficient and scalable framework implemented in [PyTorch](http://pytorch.org), to get you up and running in no time on sequence-to-sequence learning tasks.  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an *alpha* release. We appreciate any kind of feedback or contribution.
 
 
 # What's New in 0.1.7
 
 * Multi-GPU Support 
-* Copy Attention mechanism
+* Copy and Coverage mechanism
 * Fully compatible with PyTorch 0.4.1
 
 # Roadmap
@@ -21,9 +21,9 @@ Sequence to sequence learning is a fast evolving space with new techniques and a
 * Evaluation with benchmarks such as WMT machine translation, COCO image captioning, conversational models, etc;
 * Provide more flexible model options and improve the usability of the library;
 * Adding latest architectures such as:
-	- [x] Transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
-	- [ ] CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122)
-	- [ ] Deep reinforced model proposed by [A Deep Reinforced Model for Abstractive Summarization](https://arxiv.org/abs/1705.04304)
+	- [x] *Copy and Coverage mechanism* proposed by [Get To The Point: Summarization with Pointer-Generator Networks (See et al.)](https://arxiv.org/abs/1704.04368)
+	- [ ] *Transformer model* proposed by [Attention Is All You Need (Vaswani et al.)](https://arxiv.org/abs/1706.03762)
+	- [ ] *CNN based* model proposed by [Convolutional Sequence to Sequence Learning (Gehring et al.)](https://arxiv.org/abs/1705.03122)
 * Support features in the new versions of PyTorch.
 
 # Installation

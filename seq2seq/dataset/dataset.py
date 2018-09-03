@@ -18,7 +18,7 @@ def _read_corpus(path):
 class Seq2SeqDataset(torchtext.data.Dataset):
     """ The idea of dynamic vocabulary is bought from [Opennmt-py](https://github.com/OpenNMT/OpenNMT-py)"""
 
-    def __init__(self, examples, src_field, tgt_field=None, dynamic=False, **kwargs):
+    def __init__(self, examples, src_field, tgt_field=None, dynamic=True, **kwargs):
 
         # construct fields
         self.src_field = src_field

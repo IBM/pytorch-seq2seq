@@ -11,7 +11,7 @@ import seq2seq
 from seq2seq.evaluator import Evaluator
 from seq2seq.loss import NLLLoss
 from seq2seq.optim import Optimizer
-from seq2seq.util.checkpoint import Checkpoint
+from seq2seq.util import Checkpoint
 
 class SupervisedTrainer(object):
     """ The SupervisedTrainer class helps in setting up a training framework in a
@@ -49,9 +49,8 @@ class SupervisedTrainer(object):
     def _train_batch(self, batch, model, teacher_forcing_ratio, dataset):
         loss = self.loss
         # Forward propagation
-        decoder_outputs, decoder_hidden, other = model(batch,
-                                                       dataset=dataset,
-                                                       teacher_forcing_ratio=teacher_forcing_ratio)
+        decoder_outputs, _, _ = model(batch, dataset=dataset, 
+                                teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
         loss.eval_batch(decoder_outputs, batch)
@@ -131,9 +130,8 @@ class SupervisedTrainer(object):
 
             log.info(log_msg)
 
-    def train(self, model, data, num_epochs=5,
-              resume=False, dev_data=None,
-              optimizer=None, teacher_forcing_ratio=0):
+    def train(self, model, data, num_epochs=5, resume=False, 
+              dev_data=None, optimizer=None, teacher_forcing_ratio=0):
         """ Run training for a given model.
 
         Args:

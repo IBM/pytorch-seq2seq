@@ -27,7 +27,7 @@ class TestPredictor(unittest.TestCase):
         self.predictor = Predictor(seq2seq, src.vocab, trg.vocab)
 
     def test_predict(self):
-        src_seq = ["I", "am", "fat"]
-        tgt_seq = self.predictor.predict(src_seq)
+        src_seq = "I am fat"
+        tgt_seq = self.predictor.predict(src_seq.split(' '))
         for tok in tgt_seq:
             self.assertTrue(tok in self.predictor.tgt_vocab.stoi)
