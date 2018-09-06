@@ -8,7 +8,7 @@ from torch.autograd import Variable
 import torchtext
 
 from seq2seq.loss.loss import Loss
-from seq2seq.loss import NLLLoss, Perplexity, CoverageLoss
+from seq2seq.loss import NLLLoss, Perplexity
 from seq2seq.data import Seq2SeqDataset
 
 class TestLoss(unittest.TestCase):
@@ -91,11 +91,3 @@ class TestLoss(unittest.TestCase):
         ppl_loss = ppl.get_loss()
 
         self.assertAlmostEqual(ppl_loss, math.exp(nll_loss))
-
-    def test_coverage_loss_init(self):
-        """ Define test cases for covloss """
-        pass
-
-    def test_coverage_loss(self):
-        """ Define test cases for covloss """
-        pass

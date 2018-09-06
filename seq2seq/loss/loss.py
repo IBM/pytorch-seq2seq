@@ -2,7 +2,6 @@ from __future__ import print_function
 import math
 import logging
 
-import torch
 import torch.nn as nn
 import numpy as np
 
@@ -158,39 +157,3 @@ class Perplexity(NLLLoss):
             logging.warning("Loss exceeded maximum value, capping to e^100")
             return math.exp(Perplexity._MAX_EXP)
         return math.exp(nll)
-
-class CoverageLoss(Perplexity):
-    """ Coverage model coverage loss.
-
-    Reference: https://arxiv.org/pdf/1704.04368.pdf
-
-    Coverage vector is a (unnormalized) distribution over the source document 
-    words that represents the degree of coverage that those words have received
-    from the attention mechanism so far. Coverage Loss is used to additionally
-    penalize the model repeatedly attending to the same locations.
-
-    Args:
-        weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
-        mask (int, optional): index of masked token, i.e. weight[mask] = 0.
-        lambda_c (float, optional): weight assigned to coverage loss when yielding a composite loss function (default: 1)
-    """
-
-    _NAME = "Coverage Loss"
-
-    def __init__(self, weight=None, mask=None, lambda_c=1):
-        super(CoverageLoss, self).__init__(weight=weight, mask=mask, reduction='sum')
-        self.lambda_c = lambda_c
-
-    def _eval_batch(self, outputs, target, attns, coverage_vec):
-        self.acc_loss += self.criterion(outputs, target)
-        if self.mask is None:
-            self.norm_term += np.prod(target.size())
-        else:
-            self.norm_term += target.data.ne(self.mask).sum()
-        self.attns = attns
-        self.coverage_vec = coverage_vec
-
-    def get_loss(self):
-        perplexity = super(CoverageLoss, self).get_loss()
-        coverage_loss = torch.min(self.coverage_vec, self.attns).sum().item()
-        return perplexity + self.lambda_c * coverage_loss

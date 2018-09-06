@@ -45,14 +45,14 @@ class Evaluator(object):
 
         with torch.no_grad():
             for batch in batch_iterator:
-                decoder_outputs, decoder_hidden, other = model(batch)
+                decoder_outputs, _, other = model(batch)
 
                 # Evaluation
                 loss.eval_batch(decoder_outputs, batch)
 
                 seqlist = other['sequence']
                 target_variables = getattr(batch, seq2seq.tgt_field_name)
-                for step, step_output in enumerate(decoder_outputs):
+                for step, _ in enumerate(decoder_outputs):
                     target = target_variables[:, step + 1]
 
                     non_padding = target.ne(pad)

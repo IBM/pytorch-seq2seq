@@ -44,7 +44,7 @@ class Predictor(object):
             batch = torchtext.data.Batch.fromvars(dataset, 1, 
                         src=(src_id_seq, [len(src_seq)]), tgt=None)
 
-            softmax_list, _, other = self.model(batch)
+            _, _, other = self.model(batch)
             
         length = other['length'][0]
 

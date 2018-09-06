@@ -65,14 +65,12 @@ else:
         bidirectional = True
         max_len = 50
         encoder = EncoderRNN(len(input_vocab), max_len, hidden_size,
-                             bidirectional=bidirectional,
-                             rnn_cell='lstm',
+                             bidirectional=bidirectional, rnn_cell='lstm',
                              variable_lengths=True)
 
         decoder = DecoderRNN(len(output_vocab), max_len, hidden_size * 2,
                              dropout_p=0.2, use_attention=True,
-                             bidirectional=bidirectional,
-                             rnn_cell='lstm', copy=False,
+                             bidirectional=bidirectional,rnn_cell='lstm',
                              eos_id=train.tgt_field.eos_id, sos_id=train.tgt_field.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
