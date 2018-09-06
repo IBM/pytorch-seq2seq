@@ -85,3 +85,5 @@ vocab_pickle
 # local dev folders
 data/*
 experiment/*
+
+.pylintrc
