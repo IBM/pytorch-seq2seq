@@ -13,20 +13,20 @@ class TestDataset(unittest.TestCase):
     tgt_path = os.path.join(test_path, 'data/tgt.txt')
 
     def test_init_ONLY_SRC(self):
-        dataset = Seq2SeqDataset.from_file(self.src_path)
+        dataset = Seq2SeqDataset(dynamic=False).from_file(self.src_path)
         self.assertEqual(len(dataset.fields), 2)
         self.assertEqual(len(dataset), 100)
         self.assertTrue(hasattr(dataset.examples[0], seq2seq.src_field_name))
 
     def test_init_SRC_AND_TGT(self):
-        dataset = Seq2SeqDataset.from_file(self.src_path, self.tgt_path)
+        dataset = Seq2SeqDataset(dynamic=False).from_file(self.src_path, self.tgt_path)
         self.assertEqual(len(dataset.fields), 3)
         self.assertEqual(len(dataset), 100)
         ex = dataset.examples[0]
         self.assertTrue(len(getattr(ex, seq2seq.tgt_field_name)) > 2)
 
     def test_indices(self):
-        dataset = Seq2SeqDataset.from_file(self.src_path, self.tgt_path)
+        dataset = Seq2SeqDataset(dynamic=False).from_file(self.src_path, self.tgt_path)
         dataset.build_vocab(1000, 1000)
         batch_size = 25
 
@@ -36,7 +36,7 @@ class TestDataset(unittest.TestCase):
 
     def test_init_FROM_LIST(self):
         src_list = [['1','2','3'], ['4','5','6','7']]
-        dataset = Seq2SeqDataset.from_list(src_list)
+        dataset = Seq2SeqDataset(dynamic=False).from_list(src_list)
 
         self.assertEqual(len(dataset), 2)
 
@@ -44,7 +44,7 @@ class TestDataset(unittest.TestCase):
         for seq in src_list:
             tmp_file.write(' '.join(seq) + "\n")
         tmp_file.close()
-        from_file = Seq2SeqDataset.from_file('temp')
+        from_file = Seq2SeqDataset(dynamic=False).from_file('temp')
 
         self.assertEqual(len(dataset.examples), len(from_file.examples))
         for l, f in zip(dataset.examples, from_file.examples):
@@ -52,7 +52,7 @@ class TestDataset(unittest.TestCase):
         os.remove('temp')
 
     def test_dynamic(self):
-        dataset = Seq2SeqDataset.from_file(self.src_path, self.tgt_path, dynamic=True)
+        dataset = Seq2SeqDataset(dynamic=False).from_file(self.src_path, self.tgt_path, dynamic=True)
         self.assertTrue('src_index' in dataset.fields)
         for i, ex in enumerate(dataset.examples):
             idx = ex.index
