@@ -1,5 +1,6 @@
 import torch.nn as nn
-import torch.nn.functional as F
+
+from .. import src_field_name, tgt_field_name
 
 class Seq2seq(nn.Module):
     """ Standard sequence-to-sequence architecture with configurable encoder
@@ -8,7 +9,6 @@ class Seq2seq(nn.Module):
     Args:
         encoder (EncoderRNN): object of EncoderRNN
         decoder (DecoderRNN): object of DecoderRNN
-        decode_function (func, optional): function to generate symbols from output hidden states (default: F.log_softmax)
 
     Inputs: input_variable, input_lengths, target_variable, teacher_forcing_ratio
         - **input_variable** (list, option): list of sequences, whose length is the batch size and within which
@@ -33,22 +33,27 @@ class Seq2seq(nn.Module):
 
     """
 
-    def __init__(self, encoder, decoder, decode_function=F.log_softmax):
+    def __init__(self, encoder, decoder):
         super(Seq2seq, self).__init__()
         self.encoder = encoder
         self.decoder = decoder
-        self.decode_function = decode_function
 
     def flatten_parameters(self):
         self.encoder.rnn.flatten_parameters()
         self.decoder.rnn.flatten_parameters()
 
-    def forward(self, input_variable, input_lengths=None, target_variable=None,
-                teacher_forcing_ratio=0):
+    def forward(self, batch, dataset=None, teacher_forcing_ratio=0):
+        input_variable, input_lengths = getattr(batch, src_field_name)
+        target_variable = getattr(batch, tgt_field_name)
+
+        if not isinstance(input_lengths, list):
+            input_lengths = input_lengths.tolist()
+
         encoder_outputs, encoder_hidden = self.encoder(input_variable, input_lengths)
-        result = self.decoder(inputs=target_variable,
+        result = self.decoder(batch,
+                              inputs=target_variable,
                               encoder_hidden=encoder_hidden,
                               encoder_outputs=encoder_outputs,
-                              function=self.decode_function,
+                              dataset=dataset,
                               teacher_forcing_ratio=teacher_forcing_ratio)
         return result

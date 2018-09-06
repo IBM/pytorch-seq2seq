@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; pytorch-seq2seq 0.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dataset" href="../dataset.html" />
+    <link rel="prev" title="PyTorch-Seq2seq: A sequence-to-sequence framework for PyTorch" href="../index.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#what-s-new-in-0-1-7">What’s New in 0.1.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#roadmap">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-from-source">Install from source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-started">Get Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prepare-toy-dataset">Prepare toy dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#train-and-play">Train and play</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checkpoints">Checkpoints</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#troubleshoots-and-contributing">Troubleshoots and Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#development-environment">Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test">Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-style">Code Style</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../loss.html">Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notes/intro.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<span id="introduction"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><strong>pytorch-seq2seq</strong> is a simple, efficient and scalable framework implemented in <a class="reference external" href="http://pytorch.org">PyTorch</a>, to get you up and running in no time on sequence-to-sequence learning tasks.  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an <em>alpha</em> release. We appreciate any kind of feedback or contribution.</p>
+</div>
+<div class="section" id="what-s-new-in-0-1-7">
+<span id="what-s-new-in-0-1-7"></span><h1>What’s New in 0.1.7<a class="headerlink" href="#what-s-new-in-0-1-7" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Multi-GPU Support</li>
+<li>Copy and Coverage mechanism</li>
+<li>Fully compatible with PyTorch 0.4.1</li>
+</ul>
+</div>
+<div class="section" id="roadmap">
+<span id="roadmap"></span><h1>Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this headline">¶</a></h1>
+<p>Sequence to sequence learning is a fast evolving space with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:</p>
+<ul class="simple">
+<li>Tutorials with examples on how to quickly get started with the library;</li>
+<li>Evaluation with benchmarks such as WMT machine translation, COCO image captioning, conversational models, etc;</li>
+<li>Provide more flexible model options and improve the usability of the library;</li>
+<li>Adding latest architectures such as:<ul>
+<li><em>Copy and Coverage mechanism</em> proposed by <a class="reference external" href="https://arxiv.org/abs/1704.04368">Get To The Point: Summarization with Pointer-Generator Networks (See et al.)</a></li>
+<li><em>Transformer model</em> proposed by <a class="reference external" href="https://arxiv.org/abs/1706.03762">Attention Is All You Need (Vaswani et al.)</a></li>
+<li><em>CNN based</em> model proposed by <a class="reference external" href="https://arxiv.org/abs/1705.03122">Convolutional Sequence to Sequence Learning (Gehring et al.)</a></li>
+</ul>
+</li>
+<li>Support features in the new versions of PyTorch.</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<span id="installation"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>This package requires Python 2.7 or 3.6. We recommend creating a new virtual environment for this project (using virtualenv or conda).</p>
+<div class="section" id="prerequisites">
+<span id="prerequisites"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Numpy: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numpy</span></code> (Refer <a class="reference external" href="https://github.com/numpy/numpy">here</a> for problem installing Numpy).</li>
+<li>PyTorch: Refer to <a class="reference external" href="http://pytorch.org/">PyTorch website</a> to install the version w.r.t. your environment.</li>
+</ul>
+</div>
+<div class="section" id="install-from-source">
+<span id="install-from-source"></span><h2>Install from source<a class="headerlink" href="#install-from-source" title="Permalink to this headline">¶</a></h2>
+<p>Currently we only support installation from source code using setuptools.  Checkout the source code and run the following commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>If you already had a version of PyTorch installed on your system, please verify that it is at least <code class="docutils literal notranslate"><span class="pre">v0.4.1</span></code> for compatibility with our latest release <code class="docutils literal notranslate"><span class="pre">v0.1.7</span></code>.</p>
+</div>
+<div class="section" id="get-started">
+<span id="get-started"></span><h2>Get Started<a class="headerlink" href="#get-started" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prepare-toy-dataset">
+<span id="prepare-toy-dataset"></span><h3>Prepare toy dataset<a class="headerlink" href="#prepare-toy-dataset" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run script to generate the reverse toy dataset</span>
+<span class="c1"># The generated data is stored in data/toy_reverse by default</span>
+<span class="n">scripts</span><span class="o">/</span><span class="n">toy</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Define the env paths to generated data</span>
+<span class="n">TRAIN_SRC</span><span class="o">=</span><span class="n">data</span><span class="o">/</span><span class="n">toy_reverse</span><span class="o">/</span><span class="n">train</span><span class="o">/</span><span class="n">src</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">TRAIN_TGT</span><span class="o">=</span><span class="n">data</span><span class="o">/</span><span class="n">toy_reverse</span><span class="o">/</span><span class="n">train</span><span class="o">/</span><span class="n">tgt</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">DEV_SRC</span><span class="o">=</span><span class="n">data</span><span class="o">/</span><span class="n">toy_reverse</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">src</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">DEV_TGT</span><span class="o">=</span><span class="n">data</span><span class="o">/</span><span class="n">toy_reverse</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">tgt</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="train-and-play">
+<span id="train-and-play"></span><h3>Train and play<a class="headerlink" href="#train-and-play" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Start training
+python examples/sample.py  --train_src $TRAIN_SRC --train_tgt $TRAIN_TGT --dev_src $DEV_SRC --dev_tgt $DEV_TGT
+</pre></div>
+</div>
+<p>It will take about 3 minutes to train on CPU and less than 1 minute with a Tesla K80.  Once training is complete, you will be prompted to enter a new sequence to translate and the model will print out its prediction (use ctrl-C to terminate).  Try the example below!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Input</span><span class="p">:</span>  <span class="mi">1</span> <span class="mi">3</span> <span class="mi">5</span> <span class="mi">7</span> <span class="mi">9</span>
+<span class="n">Expected</span> <span class="n">output</span><span class="p">:</span> <span class="mi">9</span> <span class="mi">7</span> <span class="mi">5</span> <span class="mi">3</span> <span class="mi">1</span> <span class="n">EOS</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="checkpoints">
+<span id="checkpoints"></span><h3>Checkpoints<a class="headerlink" href="#checkpoints" title="Permalink to this headline">¶</a></h3>
+<p>Checkpoints are organized by experiments and timestamps as shown in the following file structure</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">experiment_dir</span>
+<span class="o">+--</span> <span class="n">input_vocab</span>
+<span class="o">+--</span> <span class="n">output_vocab</span>
+<span class="o">+--</span> <span class="n">checkpoints</span>
+<span class="o">|</span>  <span class="o">+--</span> <span class="n">YYYY_mm_dd_HH_MM_SS</span>
+   <span class="o">|</span>  <span class="o">+--</span> <span class="n">decoder</span>
+   <span class="o">|</span>  <span class="o">+--</span> <span class="n">encoder</span>
+   <span class="o">|</span>  <span class="o">+--</span> <span class="n">model_checkpoint</span>
+</pre></div>
+</div>
+<p>The sample script by default saves checkpoints in the <code class="docutils literal notranslate"><span class="pre">experiment</span></code> folder of the root directory.  Look at the usages of the sample code for more options, including resuming and loading from checkpoints.</p>
+</div>
+</div>
+</div>
+<div class="section" id="troubleshoots-and-contributing">
+<span id="troubleshoots-and-contributing"></span><h1>Troubleshoots and Contributing<a class="headerlink" href="#troubleshoots-and-contributing" title="Permalink to this headline">¶</a></h1>
+<p>If you have any questions, bug reports, and feature requests, please <a class="reference external" href="https://github.com/IBM/pytorch-seq2seq/issues/new">open an issue</a>.  For live discussions, please go to our <a class="reference external" href="https://gitter.im/pytorch-seq2seq/Lobby">Gitter lobby</a>.</p>
+<p>We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like questions, bug fixes and documentation improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.</p>
+<div class="section" id="development-environment">
+<span id="development-environment"></span><h2>Development Environment<a class="headerlink" href="#development-environment" title="Permalink to this headline">¶</a></h2>
+<p>We setup the development environment using <a class="reference external" href="https://www.vagrantup.com/">Vagrant</a>.  To get started, make sure that you have <a class="reference external" href="https://www.virtualbox.org/">VirtualBox</a> installed on your system, then run <code class="docutils literal notranslate"><span class="pre">vagrant</span> <span class="pre">up</span></code> with our ‘Vagrantfile’.</p>
+<p><a class="reference external" href="https://www.docker.com/">Docker</a> support for development coming soon.</p>
+</div>
+<div class="section" id="test">
+<span id="test"></span><h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<p>The quality and the maintainability of the project is ensured by comprehensive tests.  We encourage writing unit tests and integration tests when contributing new codes.</p>
+</div>
+<div class="section" id="code-style">
+<span id="code-style"></span><h2>Code Style<a class="headerlink" href="#code-style" title="Permalink to this headline">¶</a></h2>
+<p>We follow <a class="reference external" href="https://google.github.io/styleguide/pyguide.html">Google Python Style Guide</a> for code style.  Especially the style of docstrings is important to generate documentation.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../dataset.html" class="btn btn-neutral float-right" title="Dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="PyTorch-Seq2seq: A sequence-to-sequence framework for PyTorch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.7',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

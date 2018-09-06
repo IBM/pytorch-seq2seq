@@ -1,0 +1,443 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Loss Functions &mdash; pytorch-seq2seq 0.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optim" href="optim.html" />
+    <link rel="prev" title="Evaluator" href="evaluator.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#what-s-new-in-0-1-7">What’s New in 0.1.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#roadmap">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#troubleshoots-and-contributing">Troubleshoots and Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluator.html">Evaluator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Loss Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Loss Functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/loss.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-seq2seq.loss">
+<span id="loss-functions"></span><h1>Loss Functions<a class="headerlink" href="#module-seq2seq.loss" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="seq2seq.loss.Loss">
+<em class="property">class </em><code class="descclassname">seq2seq.loss.</code><code class="descname">Loss</code><span class="sig-paren">(</span><em>name</em>, <em>criterion</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.Loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for encapsulation of the loss functions.</p>
+<p>This class defines interfaces that are commonly used with loss functions
+in training and inferencing.  For information regarding individual loss
+functions, please refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#loss-functions">http://pytorch.org/docs/master/nn.html#loss-functions</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Do not use this class directly, use one of the sub classes.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of the loss function used by logging messages.</li>
+<li><strong>criterion</strong> (<em>torch.nn._Loss</em>) – one of PyTorch’s loss function.  Refer
+to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#loss-functions">http://pytorch.org/docs/master/nn.html#loss-functions</a> for
+a list of them.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of the loss function used by logging messages.</li>
+<li><strong>criterion</strong> (<em>torch.nn._Loss</em>) – one of PyTorch’s loss function.  Refer
+to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#loss-functions">http://pytorch.org/docs/master/nn.html#loss-functions</a> for
+a list of them.  Implementation depends on individual
+sub-classes.</li>
+<li><strong>acc_loss</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><em>torcn.nn.Tensor</em>) – variable that stores accumulated loss.</li>
+<li><strong>norm_term</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – normalization term that can be used to calculate
+the loss of multiple batches.  Implementation depends on individual
+sub-classes.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="seq2seq.loss.Loss.eval_batch">
+<code class="descname">eval_batch</code><span class="sig-paren">(</span><em>outputs</em>, <em>batch</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.Loss.eval_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate and accumulate loss given outputs and expected results.</p>
+<p>This method is called after each batch with the batch outputs and
+the target (expected) results.  The loss and normalization term are
+accumulated in this method.  Override it to define your own accumulation
+method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>outputs</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a>) – outputs of a batch.</li>
+<li><strong>target</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a>) – expected output of a batch.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.loss.Loss.get_loss">
+<code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.Loss.get_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the loss.</p>
+<p>This method defines how to calculate the averaged loss given the
+accumulated loss and the normalization term.  Override to define your
+own logic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">value of the loss.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">loss (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.loss.Loss.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.Loss.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the accumulated loss.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="seq2seq.loss.NLLLoss">
+<em class="property">class </em><code class="descclassname">seq2seq.loss.</code><code class="descname">NLLLoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>mask=None</em>, <em>reduction='elementwise_mean'</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.NLLLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Batch averaged negative log-likelihood loss.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>weight</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – a manual rescaling weight given to each class, refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
+<li><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – index of masked token, i.e. weight[mask] = 0.</li>
+<li><strong>reduction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – reduction to apply to the output, refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="seq2seq.loss.NLLLoss.get_loss">
+<code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.NLLLoss.get_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the loss.</p>
+<p>This method defines how to calculate the averaged loss given the
+accumulated loss and the normalization term.  Override to define your
+own logic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">value of the loss.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">loss (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="seq2seq.loss.Perplexity">
+<em class="property">class </em><code class="descclassname">seq2seq.loss.</code><code class="descname">Perplexity</code><span class="sig-paren">(</span><em>weight=None</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.Perplexity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Language model perplexity loss.</p>
+<p>Perplexity is the token averaged likelihood.  When the averaging options
+are the same, it is the exponential of negative log-likelihood.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>weight</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
+<li><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – index of masked token, i.e. weight[mask] = 0.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="seq2seq.loss.Perplexity.get_loss">
+<code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.Perplexity.get_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the loss.</p>
+<p>This method defines how to calculate the averaged loss given the
+accumulated loss and the normalization term.  Override to define your
+own logic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">value of the loss.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">loss (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="seq2seq.loss.CoverageLoss">
+<em class="property">class </em><code class="descclassname">seq2seq.loss.</code><code class="descname">CoverageLoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>mask=None</em>, <em>lambda_c=1</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.CoverageLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coverage model coverage loss.</p>
+<p>Reference: <a class="reference external" href="https://arxiv.org/pdf/1704.04368.pdf">https://arxiv.org/pdf/1704.04368.pdf</a></p>
+<p>Coverage vector is a (unnormalized) distribution over the source document
+words that represents the degree of coverage that those words have received
+from the attention mechanism so far. Coverage Loss is used to additionally
+penalize the model repeatedly attending to the same locations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>weight</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.5.0a0+b834d91 ))"><em>torch.Tensor</em></a><em>, </em><em>optional</em>) – refer to <a class="reference external" href="http://pytorch.org/docs/master/nn.html#nllloss">http://pytorch.org/docs/master/nn.html#nllloss</a></li>
+<li><strong>mask</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – index of masked token, i.e. weight[mask] = 0.</li>
+<li><strong>lambda_c</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em>) – weight assigned to coverage loss when yielding a composite loss function (default: 1)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="seq2seq.loss.CoverageLoss.get_loss">
+<code class="descname">get_loss</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.loss.CoverageLoss.get_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the loss.</p>
+<p>This method defines how to calculate the averaged loss given the
+accumulated loss and the normalization term.  Override to define your
+own logic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">value of the loss.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">loss (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="optim.html" class="btn btn-neutral float-right" title="Optim" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="evaluator.html" class="btn btn-neutral" title="Evaluator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.7',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

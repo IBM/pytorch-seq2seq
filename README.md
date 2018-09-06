@@ -5,19 +5,25 @@
 
 **[Documentation](https://ibm.github.io/pytorch-seq2seq/public/index.html)**
 
-This is a framework for sequence-to-sequence (seq2seq) models implemented in [PyTorch](http://pytorch.org).  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an alpha release. We appreciate any kind of feedback or contribution.
+**pytorch-seq2seq** is a simple, efficient and scalable framework implemented in [PyTorch](http://pytorch.org), to get you up and running in no time on sequence-to-sequence learning tasks.  The framework has modularized and extensible components for seq2seq models, training and inference, checkpoints, etc.  This is an *alpha* release. We appreciate any kind of feedback or contribution.
 
-# What's New in 0.1.6
 
-* Compatible with PyTorch 0.4
-* Added support for pre-trained word embedding
+# What's New in 0.1.7
+
+* Multi-GPU Support 
+* Copy and Coverage mechanism
+* Fully compatible with PyTorch 0.4.1
 
 # Roadmap
-Seq2seq is a fast evolving field with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
+Sequence to sequence learning is a fast evolving space with new techniques and architectures being published frequently.  The goal of this library is facilitating the development of such techniques and applications.  While constantly improving the quality of code and documentation, we will focus on the following items:
 
+* Tutorials with examples on how to quickly get started with the library;
 * Evaluation with benchmarks such as WMT machine translation, COCO image captioning, conversational models, etc;
-* Provide more flexible model options, improving the usability of the library;
-* Adding latest architectures such as the CNN based model proposed by [Convolutional Sequence to Sequence Learning](https://arxiv.org/abs/1705.03122) and the transformer model proposed by [Attention Is All You Need](https://arxiv.org/abs/1706.03762);
+* Provide more flexible model options and improve the usability of the library;
+* Adding latest architectures such as:
+	- [x] *Copy and Coverage mechanism* proposed by [Get To The Point: Summarization with Pointer-Generator Networks (See et al.)](https://arxiv.org/abs/1704.04368)
+	- [ ] *Transformer model* proposed by [Attention Is All You Need (Vaswani et al.)](https://arxiv.org/abs/1706.03762)
+	- [ ] *CNN based* model proposed by [Convolutional Sequence to Sequence Learning (Gehring et al.)](https://arxiv.org/abs/1705.03122)
 * Support features in the new versions of PyTorch.
 
 # Installation
@@ -26,7 +32,7 @@ This package requires Python 2.7 or 3.6. We recommend creating a new virtual env
 ### Prerequisites
 
 * Numpy: `pip install numpy` (Refer [here](https://github.com/numpy/numpy) for problem installing Numpy).
-* PyTorch: Refer to [PyTorch website](http://pytorch.org/) to install the version w.r.t. your environment.
+* PyTorch: Refer to [PyTorch website](http://pytorch.org/) to install the version suitable for your system.
 
 ### Install from source
 Currently we only support installation from source code using setuptools.  Checkout the source code and run the following commands:
@@ -34,7 +40,7 @@ Currently we only support installation from source code using setuptools.  Check
     pip install -r requirements.txt
     python setup.py install
 
-If you already had a version of PyTorch installed on your system, please verify that the active torch package is at least version 0.1.11.
+If you already had a version of PyTorch installed on your system, please verify that it is at least `v0.4.1` for compatibility with our latest release `v0.1.7`.
 
 # Get Started
 ### Prepare toy dataset
@@ -43,11 +49,16 @@ If you already had a version of PyTorch installed on your system, please verify 
     # The generated data is stored in data/toy_reverse by default
 	scripts/toy.sh
 
+	# Define the env paths to generated data
+	TRAIN_SRC=data/toy_reverse/train/src.txt
+	TRAIN_TGT=data/toy_reverse/train/tgt.txt
+	DEV_SRC=data/toy_reverse/dev/src.txt
+	DEV_TGT=data/toy_reverse/dev/tgt.txt
+
 ### Train and play
-	TRAIN_PATH=data/toy_reverse/train/data.txt
-	DEV_PATH=data/toy_reverse/dev/data.txt
+	
 	# Start training
-    python examples/sample.py --train_path $TRAIN_PATH --dev_path $DEV_PATH
+    python examples/sample.py  --train_src $TRAIN_SRC --train_tgt $TRAIN_TGT --dev_src $DEV_SRC --dev_tgt $DEV_TGT
 
 It will take about 3 minutes to train on CPU and less than 1 minute with a Tesla K80.  Once training is complete, you will be prompted to enter a new sequence to translate and the model will print out its prediction (use ctrl-C to terminate).  Try the example below!
 
@@ -73,20 +84,24 @@ The sample script by default saves checkpoints in the `experiment` folder of the
 * WMT Machine Translation (Coming soon)
 
 # Troubleshoots and Contributing
-If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/IBM/pytorch-seq2seq/issues/new) on Github.  For live discussions, please go to our [Gitter lobby](https://gitter.im/pytorch-seq2seq/Lobby).
+If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/IBM/pytorch-seq2seq/issues/new) and make sure to use labels, to make everyone's life easier.  For live discussions, please go to our [Gitter lobby](https://gitter.im/pytorch-seq2seq/Lobby).
 
-We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like bug fixes, documentation improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.  
+We appreciate any kind of feedback or contribution.  Feel free to proceed with small issues like questions, bug fixes and [documentation](https://github.com/IBM/pytorch-seq2seq/tree/master/docs#pytorch-seq2seq-documentation) improvement.  For major contributions and new features, please discuss with the collaborators in corresponding issues.
+
+Help us in improving our [documentation](https://github.com/IBM/pytorch-seq2seq/tree/master/docs#pytorch-seq2seq-documentation) and making it easier to use this library.
 
 ### Development Cycle
 We are using 4-week release cycles, where during each cycle changes will be pushed to the `develop` branch and finally merge to the `master` branch at the end of each cycle.
 
 ### Development Environment
-We setup the development environment using [Vagrant](https://www.vagrantup.com/).  Run `vagrant up` with our 'Vagrantfile' to get started.
+We setup the development environment using [Vagrant](https://www.vagrantup.com/).  To get started, make sure that you have [VirtualBox](https://www.virtualbox.org/) installed on your system, then run `vagrant up` with our 'Vagrantfile', once the VM has been provisioned you can `vagrant ssh` into it and start moving things around, albeit in moderation.
 
 The following tools are needed and installed in the development environment by default:
 * Git
-* Python
-* Python packages: nose, mock, coverage, flake8
+* Python 2.7
+* Python packages: pytorch, torchtext, nose, mock, coverage, flake8
+
+[Docker](https://www.docker.com/) support for development coming soon.
 
 ### Test
 The quality and the maintainability of the project is ensured by comprehensive tests.  We encourage writing unit tests and integration tests when contributing new codes.

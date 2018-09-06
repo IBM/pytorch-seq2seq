@@ -4,7 +4,7 @@ import unittest
 import torchtext
 
 from seq2seq.evaluator import Predictor
-from seq2seq.dataset import SourceField, TargetField
+from seq2seq.data import SourceField, TargetField
 from seq2seq.models import Seq2seq, EncoderRNN, DecoderRNN
 
 class TestPredictor(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestPredictor(unittest.TestCase):
         self.predictor = Predictor(seq2seq, src.vocab, trg.vocab)
 
     def test_predict(self):
-        src_seq = ["I", "am", "fat"]
-        tgt_seq = self.predictor.predict(src_seq)
+        src_seq = "I am fat"
+        tgt_seq = self.predictor.predict(src_seq.split(' '))
         for tok in tgt_seq:
             self.assertTrue(tok in self.predictor.tgt_vocab.stoi)

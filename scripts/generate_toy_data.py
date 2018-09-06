@@ -1,7 +1,6 @@
 from __future__ import print_function
 import argparse
 import os
-import shutil
 import random
 
 parser = argparse.ArgumentParser()
@@ -9,28 +8,24 @@ parser.add_argument('--dir', help="data directory", default="../data")
 parser.add_argument('--max-len', help="max sequence length", default=10)
 args = parser.parse_args()
 
+
 def generate_dataset(root, name, size):
     path = os.path.join(root, name)
     if not os.path.exists(path):
         os.mkdir(path)
 
     # generate data file
-    data_path = os.path.join(path, 'data.txt')
-    with open(data_path, 'w') as fout:
+    src_path = os.path.join(path, 'src.txt')
+    tgt_path = os.path.join(path, 'tgt.txt')
+    with open(src_path, 'w') as src_out, open(tgt_path, 'w') as tgt_out:
         for _ in range(size):
             length = random.randint(1, args.max_len)
             seq = []
             for _ in range(length):
                 seq.append(str(random.randint(0, 9)))
-            fout.write("\t".join([" ".join(seq), " ".join(reversed(seq))]))
-            fout.write('\n')
+            src_out.write(" ".join(seq) + "\n")
+            tgt_out.write(" ".join(reversed(seq)) + "\n")
 
-    # generate vocabulary
-    src_vocab = os.path.join(path, 'vocab.source')
-    with open(src_vocab, 'w') as fout:
-        fout.write("\n".join([str(i) for i in range(10)]))
-    tgt_vocab = os.path.join(path, 'vocab.target')
-    shutil.copy(src_vocab, tgt_vocab)
 
 if __name__ == '__main__':
     data_dir = args.dir

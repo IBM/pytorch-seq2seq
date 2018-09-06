@@ -6,7 +6,7 @@ import unittest
 from mock import MagicMock, patch, call, ANY
 import torchtext
 
-from seq2seq.dataset import SourceField, TargetField
+from seq2seq.data import SourceField, TargetField
 from seq2seq.evaluator import Evaluator
 from seq2seq.models import Seq2seq, EncoderRNN, DecoderRNN
 
@@ -44,5 +44,5 @@ class TestPredictor(unittest.TestCase):
             evaluator.evaluate(self.seq2seq, self.dataset)
 
         num_batches = int(math.ceil(len(self.dataset) / evaluator.batch_size))
-        expected_calls = [call.eval()] + num_batches * [call.call(ANY, ANY, ANY)]
+        expected_calls = [call.eval()] + num_batches * [call.call(ANY)]
         self.assertEquals(expected_calls, mock_mgr.mock_calls)

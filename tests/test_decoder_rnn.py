@@ -1,4 +1,3 @@
-import os
 import unittest
 
 import torch
@@ -10,13 +9,14 @@ class TestDecoderRNN(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.vocab_size = 100
+        self.batch = None
 
     def test_input_dropout_WITH_PROB_ZERO(self):
         rnn = DecoderRNN(self.vocab_size, 50, 16, 0, 1, input_dropout_p=0)
         for param in rnn.parameters():
             param.data.uniform_(-1, 1)
-        output1, _, _ = rnn()
-        output2, _, _ = rnn()
+        output1, _, _ = rnn(self.batch)
+        output2, _, _ = rnn(self.batch)
         for prob1, prob2 in zip(output1, output2):
             self.assertTrue(torch.equal(prob1.data, prob2.data))
 
@@ -27,8 +27,8 @@ class TestDecoderRNN(unittest.TestCase):
 
         equal = True
         for _ in range(50):
-            output1, _, _ = rnn()
-            output2, _, _ = rnn()
+            output1, _, _ = rnn(self.batch)
+            output2, _, _ = rnn(self.batch)
             if not torch.equal(output1[0].data, output2[0].data):
                 equal = False
                 break
@@ -38,8 +38,8 @@ class TestDecoderRNN(unittest.TestCase):
         rnn = DecoderRNN(self.vocab_size, 50, 16, 0, 1, dropout_p=0)
         for param in rnn.parameters():
             param.data.uniform_(-1, 1)
-        output1, _, _ = rnn()
-        output2, _, _ = rnn()
+        output1, _, _ = rnn(self.batch)
+        output2, _, _ = rnn(self.batch)
         for prob1, prob2 in zip(output1, output2):
             self.assertTrue(torch.equal(prob1.data, prob2.data))
 
@@ -50,8 +50,8 @@ class TestDecoderRNN(unittest.TestCase):
 
         equal = True
         for _ in range(50):
-            output1, _, _ = rnn()
-            output2, _, _ = rnn()
+            output1, _, _ = rnn(self.batch)
+            output2, _, _ = rnn(self.batch)
             if not torch.equal(output1[0].data, output2[0].data):
                 equal = False
                 break

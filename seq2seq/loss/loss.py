@@ -1,7 +1,11 @@
 from __future__ import print_function
 import math
+import logging
+
 import torch.nn as nn
 import numpy as np
+
+from .. import tgt_field_name
 
 class Loss(object):
     """ Base class for encapsulation of the loss functions.
@@ -58,7 +62,7 @@ class Loss(object):
         """
         raise NotImplementedError
 
-    def eval_batch(self, outputs, target):
+    def eval_batch(self, outputs, batch):
         """ Evaluate and accumulate loss given outputs and expected results.
 
         This method is called after each batch with the batch outputs and
@@ -70,6 +74,13 @@ class Loss(object):
             outputs (torch.Tensor): outputs of a batch.
             target (torch.Tensor): expected output of a batch.
         """
+        target_variable = getattr(batch, tgt_field_name)
+        for step, step_output in enumerate(outputs):
+            batch_size = target_variable.size(0)
+            target = target_variable[:, step + 1]
+            self._eval_batch(step_output.contiguous().view(batch_size, -1), target)
+
+    def _eval_batch(self, output, target):
         raise NotImplementedError
 
     def cuda(self):
@@ -84,16 +95,16 @@ class NLLLoss(Loss):
     """ Batch averaged negative log-likelihood loss.
 
     Args:
-        weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        weight (torch.Tensor, optional): a manual rescaling weight given to each class, refer to http://pytorch.org/docs/master/nn.html#nllloss
         mask (int, optional): index of masked token, i.e. weight[mask] = 0.
-        size_average (bool, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
+        reduction (str, optional): reduction to apply to the output, refer to http://pytorch.org/docs/master/nn.html#nllloss
     """
 
     _NAME = "Avg NLLLoss"
 
-    def __init__(self, weight=None, mask=None, size_average=True):
+    def __init__(self, weight=None, mask=None, reduction='elementwise_mean'):
         self.mask = mask
-        self.size_average = size_average
+        self.reduction = reduction
         if mask is not None:
             if weight is None:
                 raise ValueError("Must provide weight with a mask.")
@@ -101,27 +112,25 @@ class NLLLoss(Loss):
 
         super(NLLLoss, self).__init__(
             self._NAME,
-            nn.NLLLoss(weight=weight, size_average=size_average))
+            nn.NLLLoss(weight=weight, reduction=reduction))
+
+    def _eval_batch(self, outputs, target):
+        self.acc_loss += self.criterion(outputs, target)
+        self.norm_term += 1
 
     def get_loss(self):
         if isinstance(self.acc_loss, int):
             return 0
-        # total loss for all batches
-        loss = self.acc_loss.data.item()
-        if self.size_average:
-            # average loss per batch
-            loss /= self.norm_term
+        loss = self.acc_loss.data.item()    # total loss for all batches
+        if self.reduction == 'elementwise_mean':
+            loss /= self.norm_term          # average loss per batch
         return loss
-
-    def eval_batch(self, outputs, target):
-        self.acc_loss += self.criterion(outputs, target)
-        self.norm_term += 1
 
 class Perplexity(NLLLoss):
     """ Language model perplexity loss.
 
-    Perplexity is the token averaged likelihood.  When the averaging options are the
-    same, it is the exponential of negative log-likelihood.
+    Perplexity is the token averaged likelihood.  When the averaging options 
+    are the same, it is the exponential of negative log-likelihood.
 
     Args:
         weight (torch.Tensor, optional): refer to http://pytorch.org/docs/master/nn.html#nllloss
@@ -132,9 +141,9 @@ class Perplexity(NLLLoss):
     _MAX_EXP = 100
 
     def __init__(self, weight=None, mask=None):
-        super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=False)
+        super(Perplexity, self).__init__(weight=weight, mask=mask, reduction='sum')
 
-    def eval_batch(self, outputs, target):
+    def _eval_batch(self, outputs, target):
         self.acc_loss += self.criterion(outputs, target)
         if self.mask is None:
             self.norm_term += np.prod(target.size())
@@ -145,6 +154,6 @@ class Perplexity(NLLLoss):
         nll = super(Perplexity, self).get_loss()
         nll /= self.norm_term.item()
         if nll > Perplexity._MAX_EXP:
-            print("WARNING: Loss exceeded maximum value, capping to e^100")
+            logging.warning("Loss exceeded maximum value, capping to e^100")
             return math.exp(Perplexity._MAX_EXP)
         return math.exp(nll)

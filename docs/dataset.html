@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dataset &mdash; pytorch-seq2seq 0.1.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Util" href="util.html" />
+    <link rel="prev" title="Introduction" href="notes/intro.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pytorch-seq2seq
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#what-s-new-in-0-1-7">What’s New in 0.1.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#roadmap">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/intro.html#troubleshoots-and-contributing">Troubleshoots and Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-seq2seq.dataset.fields">Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="util.html">Util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluator.html">Evaluator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loss.html">Loss Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optim.html">Optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pytorch-seq2seq</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dataset">
+<h1>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h1>
+<p>We use torchtext to manage data loading and processing.  For more information about torchtext, please go to: <a class="reference external" href="https://github.com/pytorch/text">https://github.com/pytorch/text</a></p>
+<div class="section" id="id1">
+<h2>Dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-seq2seq.dataset.dataset"></span><dl class="class">
+<dt id="seq2seq.dataset.dataset.Seq2SeqDataset">
+<em class="property">class </em><code class="descclassname">seq2seq.dataset.dataset.</code><code class="descname">Seq2SeqDataset</code><span class="sig-paren">(</span><em>examples</em>, <em>src_field</em>, <em>tgt_field=None</em>, <em>dynamic=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Seq2SeqDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>The idea of dynamic vocabulary is bought from [Opennmt-py](<a class="reference external" href="https://github.com/OpenNMT/OpenNMT-py">https://github.com/OpenNMT/OpenNMT-py</a>)</p>
+<dl class="method">
+<dt id="seq2seq.dataset.dataset.Seq2SeqDataset.build_vocab">
+<code class="descname">build_vocab</code><span class="sig-paren">(</span><em>src_vocab_size</em>, <em>tgt_vocab_size</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Seq2SeqDataset.build_vocab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="seq2seq.dataset.dataset.Seq2SeqDataset.from_file">
+<em class="property">static </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>src_path</em>, <em>tgt_path=None</em>, <em>share_fields_from=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Seq2SeqDataset.from_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="seq2seq.dataset.dataset.Seq2SeqDataset.from_list">
+<em class="property">static </em><code class="descname">from_list</code><span class="sig-paren">(</span><em>src_list</em>, <em>tgt_list=None</em>, <em>share_fields_from=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.Seq2SeqDataset.from_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="seq2seq.dataset.dataset.make_example">
+<code class="descclassname">seq2seq.dataset.dataset.</code><code class="descname">make_example</code><span class="sig-paren">(</span><em>line</em>, <em>fields</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.dataset.make_example" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-seq2seq.dataset.fields">
+<span id="fields"></span><h2>Fields<a class="headerlink" href="#module-seq2seq.dataset.fields" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="seq2seq.dataset.fields.SourceField">
+<em class="property">class </em><code class="descclassname">seq2seq.dataset.fields.</code><code class="descname">SourceField</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.fields.SourceField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class of torchtext.data.Field that forces batch_first and include_lengths to be True.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="seq2seq.dataset.fields.TargetField">
+<em class="property">class </em><code class="descclassname">seq2seq.dataset.fields.</code><code class="descname">TargetField</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.fields.TargetField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper class of torchtext.data.Field that forces batch_first to be True and prepend &lt;sos&gt; and append &lt;eos&gt; to sequences in preprocessing step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sos_id</strong> – index of the start of sentence symbol</li>
+<li><strong>eos_id</strong> – index of the end of sentence symbol</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="seq2seq.dataset.fields.TargetField.SYM_EOS">
+<code class="descname">SYM_EOS</code><em class="property"> = '&lt;eos&gt;'</em><a class="headerlink" href="#seq2seq.dataset.fields.TargetField.SYM_EOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="seq2seq.dataset.fields.TargetField.SYM_SOS">
+<code class="descname">SYM_SOS</code><em class="property"> = '&lt;sos&gt;'</em><a class="headerlink" href="#seq2seq.dataset.fields.TargetField.SYM_SOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="seq2seq.dataset.fields.TargetField.build_vocab">
+<code class="descname">build_vocab</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#seq2seq.dataset.fields.TargetField.build_vocab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct the Vocab object for this field from one or more datasets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>arguments</strong> (<em>Positional</em>) – Dataset objects or other iterable data
+sources from which to construct the Vocab object that
+represents the set of possible values for this field. If
+a Dataset object is provided, all columns corresponding
+to this field are used; individual columns can also be
+provided directly.</li>
+<li><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vocab.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="util.html" class="btn btn-neutral float-right" title="Util" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="notes/intro.html" class="btn btn-neutral" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, pytorch-seq2seq Contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.7',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

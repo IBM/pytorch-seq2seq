@@ -2,7 +2,6 @@ from __future__ import division
 import logging
 import os
 import random
-import time
 
 import torch
 import torchtext
@@ -12,7 +11,7 @@ import seq2seq
 from seq2seq.evaluator import Evaluator
 from seq2seq.loss import NLLLoss
 from seq2seq.optim import Optimizer
-from seq2seq.util.checkpoint import Checkpoint
+from seq2seq.util import Checkpoint
 
 class SupervisedTrainer(object):
     """ The SupervisedTrainer class helps in setting up a training framework in a
@@ -26,8 +25,7 @@ class SupervisedTrainer(object):
         checkpoint_every (int, optional): number of batches to checkpoint after, (default: 100)
     """
     def __init__(self, expt_dir='experiment', loss=NLLLoss(), batch_size=64,
-                 random_seed=None,
-                 checkpoint_every=100, print_every=100):
+                 random_seed=None, checkpoint_every=100, print_every=100):
         self._trainer = "Simple Trainer"
         self.random_seed = random_seed
         if random_seed is not None:
@@ -48,16 +46,14 @@ class SupervisedTrainer(object):
 
         self.logger = logging.getLogger(__name__)
 
-    def _train_batch(self, input_variable, input_lengths, target_variable, model, teacher_forcing_ratio):
+    def _train_batch(self, batch, model, teacher_forcing_ratio, dataset):
         loss = self.loss
         # Forward propagation
-        decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable,
-                                                       teacher_forcing_ratio=teacher_forcing_ratio)
+        decoder_outputs, _, _ = model(batch, dataset=dataset, 
+                                teacher_forcing_ratio=teacher_forcing_ratio)
         # Get loss
         loss.reset()
-        for step, step_output in enumerate(decoder_outputs):
-            batch_size = target_variable.size(0)
-            loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
+        loss.eval_batch(decoder_outputs, batch)
         # Backward propagation
         model.zero_grad()
         loss.backward()
@@ -68,7 +64,6 @@ class SupervisedTrainer(object):
     def _train_epoches(self, data, model, n_epochs, start_epoch, start_step,
                        dev_data=None, teacher_forcing_ratio=0):
         log = self.logger
-
         print_loss_total = 0  # Reset every print_every
         epoch_loss_total = 0  # Reset every epoch
 
@@ -97,10 +92,7 @@ class SupervisedTrainer(object):
                 step += 1
                 step_elapsed += 1
 
-                input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
-                target_variables = getattr(batch, seq2seq.tgt_field_name)
-
-                loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
+                loss = self._train_batch(batch, model, teacher_forcing_ratio, data)
 
                 # Record average loss
                 print_loss_total += loss
@@ -138,9 +130,8 @@ class SupervisedTrainer(object):
 
             log.info(log_msg)
 
-    def train(self, model, data, num_epochs=5,
-              resume=False, dev_data=None,
-              optimizer=None, teacher_forcing_ratio=0):
+    def train(self, model, data, num_epochs=5, resume=False, 
+              dev_data=None, optimizer=None, teacher_forcing_ratio=0):
         """ Run training for a given model.
 
         Args:
