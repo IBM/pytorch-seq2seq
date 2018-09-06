@@ -43,7 +43,7 @@ class CopyDecoder(SimpleDecoder):
                     p_out[b: b + decode_len, copy_id].data.fill_(1e-20)
 
         symbols = p_out.topk(1, dim=1)[1]
-        return p_out, symbols, self.coverage_vec
+        return p_out, symbols #, self.coverage_vec
 
     def _copy(self):
         """ Implement copy mechanism """
