@@ -52,7 +52,7 @@ class TestDataset(unittest.TestCase):
         os.remove('temp')
 
     def test_dynamic(self):
-        dataset = Seq2SeqDataset.from_file(self.src_path, self.tgt_path, dynamic=False)
+        dataset = Seq2SeqDataset.from_file(self.src_path, self.tgt_path, dynamic=True)
         self.assertTrue('src_index' in dataset.fields)
         for i, ex in enumerate(dataset.examples):
             idx = ex.index
