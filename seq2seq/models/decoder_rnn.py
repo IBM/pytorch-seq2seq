@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from .global_attention import GlobalAttention
+from .dot_attention import DotAttention
 from .base_rnn import BaseRNN
 from .simple_decoder import SimpleDecoder
 
@@ -75,7 +75,7 @@ class DecoderRNN(BaseRNN):
 
         self.embedding = nn.Embedding(self.output_size, self.hidden_size)
         if use_attention:
-            self.attention = GlobalAttention(self.hidden_size)
+            self.attention = DotAttention(self.hidden_size)
     
         self.decoder = SimpleDecoder(self.hidden_size, self.output_size)
 

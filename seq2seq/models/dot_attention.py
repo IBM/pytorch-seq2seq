@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class GlobalAttention(nn.Module):
+class DotAttention(nn.Module):
     r"""
-    Applies a global attention mechanism on the output features from the decoder.
+    Applies a dot attention mechanism on the output features from the decoder.
 
     .. math::
             \begin{array}{ll}
@@ -30,14 +30,14 @@ class GlobalAttention(nn.Module):
 
     Examples::
 
-         >>> attention = seq2seq.models.GlobalAttention(256)
+         >>> attention = seq2seq.models.DotAttention(256)
          >>> context = Variable(torch.randn(5, 3, 256))
          >>> output = Variable(torch.randn(5, 5, 256))
          >>> output, attn = attention(output, context)
 
     """
     def __init__(self, dim):
-        super(GlobalAttention, self).__init__()
+        super(DotAttention, self).__init__()
         self.linear_out = nn.Linear(dim*2, dim)
         self.mask = None
 
