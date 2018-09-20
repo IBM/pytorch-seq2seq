@@ -6,6 +6,7 @@ import random
 import torch
 import torchtext
 from torch import optim
+from tqdm import tqdm
 
 import seq2seq
 from seq2seq.evaluator import Evaluator
@@ -88,7 +89,12 @@ class SupervisedTrainer(object):
                 next(batch_generator)
 
             model.train(True)
-            for batch in batch_generator:
+            progress_bar = tqdm(
+                batch_generator,
+                total=steps_per_epoch,
+                desc='Train {}: '.format(self.loss.name),
+            )
+            for batch in progress_bar:
                 step += 1
                 step_elapsed += 1
 
@@ -101,11 +107,10 @@ class SupervisedTrainer(object):
                 if step % self.print_every == 0 and step_elapsed > self.print_every:
                     print_loss_avg = print_loss_total / self.print_every
                     print_loss_total = 0
-                    log_msg = 'Progress: %d%%, Train %s: %.4f' % (
-                        step / total_steps * 100,
+                    progress_bar.set_description('Train {}: {:.4f}'.format(
                         self.loss.name,
-                        print_loss_avg)
-                    log.info(log_msg)
+                        print_loss_avg,
+                    ))
 
                 # Checkpoint
                 if step % self.checkpoint_every == 0 or step == total_steps:
