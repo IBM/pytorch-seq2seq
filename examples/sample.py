@@ -68,15 +68,18 @@ def sample(
 
     ## Training
     ```shell
-    ./examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt $EXPT_PATH
+    $ ./examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt
+    $EXPT_PATH
     ```
     ## Resuming from the latest checkpoint of the experiment
     ```shell
-    ./examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt $EXPT_PATH -r
+    $ ./examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt
+    $EXPT_PATH -r
     ```
     ## Resuming from a specific checkpoint
     ```shell
-    python examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt $EXPT_PATH -c $CHECKPOINT_DIR
+    $ python examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt
+    $EXPT_PATH -c $CHECKPOINT_DIR
     ```
     """
     logging.basicConfig(
@@ -161,17 +164,17 @@ def train_model(
     # Train
     trainer = SupervisedTrainer(
         loss=loss,
-        batch_size=32,
+        batch_size=512,
         checkpoint_every=50,
         print_every=10,
-        expt_dir=experiment_directory,
+        experiment_directory=experiment_directory,
     )
     start = time.clock()
     try:
         seq2seq = trainer.train(
             seq2seq,
             train,
-            num_epochs=1,
+            n_epochs=2,
             dev_data=dev,
             optimizer=optimizer,
             teacher_forcing_ratio=0.5,
