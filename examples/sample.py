@@ -1,12 +1,14 @@
+#!/usr/bin/env python
+from builtins import input
+
 import os
 import time
-import argparse
 import logging
 
+import click
 import torch
 from torch.optim.lr_scheduler import StepLR
 
-import seq2seq
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
 from seq2seq.loss import Perplexity
@@ -15,59 +17,134 @@ from seq2seq.data import Seq2SeqDataset
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
 
-try:
-    raw_input          # Python 2
-except NameError:
-    raw_input = input  # Python 3
+LOG_FORMAT = '%(asctime)s:%(name)s:%(levelname)s: %(message)s'
 
-# Sample usage:
 
-#     TRAIN_SRC=data/toy_reverse/train/src.txt
-#     TRAIN_TGT=data/toy_reverse/train/tgt.txt
-#     DEV_SRC=data/toy_reverse/dev/src.txt
-#     DEV_TGT=data/toy_reverse/dev/tgt.txt
-#
-#     # training
-#     python examples/sample.py  --train_src $TRAIN_SRC --train_tgt $TRAIN_TGT --dev_src $DEV_SRC --dev_tgt $DEV_TGT --expt_dir $EXPT_PATH
-#     # resuming from the latest checkpoint of the experiment
-#     python examples/sample.py  --train_src $TRAIN_SRC --train_tgt $TRAIN_TGT --dev_src $DEV_SRC --dev_tgt $DEV_TGT --expt_dir $EXPT_PATH --resume
-#      # resuming from a specific checkpoint
-#     python examples/sample.py  --train_src $TRAIN_SRC --train_tgt $TRAIN_TGT --dev_src $DEV_SRC --dev_tgt $DEV_TGT --expt_dir $EXPT_PATH --load_checkpoint $CHECKPOINT_DIR
+@click.command()
+@click.argument('train-source')
+@click.argument('train-target')
+@click.argument('dev-source')
+@click.argument('dev-target')
+@click.option(
+    '-expt',
+    '--experiment-directory',
+    default='./experiment',
+    help='path to save directory (use with --load-checkpoint)',
+)
+@click.option(
+    '-c',
+    '--checkpoint',
+    help='load a previously saved checkpoint',
+)
+@click.option(
+    '-r',
+    '--resume',
+    is_flag=True,
+    help='resume training from last checkpoint',
+)
+@click.option(
+    '-v',
+    '--log-level',
+    default='info',
+    help='logging level',
+)
+def sample(
+        train_source,
+        train_target,
+        dev_source,
+        dev_target,
+        experiment_directory,
+        checkpoint,
+        resume,
+        log_level,
+):
+    """
+    # Sample usage
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--train_src', action='store', help='Path to source train data')
-parser.add_argument('--train_tgt', action='store', help='Path to target train data')
-parser.add_argument('--dev_src', action='store', help='Path to source develop data')
-parser.add_argument('--dev_tgt', action='store', help='Path to source develop data')
-parser.add_argument('--expt_dir', action='store', dest='expt_dir', default='./experiment',
-                    help='Path to experiment directory. If load_checkpoint is True, then path to checkpoint directory has to be provided')
-parser.add_argument('--load_checkpoint', action='store', dest='load_checkpoint',
-                    help='The name of the checkpoint to load, usually an encoded time string')
-parser.add_argument('--resume', action='store_true', dest='resume',
-                    default=False,
-                    help='Indicates if training has to be resumed from the latest checkpoint')
-parser.add_argument('--log-level', dest='log_level',
-                    default='info',
-                    help='Logging level.')
+        TRAIN_SRC=data/toy_reverse/train/src.txt
+        TRAIN_TGT=data/toy_reverse/train/tgt.txt
+        DEV_SRC=data/toy_reverse/dev/src.txt
+        DEV_TGT=data/toy_reverse/dev/tgt.txt
 
-opt = parser.parse_args()
+    ## Training
+    ```shell
+    $ ./examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt
+    $EXPT_PATH
+    ```
+    ## Resuming from the latest checkpoint of the experiment
+    ```shell
+    $ ./examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt
+    $EXPT_PATH -r
+    ```
+    ## Resuming from a specific checkpoint
+    ```shell
+    $ python examples/sample.py $TRAIN_SRC $TRAIN_TGT $DEV_SRC $DEV_TGT -expt
+    $EXPT_PATH -c $CHECKPOINT_DIR
+    ```
+    """
+    logging.basicConfig(
+        format=LOG_FORMAT,
+        level=getattr(logging, log_level.upper()),
+    )
+    logging.info('train_source: %s', train_source)
+    logging.info('train_target: %s', train_target)
+    logging.info('dev_source: %s', dev_source)
+    logging.info('dev_target: %s', dev_target)
+    logging.info('experiment_directory: %s', experiment_directory)
 
-LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()))
-logging.info(opt)
+    if checkpoint:
+        seq2seq, input_vocab, output_vocab = load_checkpoint(
+            experiment_directory, checkpoint)
+    else:
+        seq2seq, input_vocab, output_vocab = train_model(
+            train_source,
+            train_target,
+            dev_source,
+            dev_target,
+            experiment_directory,
+            resume=resume,
+        )
 
-if opt.load_checkpoint is not None:
-    logging.info("loading checkpoint from {}".format(os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)))
-    checkpoint_path = os.path.join(opt.expt_dir, Checkpoint.CHECKPOINT_DIR_NAME, opt.load_checkpoint)
+    predictor = Predictor(seq2seq, input_vocab, output_vocab)
+
+    while True:
+        seq_str = input('Type in a source sequence: ')
+        seq = seq_str.strip().split()
+        print(predictor.predict(seq))
+
+
+def load_checkpoint(experiment_directory, checkpoint):
+    checkpoint_path = os.path.join(
+        experiment_directory,
+        Checkpoint.CHECKPOINT_DIR_NAME,
+        checkpoint,
+    )
+    logging.info('Loading checkpoint from {}'.format(
+        checkpoint_path,
+    ))
     checkpoint = Checkpoint.load(checkpoint_path)
     seq2seq = checkpoint.model
     input_vocab = checkpoint.input_vocab
     output_vocab = checkpoint.output_vocab
-else:
+    return seq2seq, input_vocab, output_vocab
+
+
+def train_model(
+        train_source,
+        train_target,
+        dev_source,
+        dev_target,
+        experiment_directory,
+        resume=False,
+):
     # Prepare dataset
-    train = Seq2SeqDataset.from_file(opt.train_src, opt.train_tgt)
+    train = Seq2SeqDataset.from_file(train_source, train_target)
     train.build_vocab(50000, 50000)
-    dev = Seq2SeqDataset.from_file(opt.dev_src, opt.dev_tgt, share_fields_from=train)
+    dev = Seq2SeqDataset.from_file(
+        dev_source,
+        dev_target,
+        share_fields_from=train,
+    )
     input_vocab = train.src_field.vocab
     output_vocab = train.tgt_field.vocab
 
@@ -80,46 +157,81 @@ else:
 
     seq2seq = None
     optimizer = None
-    if not opt.resume:
-        # Initialize model
-        hidden_size=128
-        bidirectional = True
-        max_len = 50
-        encoder = EncoderRNN(len(input_vocab), max_len, hidden_size,
-                             bidirectional=bidirectional, variable_lengths=True)
+    if not resume:
+        seq2seq, optimizer, scheduler = initialize_model(
+            train, input_vocab, output_vocab)
 
-        decoder = DecoderRNN(len(output_vocab), max_len, hidden_size * 2 if bidirectional else 1,
-                             dropout_p=0.2, use_attention=True, bidirectional=bidirectional,
-                             eos_id=train.tgt_field.eos_id, sos_id=train.tgt_field.sos_id)
-        seq2seq = Seq2seq(encoder, decoder)
-        if torch.cuda.is_available():
-            seq2seq = seq2seq.cuda()
-
-        for param in seq2seq.parameters():
-            param.data.uniform_(-0.08, 0.08)
-
-        # Optimizer and learning rate scheduler can be customized by
-        # explicitly constructing the objects and pass to the trainer.
-        optimizer = Optimizer(torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
-        scheduler = StepLR(optimizer.optimizer, 1)
-        optimizer.set_scheduler(scheduler)
-
-    # train
-    t = SupervisedTrainer(loss=loss, batch_size=32,
-                          checkpoint_every=50,
-                          print_every=10, expt_dir=opt.expt_dir)
+    # Train
+    trainer = SupervisedTrainer(
+        loss=loss,
+        batch_size=512,
+        checkpoint_every=50,
+        print_every=10,
+        experiment_directory=experiment_directory,
+    )
     start = time.clock()
-    seq2seq = t.train(seq2seq, train,
-                      num_epochs=6, dev_data=dev,
-                      optimizer=optimizer,
-                      teacher_forcing_ratio=0.5,
-                      resume=opt.resume)
+    try:
+        seq2seq = trainer.train(
+            seq2seq,
+            train,
+            n_epochs=2,
+            dev_data=dev,
+            optimizer=optimizer,
+            teacher_forcing_ratio=0.5,
+            resume=resume,
+        )
+    # Capture ^C
+    except KeyboardInterrupt:
+        pass
     end = time.clock() - start
-    print('Training time: {:.2f}s'.format(end))
+    logging.info('Training time: %.2fs', end)
 
-predictor = Predictor(seq2seq, input_vocab, output_vocab)
+    return seq2seq, input_vocab, output_vocab
 
-while True:
-    seq_str = raw_input("Type in a source sequence:")
-    seq = seq_str.strip().split()
-    print(predictor.predict(seq))
+
+def initialize_model(
+        train,
+        input_vocab,
+        output_vocab,
+        max_len=50,
+        hidden_size=128,
+        dropout_p=0,
+        bidirectional=True,
+):
+    # Initialize model
+    encoder = EncoderRNN(
+        len(input_vocab),
+        max_len,
+        hidden_size,
+        bidirectional=bidirectional,
+        variable_lengths=True,
+    )
+    decoder = DecoderRNN(
+        len(output_vocab),
+        max_len,
+        hidden_size * 2 if bidirectional else 1,
+        dropout_p=dropout_p,
+        use_attention=True,
+        bidirectional=bidirectional,
+        eos_id=train.tgt_field.eos_id,
+        sos_id=train.tgt_field.sos_id,
+    )
+    seq2seq = Seq2seq(encoder, decoder)
+    if torch.cuda.is_available():
+        seq2seq = seq2seq.cuda()
+
+    for param in seq2seq.parameters():
+        param.data.uniform_(-0.08, 0.08)
+
+    # Optimizer and learning rate scheduler can be customized by
+    # explicitly constructing the objects and pass to the trainer
+    optimizer = Optimizer(
+        torch.optim.Adam(seq2seq.parameters()), max_grad_norm=5)
+    scheduler = StepLR(optimizer.optimizer, 1)
+    optimizer.set_scheduler(scheduler)
+
+    return seq2seq, optimizer, scheduler
+
+
+if __name__ == '__main__':
+    sample()

@@ -77,6 +77,15 @@ target/
 # Vagrant
 .vagrant
 
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
 vocab_pickle
 
 # VS Code config

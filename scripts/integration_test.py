@@ -82,10 +82,10 @@ else:
     # train
     t = SupervisedTrainer(loss=loss, batch_size=32,
                           checkpoint_every=50,
-                          print_every=10, expt_dir=opt.expt_dir)
+                          print_every=10, experiment_directory=opt.expt_dir)
     start = time.clock()
     seq2seq = t.train(seq2seq, train,
-                      num_epochs=6, dev_data=dev,
+                      n_epochs=6, dev_data=dev,
                       optimizer=optimizer,
                       teacher_forcing_ratio=0.5,
                       resume=opt.resume)
