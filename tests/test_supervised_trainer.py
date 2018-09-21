@@ -32,7 +32,7 @@ class TestSupervisedTrainer(unittest.TestCase):
         start_epoch = 1
         steps_per_epoch = 7
         step = 3
-        trainer._train_epoches(self.dataset, mock_model, n_epoches, start_epoch, step)
+        trainer._train_epochs(self.dataset, mock_model, n_epoches, start_epoch, step)
 
         self.assertEqual(steps_per_epoch - step, mock_func.call_count)
 
@@ -47,7 +47,7 @@ class TestSupervisedTrainer(unittest.TestCase):
         n_epoches = 1
         start_epoch = 1
         step = 7
-        trainer._train_epoches(self.dataset, mock_model, n_epoches, start_epoch, step)
+        trainer._train_epochs(self.dataset, mock_model, n_epoches, start_epoch, step)
 
 if __name__ == '__main__':
     unittest.main()
