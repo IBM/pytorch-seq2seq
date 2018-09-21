@@ -13,13 +13,11 @@ class CopyDecoder(SimpleDecoder):
     def __init__(self, hidden_size, output_size):
         super(CopyDecoder, self).__init__(hidden_size, output_size)
         self.linear_gen = nn.Linear(hidden_size, 1)
-        self.coverage_vec = None
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, context, attn, batch, dataset):
         decode_len = context.size(1)
-        self.coverage_vec = self._coverage(attn)
-
-        p_gen = F.sigmoid(self.linear_gen(context.view(-1, self.hidden_size))).log()
+        p_gen = self.sigmoid(self.linear_gen(context.view(-1, self.hidden_size))).log()
 
         p_vocab, symbols = super(CopyDecoder, self).forward(context, attn)
         p_vocab = p_vocab.view(-1, self.output_size) * p_gen
@@ -43,12 +41,8 @@ class CopyDecoder(SimpleDecoder):
                     p_out[b: b + decode_len, copy_id].data.fill_(1e-20)
 
         symbols = p_out.topk(1, dim=1)[1]
-        return p_out, symbols #, self.coverage_vec
 
-    def _copy(self):
-        """ Implement copy mechanism """
-        pass
-
-    def _coverage(self, attn):
-        """ Implement coverage mechanism """
-        return self.coverage_vec + attn
+        # TODO(1): fix dimensions - not properly verified
+        symbols = symbols.view(batch.batch_size, decode_len)
+        p_out = p_out.view(batch.batch_size, decode_len, -1)
+        return p_out, symbols

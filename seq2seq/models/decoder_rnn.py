@@ -136,18 +136,18 @@ class DecoderRNN(BaseRNN):
             decoder_output, symbols = self.decoder(context, attn, batch, dataset)
             decoder_output = decoder_output.log()
 
-            if self.copy:
-                """ Implement Copy and Coverage Decoding """
-                pass
-            else:
-                for di in range(decoder_output.size(1)):
-                    step_output = decoder_output[:, di, :]
-                    step_symbols = symbols[:, di]
-                    if attn is not None:
-                        step_attn = attn[:, di, :]
-                    else:
-                        step_attn = None
-                    post_decode(step_output, step_symbols, step_attn)
+            # if self.copy:
+            #     """ Implement Copy Decoding """
+            #     pass
+            # else:
+            for di in range(decoder_output.size(1)):
+                step_output = decoder_output[:, di, :]
+                step_symbols = symbols[:, di]
+                if attn is not None:
+                    step_attn = attn[:, di, :]
+                else:
+                    step_attn = None
+                post_decode(step_output, step_symbols, step_attn)
         else:
             decoder_input = inputs[:, 0].unsqueeze(1)
             for di in range(max_length):
@@ -155,14 +155,14 @@ class DecoderRNN(BaseRNN):
                 decoder_output, symbols = self.decoder(context, attn, batch, dataset)
                 decoder_output = decoder_output.log()
 
-                if self.copy:
-                    """ Implement Copy and Coverage Decoding """
-                    pass
-                else:
-                    step_output = decoder_output.squeeze(1)
-                    step_symbols = symbols.squeeze(1)
-                    post_decode(step_output, step_symbols, attn)
-                    decoder_input = step_symbols
+                # if self.copy:
+                #     """ Implement Copy Decoding """
+                #     pass
+                # else:
+                step_output = decoder_output.squeeze(1)
+                step_symbols = symbols.squeeze(1)
+                post_decode(step_output, step_symbols, attn)
+                decoder_input = step_symbols
 
         ret_dict[DecoderRNN.KEY_SEQUENCE] = sequence_symbols
         ret_dict[DecoderRNN.KEY_LENGTH] = lengths.tolist()
