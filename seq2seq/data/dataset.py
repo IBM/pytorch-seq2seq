@@ -31,14 +31,12 @@ class Seq2SeqDataset(torchtext.data.Dataset):
         self.dynamic_vocab = []
         if self.dynamic:
             src_index_field = torchtext.data.Field(use_vocab=False,
-                                                   tensor_type=torch.LongTensor,
                                                    pad_token=0, sequential=True,
                                                    batch_first=True)
             self.fields.append(('src_index', src_index_field))
             examples = self._add_dynamic_vocab(examples)
 
         idx_field = torchtext.data.Field(use_vocab=False,
-                                         tensor_type=torch.LongTensor,
                                          sequential=False)
         self.fields.append(('index', idx_field))
         # construct examples
