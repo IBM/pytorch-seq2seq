@@ -161,7 +161,7 @@ class DecoderRNN(BaseRNN):
                     step_output = decoder_output.squeeze(1)
                     step_symbols = symbols.squeeze(1)
                     post_decode(step_output, step_symbols, attn)
-                    decoder_input = step_symbolss
+                    decoder_input = step_symbols
 
         ret_dict[DecoderRNN.KEY_SEQUENCE] = sequence_symbols
         ret_dict[DecoderRNN.KEY_LENGTH] = lengths.tolist()

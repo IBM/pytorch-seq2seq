@@ -72,7 +72,7 @@ else:
         decoder = DecoderRNN(len(output_vocab), max_len, hidden_size * 2,
                              dropout_p=0.2, use_attention=True,
                              bidirectional=bidirectional,
-                             rnn_cell='lstm', copy=False,
+                             rnn_cell='lstm', copy=True,
                              eos_id=train.tgt_field.eos_id, sos_id=train.tgt_field.sos_id)
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
