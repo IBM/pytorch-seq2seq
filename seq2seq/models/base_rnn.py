@@ -36,15 +36,15 @@ class BaseRNN(nn.Module):
         self.n_layers = n_layers
         self.input_dropout_p = input_dropout_p
         self.input_dropout = nn.Dropout(p=input_dropout_p)
-        if rnn_cell.lower() == 'lstm':
-            self.rnn_cell = nn.LSTM
-        elif rnn_cell.lower() == 'gru':
-            self.rnn_cell = nn.GRU
+        if rnn_cell.upper() in ['LSTM', 'GRU']:
+            self.rnn_cell = getattr(nn, rnn_cell.upper())
         else:
             raise ValueError("Unsupported RNN Cell: {0}".format(rnn_cell))
         if n_layers == 1 and dropout_p > 0:
-            logging.warning("Using dropout with 1 layer")
-        self.dropout_p = dropout_p
+            logging.warning("Suppressing dropout with 1 layer")
+            self.dropout_p = 0.0
+        else:
+            self.dropout_p = dropout_p
 
     def forward(self, *args, **kwargs):
         raise NotImplementedError()

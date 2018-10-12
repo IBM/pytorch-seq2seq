@@ -1,6 +1,6 @@
-click
-torch
-numpy
-dill
-tqdm
-torchtext
+torch==0.4.1
+click==6.7
+numpy==1.15.1
+dill==0.2.8.2
+tqdm==4.25.0
+torchtext==0.3.1

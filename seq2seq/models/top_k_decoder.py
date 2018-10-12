@@ -1,5 +1,4 @@
 import torch
-import torch.nn.functional as F
 from torch.autograd import Variable
 
 CUDA = torch.cuda.is_available()

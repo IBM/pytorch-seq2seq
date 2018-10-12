@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from .global_attention import GlobalAttention
+from .dot_attention import DotAttention
 from .base_rnn import BaseRNN
 from .simple_decoder import SimpleDecoder
 
@@ -63,7 +63,7 @@ class DecoderRNN(BaseRNN):
                 input_dropout_p, dropout_p, n_layers, rnn_cell)
 
         self.bidirectional_encoder = bidirectional
-        self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p)
+        self.rnn = self.rnn_cell(self.hidden_size, self.hidden_size, self.n_layers, batch_first=True, dropout=self.dropout_p)
 
         self.output_size = vocab_size
         self.max_length = max_len
@@ -75,7 +75,7 @@ class DecoderRNN(BaseRNN):
 
         self.embedding = nn.Embedding(self.output_size, self.hidden_size)
         if use_attention:
-            self.attention = GlobalAttention(self.hidden_size)
+            self.attention = DotAttention(self.hidden_size)
     
         self.decoder = SimpleDecoder(self.hidden_size, self.output_size)
 

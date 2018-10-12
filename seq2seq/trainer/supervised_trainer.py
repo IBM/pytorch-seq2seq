@@ -27,15 +27,8 @@ class SupervisedTrainer(object):
         batch_size (int, optional): batch size for experiment
         checkpoint_every (int, optional): number of batches to checkpoint after
     """
-    def __init__(
-            self,
-            experiment_directory='./experiment',
-            loss=None,
-            batch_size=64,
-            random_seed=None,
-            checkpoint_every=100,
-            print_every=100,
-    ):
+    def __init__(self, experiment_directory='./experiment', loss=None, batch_size=64,
+                random_seed=None, checkpoint_every=100, print_every=100):
         if loss is None:
             loss = NLLLoss()
         if random_seed is not None:
@@ -53,16 +46,8 @@ class SupervisedTrainer(object):
         if not os.path.exists(self.experiment_directory):
             os.makedirs(self.experiment_directory)
 
-    def train(
-            self,
-            model,
-            data,
-            n_epochs=5,
-            resume=False,
-            dev_data=None,
-            optimizer=None,
-            teacher_forcing_ratio=0,
-    ):
+    def train(self, model, data, n_epochs=5, resume=False,
+            dev_data=None, optimizer=None, teacher_forcing_ratio=0):
         """Train a given model.
 
         Args:
@@ -103,35 +88,18 @@ class SupervisedTrainer(object):
                     optim.Adam(model.parameters()), max_grad_norm=5)
             self.optimizer = optimizer
 
-        logger.info(
-            'Optimizer: %s, Scheduler: %s',
-            self.optimizer.optimizer,
-            self.optimizer.scheduler,
-        )
+        logger.info('Optimizer: %s, Scheduler: %s',
+                    self.optimizer.optimizer, self.optimizer.scheduler)
 
-        self._train_epochs(
-            data,
-            model,
-            n_epochs,
-            start_epoch,
-            step,
-            dev_data=dev_data,
-            teacher_forcing_ratio=teacher_forcing_ratio,
-        )
+        self._train_epochs(data, model, n_epochs, 
+                            start_epoch, step, dev_data=dev_data, 
+                            teacher_forcing_ratio=teacher_forcing_ratio)
         return model
 
-    def _train_epochs(
-            self,
-            data,
-            model,
-            n_epochs,
-            start_epoch,
-            start_step,
-            dev_data=None,
-            teacher_forcing_ratio=0,
-    ):
+    def _train_epochs(self, data, model, n_epochs, start_epoch, 
+                    start_step, dev_data=None, teacher_forcing_ratio=0):
         print_loss_total = epoch_loss_total = 0
-        device = None if torch.cuda.is_available() else -1
+        device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data,
