@@ -44,12 +44,12 @@ class EncoderRNN(BaseRNN):
                 input_dropout_p, dropout_p, n_layers, rnn_cell)
 
         self.variable_lengths = variable_lengths
-        self.embedding = nn.Embedding(vocab_size, hidden_size)
+        self.embedding = nn.Embedding(self.vocab_size, self.hidden_size)
         if embedding is not None:
             self.embedding.weight = nn.Parameter(embedding)
         self.embedding.weight.requires_grad = update_embedding
-        self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, 
-                                 bidirectional=bidirectional, dropout=dropout_p)
+        self.rnn = self.rnn_cell(self.hidden_size, self.hidden_size, self.n_layers, batch_first=True, 
+                                 bidirectional=bidirectional, dropout=self.dropout_p)
 
     def forward(self, input_var, input_lengths=None):
         """
