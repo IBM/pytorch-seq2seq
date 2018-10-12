@@ -1,7 +1,6 @@
 import unittest
 
 import torch
-import torch.nn.functional as F
 import numpy as np
 
 from seq2seq.models import DecoderRNN, TopKDecoder
@@ -53,7 +52,7 @@ class TestDecoderRNN(unittest.TestCase):
                 if sum(finished) == batch_size:
                     break
 
-    def test_k_greater_then_1(self):
+    def test_k_greater_than_1(self):
         """ Implement beam search manually and compare results from topk decoder. """
         max_len = 50
         beam_size = 3

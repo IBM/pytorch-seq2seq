@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch.nn.functional as F
 
 from .. import src_field_name, tgt_field_name
 
@@ -11,7 +10,7 @@ class Seq2seq(nn.Module):
         encoder (EncoderRNN): object of EncoderRNN
         decoder (DecoderRNN): object of DecoderRNN
 
-    Inputs: input_variable, input_lengths, target_variable, teacher_forcing_ratio, volatile
+    Inputs: input_variable, input_lengths, target_variable, teacher_forcing_ratio
         - **input_variable** (list, option): list of sequences, whose length is the batch size and within which
           each sequence is a list of token IDs. This information is forwarded to the encoder.
         - **input_lengths** (list of int, optional): A list that contains the lengths of sequences

@@ -1,11 +1,10 @@
 import os
 import unittest
-import tempfile
 
 import torchtext
 
 import seq2seq
-from seq2seq.dataset import Seq2SeqDataset
+from seq2seq.data import Seq2SeqDataset
 
 class TestDataset(unittest.TestCase):
 

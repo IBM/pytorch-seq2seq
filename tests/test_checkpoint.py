@@ -5,8 +5,7 @@ import shutil
 import mock
 from mock import ANY
 
-from seq2seq.util.checkpoint import Checkpoint
-
+from seq2seq.util import Checkpoint
 
 class TestCheckpoint(unittest.TestCase):
 
@@ -27,7 +26,7 @@ class TestCheckpoint(unittest.TestCase):
                                      '2017_05_22_09_47_31',
                                      '2017_05_23_10_47_29']
         latest_checkpoint = Checkpoint.get_latest_checkpoint(self.EXP_DIR)
-        self.assertEquals(latest_checkpoint,
+        self.assertEqual(latest_checkpoint,
                           os.path.join(self.EXP_DIR,
                                        'checkpoints/2017_05_23_10_47_29'))
 
@@ -50,15 +49,15 @@ class TestCheckpoint(unittest.TestCase):
 
         path = chk_point.save(self._get_experiment_dir())
 
-        self.assertEquals(2, mock_torch.save.call_count)
+        self.assertEqual(2, mock_torch.save.call_count)
         mock_torch.save.assert_any_call(state_dict,
                                         os.path.join(chk_point.path, Checkpoint.TRAINER_STATE_NAME))
         mock_torch.save.assert_any_call(mock_model,
                                         os.path.join(chk_point.path, Checkpoint.MODEL_NAME))
-        self.assertEquals(2, mock_open.call_count)
+        self.assertEqual(2, mock_open.call_count)
         mock_open.assert_any_call(os.path.join(path, Checkpoint.INPUT_VOCAB_FILE), ANY)
         mock_open.assert_any_call(os.path.join(path, Checkpoint.OUTPUT_VOCAB_FILE), ANY)
-        self.assertEquals(2, mock_dill.dump.call_count)
+        self.assertEqual(2, mock_dill.dump.call_count)
         mock_dill.dump.assert_any_call(mock_vocab,
                                        mock_open.return_value.__enter__.return_value)
 
@@ -80,11 +79,11 @@ class TestCheckpoint(unittest.TestCase):
         mock_torch.load.assert_any_call(
             os.path.join("mock_checkpoint_path", Checkpoint.MODEL_NAME))
 
-        self.assertEquals(loaded_chk_point.epoch, torch_dict['epoch'])
-        self.assertEquals(loaded_chk_point.optimizer, torch_dict['optimizer'])
-        self.assertEquals(loaded_chk_point.step, torch_dict['step'])
-        self.assertEquals(loaded_chk_point.input_vocab, dummy_vocabulary)
-        self.assertEquals(loaded_chk_point.output_vocab, dummy_vocabulary)
+        self.assertEqual(loaded_chk_point.epoch, torch_dict['epoch'])
+        self.assertEqual(loaded_chk_point.optimizer, torch_dict['optimizer'])
+        self.assertEqual(loaded_chk_point.step, torch_dict['step'])
+        self.assertEqual(loaded_chk_point.input_vocab, dummy_vocabulary)
+        self.assertEqual(loaded_chk_point.output_vocab, dummy_vocabulary)
 
     def _get_experiment_dir(self):
         root_dir = os.path.dirname(os.path.realpath(__file__))
