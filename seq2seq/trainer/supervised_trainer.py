@@ -131,7 +131,7 @@ class SupervisedTrainer(object):
             teacher_forcing_ratio=0,
     ):
         print_loss_total = epoch_loss_total = 0
-        device = torch.device('cuda') if torch.cuda.is_available() else -1
+        device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data,
