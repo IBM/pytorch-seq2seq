@@ -1,5 +1,10 @@
 import random
 
+# TODO temp hack DLK
+import torch
+import pdb
+# / temp hack
+
 import numpy as np
 
 import torch
@@ -91,6 +96,7 @@ class DecoderRNN(BaseRNN):
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
     def forward_step(self, input_var, hidden, encoder_outputs, function):
+
         batch_size = input_var.size(0)
         output_size = input_var.size(1)
         embedded = self.embedding(input_var)
@@ -107,6 +113,17 @@ class DecoderRNN(BaseRNN):
 
     def forward(self, inputs=None, encoder_hidden=None, encoder_outputs=None,
                     function=F.log_softmax, teacher_forcing_ratio=0):
+
+        # TODO temp hack DLK
+        if torch.cuda.is_available(): #  and inputs != None:
+            try:
+                inputs = inputs.cuda()
+                encoder_outputs = encoder_outputs.cuda()
+            except:
+                pass
+            #     pdb.set_trace()
+        # / temp hack
+
         ret_dict = dict()
         if self.use_attention:
             ret_dict[DecoderRNN.KEY_ATTN_SCORE] = list()

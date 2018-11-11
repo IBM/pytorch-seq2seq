@@ -1,5 +1,9 @@
 from __future__ import print_function, division
 
+# TODO temp hack DLK
+import pdb
+# / temp hack
+
 import torch
 import torchtext
 
@@ -57,6 +61,12 @@ class Evaluator(object):
                     loss.eval_batch(step_output.view(target_variables.size(0), -1), target)
 
                     non_padding = target.ne(pad)
+                    # TODO temp hack DLK
+                    if torch.cuda.is_available():
+                        target = target.cuda()
+                        non_padding = non_padding.cuda()
+                        # pdb.set_trace()
+                    # / temp hack
                     correct = seqlist[step].view(-1).eq(target).masked_select(non_padding).sum().item()
                     match += correct
                     total += non_padding.sum().item()

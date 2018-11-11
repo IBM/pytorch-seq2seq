@@ -1,3 +1,7 @@
+# TODO temp hack DLK
+import pdb
+# / temp hack
+
 import torch
 from torch.autograd import Variable
 
@@ -27,6 +31,11 @@ class Predictor(object):
             src_id_seq = src_id_seq.cuda()
 
         with torch.no_grad():
+            # TODO temp hack DLK
+            # pdb.set_trace()
+            if torch.cuda.is_available():
+                src_id_seq = src_id_seq.cuda()
+            # / temp hack
             softmax_list, _, other = self.model(src_id_seq, [len(src_seq)])
 
         return other

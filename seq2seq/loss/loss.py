@@ -1,5 +1,8 @@
 from __future__ import print_function
 import math
+# TODO temp hack DLK
+import torch
+# / temp hack
 import torch.nn as nn
 import numpy as np
 
@@ -135,6 +138,11 @@ class Perplexity(NLLLoss):
         super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=False)
 
     def eval_batch(self, outputs, target):
+        # TODO temp hack DLK
+        if torch.cuda.is_available():
+            outputs = outputs.cuda()
+            target = target.cuda()
+        # / temp hack
         self.acc_loss += self.criterion(outputs, target)
         if self.mask is None:
             self.norm_term += np.prod(target.size())

@@ -6,6 +6,8 @@ import torch
 from torch.optim.lr_scheduler import StepLR
 import torchtext
 
+import pdb
+
 import seq2seq
 from seq2seq.trainer import SupervisedTrainer
 from seq2seq.models import EncoderRNN, DecoderRNN, Seq2seq
@@ -14,6 +16,9 @@ from seq2seq.optim import Optimizer
 from seq2seq.dataset import SourceField, TargetField
 from seq2seq.evaluator import Predictor
 from seq2seq.util.checkpoint import Checkpoint
+
+# USE_CUDA = torch.cuda.is_available()
+torch.device('cuda')
 
 try:
     raw_input          # Python 2
@@ -96,13 +101,15 @@ else:
     optimizer = None
     if not opt.resume:
         # Initialize model
-        hidden_size=128
+        hidden_size = 300
         bidirectional = True
-        encoder = EncoderRNN(len(src.vocab), max_len, hidden_size,
-                             bidirectional=bidirectional, variable_lengths=True)
+        encoder = EncoderRNN(len(src.vocab), max_len, hidden_size, bidirectional=bidirectional, rnn_cell='LSTM', variable_lengths=True)
         decoder = DecoderRNN(len(tgt.vocab), max_len, hidden_size * 2 if bidirectional else hidden_size,
-                             dropout_p=0.2, use_attention=True, bidirectional=bidirectional,
+                             dropout_p=0.2, use_attention=True, bidirectional=bidirectional, rnn_cell='LSTM',
                              eos_id=tgt.eos_id, sos_id=tgt.sos_id)
+        # if torch.cuda.is_available():
+        #     encoder.cuda()
+        #     decoder.cuda()
         seq2seq = Seq2seq(encoder, decoder)
         if torch.cuda.is_available():
             seq2seq.cuda()
@@ -118,12 +125,12 @@ else:
         # optimizer.set_scheduler(scheduler)
 
     # train
-    t = SupervisedTrainer(loss=loss, batch_size=32,
+    t = SupervisedTrainer(loss=loss, batch_size=20,
                           checkpoint_every=50,
                           print_every=10, expt_dir=opt.expt_dir)
 
     seq2seq = t.train(seq2seq, train,
-                      num_epochs=6, dev_data=dev,
+                      num_epochs=30, dev_data=dev,
                       optimizer=optimizer,
                       teacher_forcing_ratio=0.5,
                       resume=opt.resume)
