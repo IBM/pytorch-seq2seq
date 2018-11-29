@@ -56,7 +56,7 @@ class DecoderRNN(BaseRNN):
     KEY_LENGTH = 'length'
     KEY_SEQUENCE = 'sequence'
 
-    def __init__(self, vocab_size, max_len, hidden_size, sos_id, eos_id, 
+    def __init__(self, vocab_size, max_len, hidden_size, sos_id, eos_id,
                  n_layers=1, rnn_cell='gru', bidirectional=False,
                  input_dropout_p=0, dropout_p=0, use_attention=False):
         super(DecoderRNN, self).__init__(vocab_size, max_len, hidden_size,
@@ -76,7 +76,7 @@ class DecoderRNN(BaseRNN):
         self.embedding = nn.Embedding(self.output_size, self.hidden_size)
         if use_attention:
             self.attention = DotAttention(self.hidden_size)
-    
+
         self.decoder = SimpleDecoder(self.hidden_size, self.output_size)
 
     def forward_step(self, input_var, hidden, encoder_outputs):
@@ -88,6 +88,8 @@ class DecoderRNN(BaseRNN):
         attn = None
         if self.use_attention:
             output, attn = self.attention(output, encoder_outputs)
+        else:
+            output = output.contiguous()
 
         return output, hidden, attn
 
@@ -122,7 +124,7 @@ class DecoderRNN(BaseRNN):
                 lengths[update_idx] = len(sequence_symbols)
 
         # Manual unrolling is used to support random teacher forcing.
-        # If teacher_forcing_ratio is True or False instead of a probability, 
+        # If teacher_forcing_ratio is True or False instead of a probability,
         # the unrolling can be done in graph
         if use_teacher_forcing:
             decoder_input = inputs[:, :-1]
