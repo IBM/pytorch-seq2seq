@@ -209,7 +209,7 @@ def initialize_model(
     decoder = DecoderRNN(
         len(output_vocab),
         max_len,
-        hidden_size * 2 if bidirectional else 1,
+        hidden_size * (2 if bidirectional else 1),
         dropout_p=dropout_p,
         use_attention=True,
         bidirectional=bidirectional,
