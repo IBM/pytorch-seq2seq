@@ -3,3 +3,4 @@ numpy
 dill
 tqdm
 torchtext
+six
