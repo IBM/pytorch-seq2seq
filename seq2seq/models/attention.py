@@ -67,6 +67,6 @@ class Attention(nn.Module):
         # concat -> (batch, out_len, 2*dim)
         combined = torch.cat((mix, output), dim=2)
         # output -> (batch, out_len, dim)
-        output = F.tanh(self.linear_out(combined.view(-1, 2 * hidden_size))).view(batch_size, -1, hidden_size)
+        output = torch.tanh(self.linear_out(combined.view(-1, 2 * hidden_size))).view(batch_size, -1, hidden_size)
 
         return output, attn
