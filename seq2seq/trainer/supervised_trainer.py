@@ -46,8 +46,6 @@ class SupervisedTrainer(object):
             os.makedirs(self.expt_dir)
         self.batch_size = batch_size
 
-        self.logger = logging.getLogger(__name__)
-
     def _train_batch(self, input_variable, input_lengths, target_variable, model, teacher_forcing_ratio):
         loss = self.loss
         # Forward propagation
@@ -67,12 +65,11 @@ class SupervisedTrainer(object):
 
     def _train_epoches(self, data, model, n_epochs, start_epoch, start_step,
                        dev_data=None, teacher_forcing_ratio=0):
-        log = self.logger
 
         print_loss_total = 0  # Reset every print_every
         epoch_loss_total = 0  # Reset every epoch
 
-        device = None if torch.cuda.is_available() else -1
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
             sort=False, sort_within_batch=True,
@@ -85,7 +82,7 @@ class SupervisedTrainer(object):
         step = start_step
         step_elapsed = 0
         for epoch in range(start_epoch, n_epochs + 1):
-            log.debug("Epoch: %d, Step: %d" % (epoch, step))
+            logging.debug("Epoch: %d, Step: %d" % (epoch, step))
 
             batch_generator = batch_iterator.__iter__()
             # consuming seen batches from previous training
@@ -113,7 +110,7 @@ class SupervisedTrainer(object):
                         step / total_steps * 100,
                         self.loss.name,
                         print_loss_avg)
-                    log.info(log_msg)
+                    logging.info(log_msg)
 
                 # Checkpoint
                 if step % self.checkpoint_every == 0 or step == total_steps:
@@ -136,7 +133,7 @@ class SupervisedTrainer(object):
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)
 
-            log.info(log_msg)
+            logging.info(log_msg)
 
     def train(self, model, data, num_epochs=5,
               resume=False, dev_data=None,
@@ -179,7 +176,7 @@ class SupervisedTrainer(object):
                 optimizer = Optimizer(optim.Adam(model.parameters()), max_grad_norm=5)
             self.optimizer = optimizer
 
-        self.logger.info("Optimizer: %s, Scheduler: %s" % (self.optimizer.optimizer, self.optimizer.scheduler))
+        logging.info("Optimizer: %s, Scheduler: %s" % (self.optimizer.optimizer, self.optimizer.scheduler))
 
         self._train_epoches(data, model, num_epochs,
                             start_epoch, step, dev_data=dev_data,
